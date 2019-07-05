@@ -1,0 +1,44 @@
+{
+  "name": "zoobc-explorer-api",
+  "version": "0.0.1",
+  "description": "A service for searching and displaying data published by the explorer server web API",
+  "main": "app.js",
+  "repository": "git@github.com:zoobc/zoobc-explorer-api.git",
+  "author": "ZooBC Explorer API Team",
+  "license": "Apache",
+  "private": true,
+  "keywords": [
+    "blockchainzoo",
+    "zoobc",
+    "explorer",
+    "blockchain"
+  ],
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "dependencies": {
+    "apollo-server": "^2.6.7",
+    "apollo-server-express": "^2.6.7",
+    "body-parser": "^1.19.0",
+    "chalk": "^2.4.2",
+    "cors": "^2.8.5",
+    "debug": "^4.1.1",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "express-rate-limit": "^5.0.0",
+    "graphql": "^14.4.2",
+    "graphql-resolvers": "^0.3.3",
+    "graphql-tools": "^4.0.5",
+    "grpc-pack": "^0.1.2",
+    "helmet": "^3.18.0",
+    "iplocation": "^6.1.0",
+    "lodash": "^4.17.11",
+    "moment": "^2.24.0",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.1",
+    "redis": "^2.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
+}
