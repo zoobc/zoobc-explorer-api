@@ -13,20 +13,22 @@ module.exports = (server, port, modeCluster) => {
   } else {
     server.listen(port, () => {
       console.log(
-        `%s Express server on port ${server.address().port} handled by process ${process.pid}`,
+        `%s Start Express Server on Port ${port} Handled by Process ${process.pid}`,
         chalk.green('🚀')
       );
     });
 
-    /** close server */
     process.on('SIGINT', () => {
-      console.info('%s SIGINT signal received', chalk.red('🚀'));
-
-      /** Stops the server from accepting new connections and finishes existing connections. */
-      server.close(function(err) {
+      server.close(err => {
         if (err) {
-          console.error(err);
+          console.log(`%s Error Express Server : ${err}`, chalk.red('🚀'));
           process.exit(1);
+        } else {
+          console.log(
+            `%s Close Express Server on Port ${port} Handled by Process ${process.pid}`,
+            chalk.red('🚀')
+          );
+          process.exit(0);
         }
       });
     });

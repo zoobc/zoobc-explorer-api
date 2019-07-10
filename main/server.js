@@ -1,38 +1,38 @@
+require('dotenv').config();
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
-const chalk = require('chalk');
+const express = require('express');
 
-const cluster = require('./cluster');
 const config = require('../config/config');
+const port = config.app.port;
+const app = express().set('port', port);
+const server =
+  config.app.modeServer === 'http'
+    ? http.createServer(app)
+    : https.createServer(
+        {
+          key: fs.readFileSync(config.app.openSslKeyPath),
+          cert: fs.readFileSync(config.app.openSslCertPath),
+        },
+        app
+      );
 
-module.exports = app => {
-  const server =
-    config.app.modeServer === 'http'
-      ? http.createServer(app)
-      : https.createServer(
-          {
-            key: fs.readFileSync(config.app.openSslKeyPath),
-            cert: fs.readFileSync(config.app.openSslCertPath),
-          },
-          app
-        );
-  const port = config.app.port;
-  app.set('port', port);
+module.exports = {
+  start: () => {
+    require('./redis')();
+    require('./cors')(app);
+    require('./compression')(app);
+    require('./log')(app);
+    require('./swagger')(app);
+    require('./cluster')(server, port, config.app.modeCluster);
+  },
 
-  /** create server */
-  const modeCluster = config.app.modeCluster;
-  cluster(server, port, modeCluster);
+  stop: () => {
+    require('../utils/kill-port')(port);
+  },
 
-  /** timeout to kill */
-  process.on('message', msg => {
-    if (msg == 'shutdown') {
-      console.log('%s Closing all connections...', chalk.red('🚀'));
-
-      setTimeout(() => {
-        console.log('%s Finished closing connections', chalk.red('🚀'));
-        process.exit(0);
-      }, 1500);
-    }
-  });
+  port: () => {
+    console.info(port);
+  },
 };
