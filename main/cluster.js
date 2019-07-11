@@ -1,6 +1,9 @@
-const cluster = require('cluster');
 const os = require('os');
 const chalk = require('chalk');
+const cluster = require('cluster');
+const fs = require('fs');
+
+const config = require('../config/config');
 
 module.exports = (server, port, modeCluster) => {
   if (cluster.isMaster && modeCluster) {
@@ -17,6 +20,10 @@ module.exports = (server, port, modeCluster) => {
         chalk.green('🚀')
       );
     });
+
+    if (typeof process.pid !== 'undefined') {
+      fs.writeFileSync(config.app.pidPath, process.pid, { encoding: 'utf8' });
+    }
 
     process.on('SIGINT', () => {
       server.close(err => {

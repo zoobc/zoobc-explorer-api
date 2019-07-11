@@ -1,6 +1,6 @@
 module.exports = () => {
   console.log(`
-  Usage with npm: npm zoobc [options]
+  Usage with npm: npm run zoobc [options]
   Usage with yarn: yarn zoobc [options]
   
   Options:

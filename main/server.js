@@ -19,7 +19,7 @@ const server =
       );
 
 module.exports = {
-  start: () => {
+  init: () => {
     require('./redis')();
     require('./cors')(app);
     require('./compression')(app);
@@ -28,8 +28,24 @@ module.exports = {
     require('./cluster')(server, port, config.app.modeCluster);
   },
 
+  start: () => {
+    require('./cors')(app);
+    require('./compression')(app);
+    require('./log')(app);
+    require('./swagger')(app);
+    require('./cluster')(server, port, false);
+  },
+
   stop: () => {
-    require('../utils/kill-port')(port);
+    try {
+      if (fs.existsSync(config.app.pidPath)) {
+        const serverPid = fs.readFileSync(config.app.pidPath, { encoding: 'utf8' });
+        fs.unlinkSync(config.app.pidPath);
+        require('../utils/kill-pid')(serverPid);
+      }
+    } catch (error) {
+      throw error;
+    }
   },
 
   port: () => {

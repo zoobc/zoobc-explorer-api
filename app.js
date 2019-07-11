@@ -1,1 +1,1 @@
-require('./main/server').start();
+require('./main/server').init();

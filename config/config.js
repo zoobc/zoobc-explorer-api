@@ -8,6 +8,7 @@ module.exports = {
     modeServer: 'http',
     modeCluster: true,
     modeRedis: true,
+    pidPath: '.zoobc.pid',
     openSslKeyPath: './key.pem',
     openSslCertPath: './cert.pem',
     loggerFilePath: './logs/access.log',
