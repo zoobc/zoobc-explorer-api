@@ -3,6 +3,18 @@
   "version": "0.0.1",
   "description": "A service for searching and displaying data published by the explorer server web API",
   "main": "app.js",
+  "bin": "app.js",
+  "pkg": {
+    "assets": [
+      "spinechain-schema-prototype/**/*",
+      "spinechain-explorer-prototype/build/**/*"
+    ],
+    "targets": [
+      "node10-linux-x64",
+      "node10-macos-x64",
+      "node10-win-x64"
+    ]
+  },
   "repository": "git@github.com:zoobc/zoobc-explorer-api.git",
   "author": "ZooBC Explorer API Team",
   "license": "Apache",
