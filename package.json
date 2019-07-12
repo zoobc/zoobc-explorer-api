@@ -17,12 +17,12 @@
   "scripts": {
     "start": "nodemon app.js",
     "zoobc": "node argv.js",
-    "pkg": "pkg app.js --output ./bin"
+    "pkg": "pkg --out-path bin/ ."
   },
   "pkg": {
     "assets": [
-      "zoobc-schema/**/*",
-      "zoobc-explorer-ui/build/**/*"
+      "spinechain-schema-prototype/**/*",
+      "spinechain-explorer-prototype/build/**/*"
     ],
     "targets": [
       "node10-linux-x64",

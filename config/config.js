@@ -4,7 +4,7 @@ module.exports = {
   app: {
     port: 6969,
     host: process.env.HOST || 'localhost',
-    mainRoute: '/zoobc/api/v1',
+    mainRoute: '/expspinechain/api/v1',
     modeServer: 'http',
     modeCluster: true,
     modeRedis: true,

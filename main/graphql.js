@@ -1,5 +1,5 @@
 const configGraphql = require('../config/graphql');
 
-module.exports = (app) => {
+module.exports = function(app) {
   configGraphql.connectToServer(app);
 };

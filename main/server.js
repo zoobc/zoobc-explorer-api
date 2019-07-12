@@ -24,6 +24,8 @@ module.exports = {
     require('./cors')(app);
     require('./compression')(app);
     require('./log')(app);
+    require('./routes')(app);
+    require('./graphql')(app);
     require('./swagger')(app);
     require('./cluster')(server, port, config.app.modeCluster);
   },
@@ -32,6 +34,8 @@ module.exports = {
     require('./cors')(app);
     require('./compression')(app);
     require('./log')(app);
+    require('./routes')(app);
+    require('./graphql')(app);
     require('./swagger')(app);
     require('./cluster')(server, port, false);
   },
