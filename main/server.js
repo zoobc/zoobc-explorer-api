@@ -9,6 +9,7 @@ const config = require('../config/config');
 const port = config.app.port;
 const app = express().set('port', port);
 
+// serve static files in express
 app.use(express.static(path.join(__dirname, '../spinechain-explorer-prototype/build')));
 
 const server =
