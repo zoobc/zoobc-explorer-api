@@ -3,10 +3,14 @@ const fs = require('fs');
 const http = require('http');
 const https = require('https');
 const express = require('express');
+const path = require('path');
 
 const config = require('../config/config');
 const port = config.app.port;
 const app = express().set('port', port);
+
+app.use(express.static(path.join(__dirname, '../spinechain-explorer-prototype/build')));
+
 const server =
   config.app.modeServer === 'http'
     ? http.createServer(app)
