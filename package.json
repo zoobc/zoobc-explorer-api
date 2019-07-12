@@ -17,7 +17,7 @@
   "scripts": {
     "start": "nodemon app.js",
     "zoobc": "node argv.js",
-    "pkg": "pkg --out-path bin/ ."
+    "pkg": "pkg --out-path ../bin/ ."
   },
   "pkg": {
     "assets": [
