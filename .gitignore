@@ -15,6 +15,10 @@ key.pem
 # production
 /build
 
+# zoobc pid
+.zoobc.pid
+.pid
+
 # misc
 .DS_Store
 .idea
