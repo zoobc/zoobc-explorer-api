@@ -17,17 +17,14 @@
   "scripts": {
     "start": "nodemon app.js",
     "zoobc": "node argv.js",
-    "pkg": "pkg --out-path ../bin/ ."
+    "pkg-win": "pkg -t node10-win-x64 --out-path ../bin/ .",
+    "pkg-mac": "pkg -t node10-macos-x64 --out-path ../bin/ .",
+    "pkg-linux": "pkg -t node10-linux-x64 --out-path ../bin/ ."
   },
   "pkg": {
     "assets": [
       "spinechain-schema-prototype/**/*",
       "spinechain-explorer-prototype/build/**/*"
-    ],
-    "targets": [
-      "node10-linux-x64",
-      "node10-macos-x64",
-      "node10-win-x64"
     ]
   },
   "dependencies": {
