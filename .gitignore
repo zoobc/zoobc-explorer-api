@@ -13,7 +13,10 @@ key.pem
 /coverage
 
 # production
-/build
+explorer-api-linux
+explorer-api-mac
+explorer-api-win
+explorer-api-win.exe
 
 # zoobc pid
 .zoobc.pid
