@@ -8,6 +8,11 @@ A web viewer for searching and displaying data published by the explorer server 
 
 - [Express](https://www.npmjs.com/package/express)
 - [Redis](https://redis.io/topics/quickstart)
+- [gRPC](https://grpc.io/docs/quickstart/node/)
+- [Rest API](https://restfulapi.net/)
+- [GraphQL](https://graphql.org/code/#javascript)
+- [Apollo-Graphql](https://www.apollographql.com/docs/)
+- [IP Location](https://www.npmjs.com/package/iplocation)
 - [SSL Certificate](https://support.microfocus.com/kb/doc.php?id=7013103)
 - [Swagger](https://swagger.io/)
 
@@ -18,10 +23,12 @@ A web viewer for searching and displaying data published by the explorer server 
   - [How to Install on MaxOS or Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-18-04)
 - Nodemon
   - [How to Install](https://github.com/remy/nodemon#nodemon)
+- GraphQL CLI (optional)
+  - [How to Install](https://oss.prisma.io/content/graphql-cli/01-overview)
 
 ## How to Usage
 
-clone the Explorer API repository then create your branch from `develop` on terminal.
+Fork and clone the Explorer Middleware repository then create your branch from ```develop``` on terminal.
 
 ```bash
 $ git clone git@github.com:your-github-account/zoobc-explorer-api.git
@@ -40,10 +47,17 @@ $ yarn start or npm start
 # starting app using yarn or npm
 ```
 
+## How to Update Schema
+
+```bash
+$ ./schema.sh
+# delete and clone repository zoobc-schema
+```
+
 ## Usage with CLI
 
 ```bash
-$ yarn zoobc -h or npm zoobc -h
+$ yarn zoobc -h or yarn zoobc --help
 # print zoobc command line options
 
 $ yarn zoobc start
@@ -75,8 +89,16 @@ $ kill xxxx     //listen number
     ├── apidoc                # Static HTML for API documentation
     ├── config                # Configuration application, graphql and doc api
     ├── docs                  # The screnshoot, doc api and json format import insomnia
+    ├── grapqh                # Directory a query language for API
+    ├   ├── resovers          # Containing files for the resolver
+    ├   └── schema            # Schema models
     ├── logs                  # Log files
     ├── main                  # Modules files for app.js
+    ├── models                # Structure of tables and properties
+    ├── restapi               # Directory a rest language for API
+    ├   ├── controllers       # Containing class files for the controllers
+    ├   ├── routes            # Containing routes API
+    ├   └── services          # Containing class files for the service controllers
     └── utils                 # Functions that are provided application
 
 ## License
