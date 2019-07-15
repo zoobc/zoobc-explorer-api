@@ -10,7 +10,10 @@ switch (argv) {
   case 'port':
     require('./main/server').port();
     break;
-  case '--help' || '-h':
+  case '--help':
+    require('./main/help')();
+    break;
+  case '-h':
     require('./main/help')();
     break;
   default:
