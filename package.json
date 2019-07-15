@@ -23,8 +23,8 @@
   },
   "pkg": {
     "assets": [
-      "spinechain-schema-prototype/**/*",
-      "spinechain-explorer-prototype/build/**/*"
+      "zoobc-schema/**/*",
+      "zoobc-explorer-ui/build/**/*"
     ]
   },
   "dependencies": {
