@@ -12,12 +12,6 @@ const app = express().set('port', port);
 const staticPath = path.join(__dirname, '../zoobc-explorer-ui/build');
 
 fs.access(staticPath, fs.F_OK, err => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-
-  // serve static files in express
   app.use(express.static(staticPath));
 });
 
