@@ -10,7 +10,7 @@ const port = config.app.port;
 const app = express().set('port', port);
 
 // serve static files in express
-app.use(express.static(path.join(__dirname, '../spinechain-explorer-prototype/build')));
+app.use(express.static(path.join(__dirname, '../zoobc-explorer-ui/build')));
 
 const server =
   config.app.modeServer === 'http'
