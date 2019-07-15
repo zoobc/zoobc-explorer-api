@@ -4,7 +4,7 @@ module.exports = {
   app: {
     port: 6969,
     host: process.env.HOST || 'localhost',
-    mainRoute: '/expspinechain/api/v1',
+    mainRoute: '/zoobc/api/v1',
     modeServer: 'http',
     modeCluster: true,
     modeRedis: true,
@@ -18,6 +18,6 @@ module.exports = {
   },
   proto: {
     host: '18.139.3.139:8000',
-    path: path.resolve(__dirname, '../spinechain-schema-prototype'),
+    path: path.resolve(__dirname, '../zoobc-schema'),
   },
 };
