@@ -17,7 +17,7 @@ module.exports = {
     pageLimit: 10,
   },
   proto: {
-    host: '18.139.3.139:8000',
+    host: '18.139.3.139:7000',
     path: path.resolve(__dirname, '../zoobc-schema'),
   },
 };
