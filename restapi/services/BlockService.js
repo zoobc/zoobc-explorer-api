@@ -7,102 +7,111 @@ module.exports = class BlockService {
     this.block = Block;
   }
 
-  async findAll({ BlockSize, BlockHeight }, callback) {
+  async findAll({ ChainType, Limit, Height }, callback) {
     try {
-      this.block.GetBlocks({ BlockSize: BlockSize, BlockHeight: BlockHeight }, (err, result) => {
-        if (err) {
-          callback(err.details, null);
-          return;
-        }
+      this.block.GetBlocks(
+        { ChainType: ChainType, Limit: Limit, Height: Height },
+        (err, result) => {
+          if (err) {
+            callback(err.details, null);
+            return;
+          }
 
-        const { Blocks, BlockSize, BlockHeight } = result;
-        Converter.formatDataGRPC(Blocks);
-        callback(null, {
-          data: { Blocks, BlockSize, BlockHeight },
-        });
-      });
+          const { ChainType, Count, Height, blocks } = result;
+          Converter.formatDataGRPC(blocks);
+          callback(null, {
+            data: { ChainType, Count, Height, blocks },
+          });
+        }
+      );
     } catch (error) {
       throw Error(error.message);
     }
   }
 
-  async graphPeriod({ start_date, end_date }, callback) {
+  async graphPeriod({ start_date, end_date, ChainType, Limit, Height }, callback) {
     try {
       const startDateTimestamp = moment(start_date, 'DD-MM-YYYY').startOf('day');
       const endDateTimestamp = moment(end_date, 'DD-MM-YYYY').startOf('day');
 
-      this.block.GetBlocks({ BlockSize: 1, BlockHeight: 1 }, (err, result) => {
-        if (err) {
-          callback(err.details, null);
-          return;
-        }
+      this.block.GetBlocks(
+        { ChainType: ChainType, Limit: Limit, Height: Height },
+        (err, result) => {
+          if (err) {
+            callback(err.details, null);
+            return;
+          }
 
-        const { Blocks } = result;
+          const { blocks } = result;
 
-        const graph = {
-          graph: [['Timestamp', 'Sum Transactions', 'Sum Block']],
-        };
+          const graph = {
+            graph: [['Timestamp', 'Sum Transactions', 'Sum Block']],
+          };
 
-        let timestamp = 0;
+          let timestamp = 0;
 
-        Blocks.map(function(item) {
-          let temp = moment.unix(item.Timestamp).format('DD-MM-YYYY');
-          let final = moment(temp, 'DD-MM-YYYY').startOf('day');
-          if (
-            final.isSameOrAfter(startDateTimestamp, 'day') &&
-            final.isSameOrBefore(endDateTimestamp, 'day')
-          ) {
-            if (item.Timestamp !== timestamp) {
-              timestamp = item.Timestamp;
-              let timestampString = moment.unix(timestamp).format('DD-MMM-YYYY HH:mm:ss');
-              let tempArr = [];
-              tempArr.push(timestampString, item.Transactions.length, 1);
-              graph.graph.push(tempArr);
-            } else {
-              let timestampString = moment.unix(timestamp).format('DD-MMM-YYYY HH:mm:ss');
-              const result = graph.graph.filter(item => item[0] === timestampString);
-              if (result && result.length > 0) {
-                result[0][1] += item.Transactions.length;
-                result[0][2] += 1;
+          blocks.map(function(item) {
+            let temp = moment.unix(item.Timestamp).format('DD-MM-YYYY');
+            let final = moment(temp, 'DD-MM-YYYY').startOf('day');
+            if (
+              final.isSameOrAfter(startDateTimestamp, 'day') &&
+              final.isSameOrBefore(endDateTimestamp, 'day')
+            ) {
+              if (item.Timestamp !== timestamp) {
+                timestamp = item.Timestamp;
+                let timestampString = moment.unix(timestamp).format('DD-MMM-YYYY HH:mm:ss');
+                let tempArr = [];
+                tempArr.push(timestampString, item.Transactions.length, 1);
+                graph.graph.push(tempArr);
+              } else {
+                let timestampString = moment.unix(timestamp).format('DD-MMM-YYYY HH:mm:ss');
+                const result = graph.graph.filter(item => item[0] === timestampString);
+                if (result && result.length > 0) {
+                  result[0][1] += item.Transactions.length;
+                  result[0][2] += 1;
+                }
               }
             }
-          }
-          return item;
-        });
+            return item;
+          });
 
-        callback(null, {
-          data: graph,
-        });
-      });
+          callback(null, {
+            data: graph,
+          });
+        }
+      );
     } catch (error) {
       throw Error(error.message);
     }
   }
 
-  async graphSummary(callback) {
+  async graphSummary({ ChainType, Limit, Height }, callback) {
     try {
-      this.block.GetBlocks({ BlockSize: 1, BlockHeight: 1 }, (err, result) => {
-        if (err) {
-          callback(err.details, null);
-          return;
+      this.block.GetBlocks(
+        { ChainType: ChainType, Limit: Limit, Height: Height },
+        (err, result) => {
+          if (err) {
+            callback(err.details, null);
+            return;
+          }
+
+          const { blocks } = result;
+
+          const graph = {
+            graph: [['Category', 'Total'], ['Block', 0], ['Transaction', 0]],
+          };
+
+          blocks.map(function(item) {
+            graph.graph[1][1] += 1;
+            graph.graph[2][1] += item.Transactions.length;
+            return item;
+          });
+
+          callback(null, {
+            data: graph,
+          });
         }
-
-        const { Blocks } = result;
-
-        const graph = {
-          graph: [['Category', 'Total'], ['Block', 0], ['Transaction', 0]],
-        };
-
-        Blocks.map(function(item) {
-          graph.graph[1][1] += 1;
-          graph.graph[2][1] += item.Transactions.length;
-          return item;
-        });
-
-        callback(null, {
-          data: graph,
-        });
-      });
+      );
     } catch (error) {
       throw Error(error.message);
     }

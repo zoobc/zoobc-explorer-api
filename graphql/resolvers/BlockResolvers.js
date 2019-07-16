@@ -9,11 +9,11 @@ module.exports = {
       try {
         return new Promise((resolve, reject) => {
           Block.GetBlocks(
-            { BlockSize: args.BlockSize, BlockHeight: args.BlockHeight },
+            { ChainType: args.ChainType, Limit: args.Limit, Height: args.Height },
             (err, result) => {
               if (err) return reject(err);
-              const { Blocks = null } = result;
-              Converter.formatDataGRPC(Blocks);
+              const { blocks = null } = result;
+              Converter.formatDataGRPC(blocks);
               resolve(result);
             }
           );
