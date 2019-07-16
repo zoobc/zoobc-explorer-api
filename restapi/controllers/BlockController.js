@@ -19,7 +19,7 @@ module.exports = class BlockController extends BaseController {
           handleError.sendCatchError(res, err);
           return;
         }
-        
+
         this.sendSuccessResponse(
           res,
           responseBuilder
@@ -78,7 +78,7 @@ module.exports = class BlockController extends BaseController {
     const handleError = new HandleError();
 
     try {
-      this.service.graphSummary((err, result) => {
+      this.service.graphSummary(req.query, (err, result) => {
         if (err) handleError.sendCatchError(res, err);
         this.sendSuccessResponse(
           res,
