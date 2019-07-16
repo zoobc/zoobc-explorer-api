@@ -5,7 +5,7 @@ const config = require('./config');
 const { description, version, license, author } = require('../package.json');
 const host = nconf.get('app_host') || config.app.host;
 const port = nconf.get('app_port') || config.app.port;
-const apiDoc = `https://${host}:${port}${config.app.mainRoute}`;
+const apiDoc = `http://${host}:${port}${config.app.mainRoute}`;
 
 const options = {
   swaggerDefinition: {
