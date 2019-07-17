@@ -6,37 +6,8 @@ module.exports = class TransactionService {
     this.transaction = Transaction;
   }
 
-  getTransactionsByBlockID(blockID, callback) {
-    this.transaction.GetTransactionsByBlockID({ BlockID: blockID }, (err, result) => {
-      if (err) {
-        callback(err.details, null);
-        return;
-      }
-
-      Converter.formatDataGRPC(result.Transactions);
-      callback(null, { data: result.Transactions });
-    });
-  }
-
-  getTransactionsByAccountPublicKey(accPublicKey, callback) {
-    const decodedData = Buffer.from(accPublicKey, 'base64');
-
-    this.transaction.GetTransactionsByAccountPublicKey(
-      { AccountPublicKey: decodedData },
-      (err, result) => {
-        if (err) {
-          callback(err.details, null);
-          return;
-        }
-
-        Converter.formatDataGRPC(result.Transactions);
-        callback(null, { data: result.Transactions });
-      }
-    );
-  }
-
-  getTransactionsTypeGraph(blockID, callback) {
-    this.transaction.GetTransactionsByBlockID({ BlockID: blockID }, (err, result) => {
+  getTransactionsTypeGraph(limit, offSet) {
+    this.transaction.GetTransaction({ Limit: limit, Offset: offSet }, (err, result) => {
       if (err) {
         callback(err.details, null);
         return;
@@ -66,40 +37,46 @@ module.exports = class TransactionService {
     });
   }
 
-  async findAll({ blockID, accPublicKey }, callback) {
+  async transStat({ limit, offSet }, callback) {
     try {
-      if (accPublicKey) {
-        this.getTransactionsByAccountPublicKey(accPublicKey, callback);
+      if (limit) {
+        if (offSet){
+          this.transaction.GetTransactions({ Limit: limit, Offset: offSet}, async (err, result) => {
+            if (err) {
+             callback(err.details, null);
+             return;
+            }
+            callback(null, result);
+          });
+        } else {
+          console.log('LIMIT EXIST NO OFFSET BUT ERROR')
+          this.transaction.GetTransactions({ Limit: limit, Offset: 1}, async (err, result) => {
+            if (err) {
+              console.log('LIMIT EXIST NO OFFSET BUT ERROR-2')
+              callback(err.details, null);
+              return;
+            }
+            callback(null, result);
+          });
+        }
       } else {
-        this.getTransactionsByBlockID(blockID, callback);
-      }
-    } catch (error) {
-      throw Error(error.message);
-    }
-  }
-
-  async transStat({ senderPublicKey, recipientPublicKey, blockID, accPublicKey }, callback) {
-    try {
-      if (blockID) {
-        this.getTransactionsByBlockID(blockID, async (err, res) => {
-          if (err) {
-            callback(err.details, null);
-            return;
-          }
-
-          const result = await this.filterData(res.data, senderPublicKey, recipientPublicKey);
-          callback(null, result);
-        });
-      } else {
-        this.getTransactionsByAccountPublicKey(accPublicKey, async (err, res) => {
-          if (err) {
-            callback(err.details, null);
-            return;
-          }
-
-          const result = await this.filterData(res.data, senderPublicKey, recipientPublicKey);
-          callback(null, result);
-        });
+        if (offSet){
+          this.transaction.GetTransactions({ Limit: 1, Offset: offSet}, async (err, result) => {
+            if (err) {
+             callback(err.details, null);
+             return;
+            }
+            callback(null, result);
+          });
+        } else {
+          this.transaction.GetTransactions({ Limit: 1, Offset: 1}, async (err, result) => {
+            if (err) {
+              callback(err.details, null);
+              return;
+            }
+            callback(null, result);
+          });
+        }
       }
     } catch (error) {
       throw Error(error.message);
@@ -123,9 +100,23 @@ module.exports = class TransactionService {
     return result;
   }
 
-  async graph({ blockID }, callback) {
+  async graph({ limit, offSet }, callback) {
     try {
-      this.getTransactionsTypeGraph(blockID, callback);
+      this.transaction.GetTransactions (limit, offSet);
+    } catch (error) {
+      throw Error(error.message);
+    }
+  }
+
+  async getTransaction({ id }, callback) {
+    try {
+      this.transaction.GetTransactions({ ID: id}, async (err, result) => {
+        if (err) {
+         callback(err.details, null);
+         return;
+        }
+        callback(null, result);
+      });
     } catch (error) {
       throw Error(error.message);
     }
