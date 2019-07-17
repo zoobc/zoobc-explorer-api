@@ -3,8 +3,6 @@ const { transactionController } = require('../controllers');
 
 const router = express.Router();
 
-
-
 router.get('/graph/amounts', (req, res) => {
   transactionController.transStat(req, res);
 });
