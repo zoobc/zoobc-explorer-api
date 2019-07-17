@@ -18,6 +18,9 @@ explorer-api-mac
 explorer-api-win
 explorer-api-win.exe
 
+# zoobc schema
+/zoobc-schema
+
 # zoobc pid
 .zoobc.pid
 .pid
