@@ -6,8 +6,8 @@ module.exports = class TransactionService {
     this.transaction = Transaction;
   }
 
-  getTransactionsTypeGraph(limit, offSet) {
-    this.transaction.GetTransaction({ Limit: limit, Offset: offSet }, (err, result) => {
+  getTransactionsTypeGraph({limit = 1, offSet = 1}, callback) {
+    this.transaction.GetTransactions({ Limit: limit, Offset: offSet }, (err, result) => {
       if (err) {
         callback(err.details, null);
         return;
@@ -37,47 +37,17 @@ module.exports = class TransactionService {
     });
   }
 
-  async transStat({ limit, offSet }, callback) {
+  async transStat({ limit = 1, offSet = 1}, callback) {
+    limit = limit || 1;
+    offSet = offSet || 1;
     try {
-      if (limit) {
-        if (offSet){
-          this.transaction.GetTransactions({ Limit: limit, Offset: offSet}, async (err, result) => {
-            if (err) {
-             callback(err.details, null);
-             return;
-            }
-            callback(null, result);
-          });
-        } else {
-          console.log('LIMIT EXIST NO OFFSET BUT ERROR')
-          this.transaction.GetTransactions({ Limit: limit, Offset: 1}, async (err, result) => {
-            if (err) {
-              console.log('LIMIT EXIST NO OFFSET BUT ERROR-2')
-              callback(err.details, null);
-              return;
-            }
-            callback(null, result);
-          });
+      this.transaction.GetTransactions({ Limit: limit, Offset: offSet}, async (err, result) => {
+        if (err) {
+         callback(err.details, null);
+         return;
         }
-      } else {
-        if (offSet){
-          this.transaction.GetTransactions({ Limit: 1, Offset: offSet}, async (err, result) => {
-            if (err) {
-             callback(err.details, null);
-             return;
-            }
-            callback(null, result);
-          });
-        } else {
-          this.transaction.GetTransactions({ Limit: 1, Offset: 1}, async (err, result) => {
-            if (err) {
-              callback(err.details, null);
-              return;
-            }
-            callback(null, result);
-          });
-        }
-      }
+        callback(null, result);
+      });
     } catch (error) {
       throw Error(error.message);
     }
@@ -100,9 +70,9 @@ module.exports = class TransactionService {
     return result;
   }
 
-  async graph({ limit, offSet }, callback) {
+  async graph({ limit = 1, offSet = 1}, callback) {
     try {
-      this.transaction.GetTransactions (limit, offSet);
+      this.getTransactionsTypeGraph({limit, offSet}, callback);
     } catch (error) {
       throw Error(error.message);
     }
