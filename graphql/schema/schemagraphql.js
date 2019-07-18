@@ -2,7 +2,8 @@ const { gql } = require('apollo-server-express');
 
 module.exports = gql`
   type Query {
-    block(ChainType: Int, Limit: Int, Height: Int): Block
+    blocks(ChainType: Int, Limit: Int, Height: Int): Blocks
+    block(ChainType: Int, ID: ID, Height: Int): Block!
     transactions(BlockID: String, AccountPublicKey: String): [Transactions!]
     accountBalances: [AccountBalance!]
     accountBalance(PublicKey: String): AccountBalance!
@@ -10,14 +11,14 @@ module.exports = gql`
     mapPeers: [MapPeers!]
   }
 
-  type Block {
-    blocks: [Blocks!]
+  type Blocks {
+    blocks: [Block!]
     ChainType: Int
     Count: Int
     Height: Int
   }
 
-  type Blocks {
+  type Block {
     ID: ID!
     PreviousBlockHash: String
     Height: Int
