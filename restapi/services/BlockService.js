@@ -29,9 +29,9 @@ module.exports = class BlockService {
     }
   }
 
-  async findById(id, { ChainType, Height }, callback) {
+  async findById(id, callback) {
     try {
-      this.block.GetBlock({ ID: id, ChainType: ChainType, Height: Height }, (err, result) => {
+      this.block.GetBlock({ ID: id }, (err, result) => {
         if (err) {
           callback(err.details, null);
           return;

@@ -9,10 +9,12 @@ const config = require('../config/config');
 const port = config.app.port;
 const app = express().set('port', port);
 
-const staticPath = path.join(__dirname, '../zoobc-explorer-ui/build');
+const pathBuildUI = '../zoobc-explorer-ui/build';
 
-fs.access(staticPath, fs.F_OK, err => {
-  app.use(express.static(staticPath));
+fs.stat(path.join(__dirname, pathBuildUI), err => {
+  if (!err) {
+    app.use(express.static(path.join(__dirname, pathBuildUI)));
+  }
 });
 
 const server =
@@ -49,15 +51,7 @@ module.exports = {
   },
 
   stop: () => {
-    try {
-      if (fs.existsSync(config.app.pidPath)) {
-        const serverPid = fs.readFileSync(config.app.pidPath, { encoding: 'utf8' });
-        fs.unlinkSync(config.app.pidPath);
-        require('../utils/kill-pid')(serverPid);
-      }
-    } catch (error) {
-      throw error;
-    }
+    require('../utils/kill-port')(port);
   },
 
   port: () => {
