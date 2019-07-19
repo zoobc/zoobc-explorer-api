@@ -2,7 +2,7 @@
  * @swagger
  * tags:
  *  - name: Transactions
- *    description: Rest API Block.
+ *    description: Rest API Transactions.
  * paths:
  *  /transactions:
  *    get:
@@ -14,15 +14,15 @@
  *          schema:
  *            type: integer
  *            example: 5
- *          description: Number of block to fetch
+ *          description: Number of transactions to fetch
  *        - in: query
  *          name: Offset
  *          schema:
  *            type: integer
  *            example: 1
- *          description: Fetch block from `n` height
+ *          description: Fetch transactions from specific BlockID
  *      summary: Get Transactions
- *      description: Get list block.
+ *      description: Get list transactions.
  *      responses:
  *        200:
  *          description: response status
@@ -93,7 +93,4 @@
  *      Transactions:
  *        type: array
  *        items: []
- *      Total:
- *        type: string
- *        example: ''
  */
