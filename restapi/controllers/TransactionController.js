@@ -58,6 +58,11 @@ module.exports = class TransactionController extends BaseController {
       handleError.sendCatchError(res, error);
     }
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 696e51c5ff803d69e30b88d64a9eebbf55dfdf89
     async getOne(req, res) {
       const responseBuilder = new ResponseBuilder();
       const handleError = new HandleError();

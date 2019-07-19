@@ -2,6 +2,7 @@ const { gql } = require('apollo-server-express');
 
 module.exports = gql`
   type Query {
+<<<<<<< HEAD
     block(ChainType: Int, Limit: Int, Height: Int): Block
     transactions(Limit: Int, Offset: Int): [Transactions!]
     transaction(ID: ID): Transactions!
@@ -9,16 +10,22 @@ module.exports = gql`
     accountBalance(PublicKey: String): AccountBalance!
     peers: [Peers!]
     mapPeers: [MapPeers!]
+=======
+    blocks(ChainType: Int, Limit: Int, Height: Int): Blocks
+    block(ChainType: Int, ID: ID, Height: Int): Block!
+    transactions(Limit: Int, Offset: Int): [Transactions!]
+    transaction(ID: ID): Transactions!
+>>>>>>> 696e51c5ff803d69e30b88d64a9eebbf55dfdf89
   }
 
-  type Block {
-    blocks: [Blocks!]
+  type Blocks {
+    blocks: [Block!]
     ChainType: Int
     Count: Int
     Height: Int
   }
 
-  type Blocks {
+  type Block {
     ID: ID!
     PreviousBlockHash: String
     Height: Int
@@ -34,7 +41,7 @@ module.exports = gql`
     Version: Int
     PayloadLength: Int
     PayloadHash: String
-    # Transactions: [Transactions]
+    Transactions: [Transactions]
   }
 
   type Transactions {
@@ -53,34 +60,5 @@ module.exports = gql`
     Type: String
     Height: Int
     Hash: String
-  }
-
-  type AccountBalance {
-    ID: ID!
-    PublicKey: String
-    Balance: String
-    UnconfirmedBalance: String
-    ForgedBalance: Int
-    Height: Int
-  }
-
-  type Peers {
-    Address: String
-    AnnouncedAddress: String
-    Port: String
-    State: String
-    Version: String
-  }
-
-  type MapPeers {
-    Address: String
-    Lat: Float
-    Long: Float
-    Region: String
-    City: String
-    AnnouncedAddress: String
-    Port: String
-    State: String
-    Version: String
   }
 `;

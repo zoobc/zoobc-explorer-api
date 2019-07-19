@@ -1,29 +1,29 @@
 /**
  * @swagger
  * tags:
- *  - name: Transaction
- *    description: Rest API Transaction.
+ *  - name: Blocks
+ *    description: Rest API Single Block by Block ID.
  * paths:
- *  /transaction:
+ *  /blocks/{id}:
  *    get:
  *      tags:
- *        - Transaction
+ *        - Blocks
  *      parameters:
- *        - in: query
- *          name: ID
+ *        - in: path
+ *          name: id
  *          schema:
  *            type: integer
- *            example: 23512315123
- *          description: BlockID to fetch
- *      summary: Get Transactions
- *      description: Get a transaction.
+ *            example: -8411591260855429783
+ *          description: Block ID
+ *      summary: Get Single Block
+ *      description: Get Single Block by Block ID.
  *      responses:
  *        200:
  *          description: response status
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/definitions/PageTransaction'
+ *                $ref: '#/definitions/PageBlock'
  *        500:
  *          description: response status
  *          content:
@@ -31,58 +31,57 @@
  *              schema:
  *                $ref: '#/definitions/SendInternalServerError'
  * definitions:
- *  PageTransaction:
+ *  PageBlock:
  *    properties:
  *      data:
- *        type: array
- *        items:
- *          $ref: '#/definitions/Transaction'
- *  Transaction:
+ *        type: object
+ *        $ref: '#/definitions/Block'
+ *  Block:
  *    properties:
  *      ID:
  *        type: string
  *        example: '-9217256230337793364'
- *      BlockID:
+ *      PreviousBlockHash:
  *        type: string
- *        example: '4545420970999433273'
- *      Version:
- *        type: Number
- *        example: '1'
+ *        example: 'phqSwa3IJiN1/l7bXgKiSdWIzHYCez44fmEfTAErUSHNCAglqhYWa8Mu5P+gM0UffgiumLGoB644gc1tyAc0cA=='
  *      Height:
  *        type: Number
  *        example: 379
- *      SenderAccountType:
+ *      Timestamp:
  *        type: string
  *        example: '16-Jul-2019 03:31:19'
- *      SenderAccountAddress:
+ *      BlockSeed:
  *        type: string
  *        example: 'L8BqsLkQ8j1v72uErTeX3FQe77khcHeE6uFiFLT7/UTA9cLlwmYdrgRzyG++vCnjK3Jn9pRc1qvvRjpg7DIUjQ=='
- *      RecipientAccountType:
+ *      BlockSignature:
  *        type: string
  *        example: 'g8laoR+unV2WxUiartNxbB2sXGDFuvUxXqj372xfdcMyh7VCb1qvdb4v7riUB1Gp9uGYLTpCvsWb1be+Mi/XDQ=='
- *      RecipientAccountAddress:
+ *      CumulativeDifficulty:
  *        type: string
  *        example: '62619300479358'
- *      TransactionType:
- *        type: Number
+ *      SmithScale:
+ *        type: string
  *        example: '76112951'
- *      Fee:
- *        type: Number
+ *      BlocksmithID:
+ *        type: string
+ *        example: 'BCZEGOb3WNx3fDOVf9ZS4EjvOIv/UeW4TVBQJ/6tHKk='
+ *      TotalAmount:
+ *        type: string
  *        example: '0'
- *      Timestamp:
- *        type: Number
- *        example: '1562806389280'
- *      TransactionHash:
- *        type: array
- *        items: []
- *      TransactionBodyLength:
+ *      TotalFee:
+ *        type: string
+ *        example: '0'
+ *      TotalCoinBase:
+ *        type: string
+ *        example: '0'
+ *      Version:
  *        type: Number
  *        example: 1
- *      TransactionBodyBytes:
- *        type: Objects
+ *      PayloadLength:
+ *        type: Number
  *        example: 0
- *      Signature:
- *        type: Objects
+ *      PayloadHash:
+ *        type: string
  *        example: ''
  *      Transactions:
  *        type: array
