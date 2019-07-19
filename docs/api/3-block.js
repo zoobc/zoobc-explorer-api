@@ -2,40 +2,28 @@
  * @swagger
  * tags:
  *  - name: Blocks
- *    description: Rest API List Block.
+ *    description: Rest API Single Block by Block ID.
  * paths:
- *  /blocks:
+ *  /blocks/{id}:
  *    get:
  *      tags:
  *        - Blocks
  *      parameters:
- *        - in: query
- *          name: ChainType
+ *        - in: path
+ *          name: id
  *          schema:
  *            type: integer
- *            example: 1
- *          description: Number indicating chaintype
- *        - in: query
- *          name: Limit
- *          schema:
- *            type: integer
- *            example: 5
- *          description: Number of block to fetch
- *        - in: query
- *          name: Height
- *          schema:
- *            type: integer
- *            example: 1
- *          description: Fetch block from `n` height
- *      summary: Get Blocks
- *      description: Get list block.
+ *            example: -8411591260855429783
+ *          description: Block ID
+ *      summary: Get Single Block
+ *      description: Get Single Block by Block ID.
  *      responses:
  *        200:
  *          description: response status
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/definitions/PageBlocks'
+ *                $ref: '#/definitions/PageBlock'
  *        500:
  *          description: response status
  *          content:
@@ -43,13 +31,12 @@
  *              schema:
  *                $ref: '#/definitions/SendInternalServerError'
  * definitions:
- *  PageBlocks:
+ *  PageBlock:
  *    properties:
  *      data:
- *        type: array
- *        items:
- *          $ref: '#/definitions/Blocks'
- *  Blocks:
+ *        type: object
+ *        $ref: '#/definitions/Block'
+ *  Block:
  *    properties:
  *      ID:
  *        type: string
