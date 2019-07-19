@@ -2,20 +2,10 @@ const { gql } = require('apollo-server-express');
 
 module.exports = gql`
   type Query {
-<<<<<<< HEAD
-    block(ChainType: Int, Limit: Int, Height: Int): Block
-    transactions(Limit: Int, Offset: Int): [Transactions!]
-    transaction(ID: ID): Transactions!
-    accountBalances: [AccountBalance!]
-    accountBalance(PublicKey: String): AccountBalance!
-    peers: [Peers!]
-    mapPeers: [MapPeers!]
-=======
     blocks(ChainType: Int, Limit: Int, Height: Int): Blocks
     block(ChainType: Int, ID: ID, Height: Int): Block!
     transactions(Limit: Int, Offset: Int): [Transactions!]
     transaction(ID: ID): Transactions!
->>>>>>> 696e51c5ff803d69e30b88d64a9eebbf55dfdf89
   }
 
   type Blocks {
@@ -48,17 +38,18 @@ module.exports = gql`
     ID: ID!
     BlockID: String
     Deadline: Int
-    SenderPublicKey: String
-    RecipientPublicKey: String
-    AmountNQT: String
-    FeeNQT: String
-    EcBlockHeight: Int
-    EcBlockID: String
-    Version: String
+    SenderAccountType: Int
+    SenderAccountAddress: String
+    RecipientAccountType: Int
+    RecipientAccountAddress: String
+    TransactionType: Int
+    Fee: String
     Timestamp: String
+    TransactionHash: String
+    Version: String
+    TransactionBodyLength: Int
     Signature: String
-    Type: String
+    TransactionBodyBytes: String
     Height: Int
-    Hash: String
   }
 `;

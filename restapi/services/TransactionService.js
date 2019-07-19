@@ -6,7 +6,7 @@ module.exports = class TransactionService {
     this.transaction = Transaction;
   }
 
-  getTransactionsTypeGraph({limit = 1, offSet = 1}, callback) {
+  getTransactionsTypeGraph({ limit = 1, offSet = 1 }, callback) {
     this.transaction.GetTransactions({ Limit: limit, Offset: offSet }, (err, result) => {
       if (err) {
         callback(err.details, null);
@@ -37,16 +37,20 @@ module.exports = class TransactionService {
     });
   }
 
-  async transStat({ limit = 1, offSet = 1}, callback) {
+  async transStat({ limit = 1, offSet = 1 }, callback) {
     limit = limit || 1;
     offSet = offSet || 1;
     try {
-      this.transaction.GetTransactions({ Limit: limit, Offset: offSet}, async (err, result) => {
+      this.transaction.GetTransactions({ Limit: limit, Offset: offSet }, async (err, result) => {
         if (err) {
-         callback(err.details, null);
-         return;
+          callback(err.details, null);
+          return;
         }
-        callback(null, result);
+        const { Total, Count, Transactions } = result;
+        Converter.formatDataGRPC(Transactions);
+        callback(null, {
+          data: { Total, Count, Transactions },
+        });
       });
     } catch (error) {
       throw Error(error.message);
@@ -70,9 +74,9 @@ module.exports = class TransactionService {
     return result;
   }
 
-  async graph({ limit = 1, offSet = 1}, callback) {
+  async graph({ limit = 1, offSet = 1 }, callback) {
     try {
-      this.getTransactionsTypeGraph({limit, offSet}, callback);
+      this.getTransactionsTypeGraph({ limit, offSet }, callback);
     } catch (error) {
       throw Error(error.message);
     }
@@ -80,11 +84,12 @@ module.exports = class TransactionService {
 
   async getTransaction({ id }, callback) {
     try {
-      this.transaction.GetTransaction({ ID: id}, async (err, result) => {
+      this.transaction.GetTransaction({ ID: id }, async (err, result) => {
         if (err) {
-         callback(err.details, null);
-         return;
+          callback(err.details, null);
+          return;
         }
+        Converter.formatDataGRPC2(result);
         callback(null, result);
       });
     } catch (error) {

@@ -15,7 +15,7 @@
  *            type: integer
  *            example: 23512315123
  *          description: BlockID to fetch
- *      summary: Get Transactions
+ *      summary: Get Transaction
  *      description: Get a transaction.
  *      responses:
  *        200:
@@ -73,18 +73,15 @@
  *        type: Number
  *        example: '1562806389280'
  *      TransactionHash:
- *        type: array
- *        items: []
+ *        type: string
+ *        example: ''
  *      TransactionBodyLength:
  *        type: Number
  *        example: 1
  *      TransactionBodyBytes:
- *        type: Objects
- *        example: 0
- *      Signature:
- *        type: Objects
+ *        type: string
  *        example: ''
- *      Transactions:
- *        type: array
- *        items: []
+ *      Signature:
+ *        type: string
+ *        example: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
  */

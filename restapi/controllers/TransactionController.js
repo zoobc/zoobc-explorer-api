@@ -37,91 +37,77 @@ module.exports = class TransactionController extends BaseController {
     const handleError = new HandleError();
     const { limit, offSet } = req.query;
 
-      this.service.transStat(
-        { limit, offSet },
-        (err, result) => {
-          if (err) {
-            handleError.sendCatchError(res, err);
-            return;
-          }
+    this.service.transStat({ limit, offSet }, (err, result) => {
+      if (err) {
+        handleError.sendCatchError(res, err);
+        return;
+      }
 
-          this.sendSuccessResponse(
-            res,
-            responseBuilder
-              .setData(result)
-              .setMessage('Transactions fetched successfully')
-              .build()
-          );
-        }
+      this.sendSuccessResponse(
+        res,
+        responseBuilder
+          .setData(result)
+          .setMessage('Transactions fetched successfully')
+          .build()
       );
-    } catch (error) {
-      handleError.sendCatchError(res, error);
-    }
+    });
+  }
+  catch(error) {
+    handleError.sendCatchError(res, error);
+  }
 
-<<<<<<< HEAD
-=======
+  async getOne(req, res) {
+    const responseBuilder = new ResponseBuilder();
+    const handleError = new HandleError();
+    const { id } = req.params;
 
+    try {
+      if (!id) {
+        this.sendInvalidPayloadResponse(
+          res,
+          responseBuilder.setMessage('Invalid Payload Parameter').build()
+        );
+        return;
+      }
 
->>>>>>> 696e51c5ff803d69e30b88d64a9eebbf55dfdf89
-    async getOne(req, res) {
-      const responseBuilder = new ResponseBuilder();
-      const handleError = new HandleError();
-      const { id } = req.params;
-      console.log("ID =====", id)
-
-      try {
-        if (!id) {
-          this.sendInvalidPayloadResponse(
-            res,
-            responseBuilder.setMessage('Invalid Payload Parameter').build()
-          );
+      this.service.getTransaction({ id }, (err, result) => {
+        if (err) {
+          handleError.sendCatchError(res, err);
           return;
         }
 
-        this.service.getTransaction(
-          { id },
-          (err, result) => {
-            if (err) {
-              handleError.sendCatchError(res, err);
-              return;
-            }
-
-            this.sendSuccessResponse(
-              res,
-              responseBuilder
-                .setData(result)
-                .setMessage('Transactions fetched successfully')
-                .build()
-            );
-          }
+        this.sendSuccessResponse(
+          res,
+          responseBuilder
+            .setData(result)
+            .setMessage('Transactions fetched successfully')
+            .build()
         );
-      } catch (error) {
-        handleError.sendCatchError(res, error);
-      }
+      });
+    } catch (error) {
+      handleError.sendCatchError(res, error);
     }
+  }
 
   async transStat(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
     const { limit, offSet } = req.query;
     try {
-      this.service.transStat(
-        { limit, offSet },
-        (err, result) => {
-          if (err) {
-            handleError.sendCatchError(res, err);
-            return;
-          }
-
-          this.sendSuccessResponse(
-            res,
-            responseBuilder
-              .setData(result)
-              .setMessage('Transactions Amount Graph fetched successfully')
-              .build()
-          );
+      this.service.transStat({ limit, offSet }, (err, result) => {
+        if (err) {
+          handleError.sendCatchError(res, err);
+          return;
         }
-      );
+
+        this.sendSuccessResponse(
+          res,
+          responseBuilder
+            .setData(result)
+            .setMessage('Transactions Amount Graph fetched successfully')
+            .build()
+        );
+      });
     } catch (error) {
       handleError.sendCatchError(res, error);
     }
