@@ -5,7 +5,7 @@ const { Converter } = require('../../utils');
 
 module.exports = {
   Query: {
-    block: combineResolvers(async (parent, args, context, info) => {
+    blocks: combineResolvers(async (parent, args, context, info) => {
       try {
         return new Promise((resolve, reject) => {
           Block.GetBlocks(
@@ -14,6 +14,23 @@ module.exports = {
               if (err) return reject(err);
               const { blocks = null } = result;
               Converter.formatDataGRPC(blocks);
+              resolve(result);
+            }
+          );
+        });
+      } catch (error) {
+        throw new ForbiddenError('Get Blocks Error:', error);
+      }
+    }),
+
+    block: combineResolvers(async (parent, args, context, info) => {
+      try {
+        return new Promise((resolve, reject) => {
+          Block.GetBlock(
+            { ChainType: args.ChainType, ID: args.ID, Height: args.Height },
+            (err, result) => {
+              if (err) return reject(err);
+              Converter.formatDataGRPC2(result);
               resolve(result);
             }
           );

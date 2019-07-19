@@ -33,6 +33,40 @@ module.exports = class BlockController extends BaseController {
     }
   }
 
+  async find(req, res) {
+    const responseBuilder = new ResponseBuilder();
+    const handleError = new HandleError();
+    const idReq = req.params.id;
+
+    try {
+      if (!this.checkReqParam(idReq)) {
+        this.sendInvalidPayloadResponse(
+          res,
+          responseBuilder.setMessage('Invalid Payload Parameter').build()
+        );
+        return;
+      }
+
+      this.service.findById(idReq, (err, result) => {
+        if (err) {
+          handleError.sendCatchError(res, err);
+          return;
+        }
+
+        this.sendSuccessResponse(
+          res,
+          responseBuilder
+            .setData(result)
+            .setMessage('Block fetched successfully')
+            .build()
+        );
+        return;
+      });
+    } catch (error) {
+      handleError.sendCatchError(res, error);
+    }
+  }
+
   async graphPeriod(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
@@ -91,5 +125,13 @@ module.exports = class BlockController extends BaseController {
     } catch (error) {
       handleError.sendCatchError(res, error);
     }
+  }
+
+  checkReqParam(param) {
+    if (!param || typeof param === 'undefined' || param === 'null') {
+      return false;
+    }
+
+    return true;
   }
 };

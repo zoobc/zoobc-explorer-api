@@ -2,7 +2,7 @@
  * @swagger
  * tags:
  *  - name: Blocks
- *    description: Rest API Block.
+ *    description: Rest API List Block.
  * paths:
  *  /blocks:
  *    get:
