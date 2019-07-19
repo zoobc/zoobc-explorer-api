@@ -31,7 +31,7 @@
  *              schema:
  *                $ref: '#/definitions/SendInternalServerError'
  * definitions:
- *  PageTransactions:
+ *  PageTransaction:
  *    properties:
  *      data:
  *        type: array
