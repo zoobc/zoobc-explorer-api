@@ -7,6 +7,10 @@ router.get('/', (req, res) => {
   blockController.get(req, res);
 });
 
+router.get('/:id', (req, res) => {
+  blockController.find(req, res);
+});
+
 router.get('/graph/period', (req, res) => {
   blockController.graphPeriod(req, res);
 });
