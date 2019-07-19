@@ -13,9 +13,11 @@ key.pem
 /coverage
 
 # production
+explorer-api
 explorer-api-linux
 explorer-api-mac
 explorer-api-win
+explorer-api.exe
 explorer-api-win.exe
 
 # zoobc schema

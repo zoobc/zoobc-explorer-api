@@ -39,7 +39,7 @@ module.exports = class BlockController extends BaseController {
     const idReq = req.params.id;
 
     try {
-      if (!idReq || typeof idReq === 'undefined' || idReq === 'null') {
+      if (!this.checkReqParam(idReq)) {
         this.sendInvalidPayloadResponse(
           res,
           responseBuilder.setMessage('Invalid Payload Parameter').build()
@@ -47,7 +47,7 @@ module.exports = class BlockController extends BaseController {
         return;
       }
 
-      this.service.findById(idReq, req.query, (err, result) => {
+      this.service.findById(idReq, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
@@ -125,5 +125,13 @@ module.exports = class BlockController extends BaseController {
     } catch (error) {
       handleError.sendCatchError(res, error);
     }
+  }
+
+  checkReqParam(param) {
+    if (!param || typeof param === 'undefined' || param === 'null') {
+      return false;
+    }
+
+    return true;
   }
 };
