@@ -4,11 +4,8 @@ module.exports = gql`
   type Query {
     blocks(ChainType: Int, Limit: Int, Height: Int): Blocks
     block(ChainType: Int, ID: ID, Height: Int): Block!
-    transactions(BlockID: String, AccountPublicKey: String): [Transactions!]
-    accountBalances: [AccountBalance!]
-    accountBalance(PublicKey: String): AccountBalance!
-    peers: [Peers!]
-    mapPeers: [MapPeers!]
+    transactions(Limit: Int, Offset: Int): [Transactions!]
+    transaction(ID: ID): Transactions!
   }
 
   type Blocks {
@@ -34,7 +31,7 @@ module.exports = gql`
     Version: Int
     PayloadLength: Int
     PayloadHash: String
-    # Transactions: [Transactions]
+    Transactions: [Transactions]
   }
 
   type Transactions {
@@ -53,34 +50,5 @@ module.exports = gql`
     Type: String
     Height: Int
     Hash: String
-  }
-
-  type AccountBalance {
-    ID: ID!
-    PublicKey: String
-    Balance: String
-    UnconfirmedBalance: String
-    ForgedBalance: Int
-    Height: Int
-  }
-
-  type Peers {
-    Address: String
-    AnnouncedAddress: String
-    Port: String
-    State: String
-    Version: String
-  }
-
-  type MapPeers {
-    Address: String
-    Lat: Float
-    Long: Float
-    Region: String
-    City: String
-    AnnouncedAddress: String
-    Port: String
-    State: String
-    Version: String
   }
 `;

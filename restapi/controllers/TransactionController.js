@@ -32,22 +32,78 @@ module.exports = class TransactionController extends BaseController {
     }
   }
 
+  async getAll(req, res) {
+    const responseBuilder = new ResponseBuilder();
+    const handleError = new HandleError();
+    const { limit, offSet } = req.query;
+
+      this.service.transStat(
+        { limit, offSet },
+        (err, result) => {
+          if (err) {
+            handleError.sendCatchError(res, err);
+            return;
+          }
+
+          this.sendSuccessResponse(
+            res,
+            responseBuilder
+              .setData(result)
+              .setMessage('Transactions fetched successfully')
+              .build()
+          );
+        }
+      );
+    } catch (error) {
+      handleError.sendCatchError(res, error);
+    }
+
+
+
+    async getOne(req, res) {
+      const responseBuilder = new ResponseBuilder();
+      const handleError = new HandleError();
+      const { id } = req.params;
+      console.log("ID =====", id)
+
+      try {
+        if (!id) {
+          this.sendInvalidPayloadResponse(
+            res,
+            responseBuilder.setMessage('Invalid Payload Parameter').build()
+          );
+          return;
+        }
+
+        this.service.getTransaction(
+          { id },
+          (err, result) => {
+            if (err) {
+              handleError.sendCatchError(res, err);
+              return;
+            }
+
+            this.sendSuccessResponse(
+              res,
+              responseBuilder
+                .setData(result)
+                .setMessage('Transactions fetched successfully')
+                .build()
+            );
+          }
+        );
+      } catch (error) {
+        handleError.sendCatchError(res, error);
+      }
+    }
+
   async transStat(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const { senderPublicKey, recipientPublicKey, blockID, accPublicKey } = req.query;
-
+    const { limit, offSet } = req.query;
     try {
-      if (blockID && accPublicKey) {
-        this.sendInvalidPayloadResponse(
-          res,
-          responseBuilder.setMessage('Invalid Payload Parameter').build()
-        );
-        return;
-      }
-
       this.service.transStat(
-        { senderPublicKey, recipientPublicKey, blockID, accPublicKey },
+        { limit, offSet },
         (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
