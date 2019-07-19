@@ -3,7 +3,8 @@ const { gql } = require('apollo-server-express');
 module.exports = gql`
   type Query {
     block(ChainType: Int, Limit: Int, Height: Int): Block
-    transactions(BlockID: String, AccountPublicKey: String): [Transactions!]
+    transactions(Limit: Int, Offset: Int): [Transactions!]
+    transaction(ID: ID): Transactions!
     accountBalances: [AccountBalance!]
     accountBalance(PublicKey: String): AccountBalance!
     peers: [Peers!]
