@@ -35,9 +35,10 @@ module.exports = gql`
   }
 
   type Transactions {
+    Version: String
     ID: ID!
     BlockID: String
-    Deadline: Int
+    Height: Int
     SenderAccountType: Int
     SenderAccountAddress: String
     RecipientAccountType: Int
@@ -46,10 +47,8 @@ module.exports = gql`
     Fee: String
     Timestamp: String
     TransactionHash: String
-    Version: String
     TransactionBodyLength: Int
     Signature: String
     TransactionBodyBytes: String
-    Height: Int
   }
 `;

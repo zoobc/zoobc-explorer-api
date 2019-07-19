@@ -89,7 +89,7 @@ module.exports = class TransactionController extends BaseController {
     }
   }
 
-  async transStat(req, res) {
+  async graphTransStat(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
     const { limit, offSet } = req.query;

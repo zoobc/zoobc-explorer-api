@@ -23,11 +23,10 @@ module.exports = {
     transaction: combineResolvers(async (parent, args, context, info) => {
       try {
         return new Promise((resolve, reject) => {
-          Transaction.GetTransaction({ ID: Id }, (err, result) => {
+          Transaction.GetTransaction({ ID: args.ID }, (err, result) => {
             if (err) return reject(err);
-            const { Transactions = null } = result;
-            Converter.formatDataGRPC(Transactions);
-            resolve(Transactions);
+            Converter.formatDataGRPC2(result);
+            resolve(result);
           });
         });
       } catch (error) {
