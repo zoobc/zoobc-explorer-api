@@ -17,9 +17,9 @@
   "scripts": {
     "start": "nodemon app.js",
     "zoobc": "node app.js",
-    "pkg-win": "rm -f explorer-api-win && pkg -t node10-win-x64 --output explorer-api-win.exe .",
-    "pkg-mac": "rm -f explorer-api-mac && pkg -t node10-macos-x64 --output explorer-api-mac .",
-    "pkg-linux": "rm -f explorer-api-linux && pkg -t node10-linux-x64 --output explorer-api-linux ."
+    "pkg-win": "rm -f explorer-api && pkg -t node10-win-x64 --output explorer-api.exe .",
+    "pkg-mac": "rm -f explorer-api && pkg -t node10-macos-x64 --output explorer-api .",
+    "pkg-linux": "rm -f explorer-api && pkg -t node10-linux-x64 --output explorer-api ."
   },
   "pkg": {
     "assets": [
