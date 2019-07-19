@@ -58,8 +58,6 @@ module.exports = class TransactionController extends BaseController {
       handleError.sendCatchError(res, error);
     }
 
-
-
     async getOne(req, res) {
       const responseBuilder = new ResponseBuilder();
       const handleError = new HandleError();
