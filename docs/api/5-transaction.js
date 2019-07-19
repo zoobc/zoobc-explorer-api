@@ -1,35 +1,29 @@
 /**
  * @swagger
  * tags:
- *  - name: Transactions
- *    description: Rest API Transactions.
+ *  - name: Transaction
+ *    description: Rest API Transaction.
  * paths:
- *  /transactions:
+ *  /transaction:
  *    get:
  *      tags:
- *        - Transactions
+ *        - Transaction
  *      parameters:
  *        - in: query
- *          name: Limit
+ *          name: ID
  *          schema:
  *            type: integer
- *            example: 5
- *          description: Number of transactions to fetch
- *        - in: query
- *          name: Offset
- *          schema:
- *            type: integer
- *            example: 1
- *          description: Fetch transactions from specific BlockID
+ *            example: 23512315123
+ *          description: BlockID to fetch
  *      summary: Get Transactions
- *      description: Get list transactions.
+ *      description: Get a transaction.
  *      responses:
  *        200:
  *          description: response status
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/definitions/PageTransactions'
+ *                $ref: '#/definitions/PageTransaction'
  *        500:
  *          description: response status
  *          content:
@@ -42,8 +36,8 @@
  *      data:
  *        type: array
  *        items:
- *          $ref: '#/definitions/Transactions'
- *  Transactions:
+ *          $ref: '#/definitions/Transaction'
+ *  Transaction:
  *    properties:
  *      ID:
  *        type: string
