@@ -80,7 +80,7 @@ module.exports = class TransactionService {
 
   async getTransaction({ id }, callback) {
     try {
-      this.transaction.GetTransactions({ ID: id}, async (err, result) => {
+      this.transaction.GetTransaction({ ID: id}, async (err, result) => {
         if (err) {
          callback(err.details, null);
          return;

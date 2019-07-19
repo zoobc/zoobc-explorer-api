@@ -64,6 +64,7 @@ module.exports = class TransactionController extends BaseController {
       const responseBuilder = new ResponseBuilder();
       const handleError = new HandleError();
       const { id } = req.params;
+      console.log("ID =====", id)
 
       try {
         if (!id) {
