@@ -10,7 +10,7 @@ module.exports = (port, method = 'tcp', opts = {}) => {
 
   let cmd;
   if (process.platform === 'win32') {
-    cmd = `FOR /F "tokens=5 delims= " %P IN ('netstat -ano ^| find "LISTENING" ^| find ":${port} "') DO (TASKKILL /PID %P)`;
+    cmd = `FOR /F "tokens=5 delims= " %P IN ('netstat -ano ^| find "LISTENING" ^| find ":${port} "') DO (TASKKILL /PID %P /F)`;
   } else {
     cmd = `lsof -i ${method === 'udp' ? 'udp' : 'tcp'}:${port} | grep ${
       method === 'udp' ? 'UDP' : 'LISTEN'
@@ -18,10 +18,12 @@ module.exports = (port, method = 'tcp', opts = {}) => {
   }
 
   exec(cmd, opts, (e, stdout, stderr) => {
-    if (e instanceof Error) {
-      throw e;
+    if (process.env.DEBUG) {
+      if (e instanceof Error) {
+        throw e;
+      }
+      console.log('stdout ', stdout);
+      console.log('stderr ', stderr);
     }
-    console.log('stdout ', stdout);
-    console.log('stderr ', stderr);
   });
 };

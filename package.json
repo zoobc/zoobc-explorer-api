@@ -25,8 +25,7 @@
     "assets": [
       "zoobc-schema/model/*.proto",
       "zoobc-schema/service/*.proto",
-      "zoobc-explorer-ui/build/**/*",
-      "node_modules/grpc/src/node/extension_binary/node-v64-darwin-x64-unknow/grpc_node.node"
+      "zoobc-explorer-ui/build/**/*"
     ]
   },
   "dependencies": {
