@@ -6,37 +6,8 @@ module.exports = class TransactionService {
     this.transaction = Transaction;
   }
 
-  getTransactionsByBlockID(blockID, callback) {
-    this.transaction.GetTransactionsByBlockID({ BlockID: blockID }, (err, result) => {
-      if (err) {
-        callback(err.details, null);
-        return;
-      }
-
-      Converter.formatDataGRPC(result.Transactions);
-      callback(null, { data: result.Transactions });
-    });
-  }
-
-  getTransactionsByAccountPublicKey(accPublicKey, callback) {
-    const decodedData = Buffer.from(accPublicKey, 'base64');
-
-    this.transaction.GetTransactionsByAccountPublicKey(
-      { AccountPublicKey: decodedData },
-      (err, result) => {
-        if (err) {
-          callback(err.details, null);
-          return;
-        }
-
-        Converter.formatDataGRPC(result.Transactions);
-        callback(null, { data: result.Transactions });
-      }
-    );
-  }
-
-  getTransactionsTypeGraph(blockID, callback) {
-    this.transaction.GetTransactionsByBlockID({ BlockID: blockID }, (err, result) => {
+  getTransactionsTypeGraph({limit = 1, offSet = 1}, callback) {
+    this.transaction.GetTransactions({ Limit: limit, Offset: offSet }, (err, result) => {
       if (err) {
         callback(err.details, null);
         return;
@@ -66,41 +37,17 @@ module.exports = class TransactionService {
     });
   }
 
-  async findAll({ blockID, accPublicKey }, callback) {
+  async transStat({ limit = 1, offSet = 1}, callback) {
+    limit = limit || 1;
+    offSet = offSet || 1;
     try {
-      if (accPublicKey) {
-        this.getTransactionsByAccountPublicKey(accPublicKey, callback);
-      } else {
-        this.getTransactionsByBlockID(blockID, callback);
-      }
-    } catch (error) {
-      throw Error(error.message);
-    }
-  }
-
-  async transStat({ senderPublicKey, recipientPublicKey, blockID, accPublicKey }, callback) {
-    try {
-      if (blockID) {
-        this.getTransactionsByBlockID(blockID, async (err, res) => {
-          if (err) {
-            callback(err.details, null);
-            return;
-          }
-
-          const result = await this.filterData(res.data, senderPublicKey, recipientPublicKey);
-          callback(null, result);
-        });
-      } else {
-        this.getTransactionsByAccountPublicKey(accPublicKey, async (err, res) => {
-          if (err) {
-            callback(err.details, null);
-            return;
-          }
-
-          const result = await this.filterData(res.data, senderPublicKey, recipientPublicKey);
-          callback(null, result);
-        });
-      }
+      this.transaction.GetTransactions({ Limit: limit, Offset: offSet}, async (err, result) => {
+        if (err) {
+         callback(err.details, null);
+         return;
+        }
+        callback(null, result);
+      });
     } catch (error) {
       throw Error(error.message);
     }
@@ -123,9 +70,23 @@ module.exports = class TransactionService {
     return result;
   }
 
-  async graph({ blockID }, callback) {
+  async graph({ limit = 1, offSet = 1}, callback) {
     try {
-      this.getTransactionsTypeGraph(blockID, callback);
+      this.getTransactionsTypeGraph({limit, offSet}, callback);
+    } catch (error) {
+      throw Error(error.message);
+    }
+  }
+
+  async getTransaction({ id }, callback) {
+    try {
+      this.transaction.GetTransaction({ ID: id}, async (err, result) => {
+        if (err) {
+         callback(err.details, null);
+         return;
+        }
+        callback(null, result);
+      });
     } catch (error) {
       throw Error(error.message);
     }
