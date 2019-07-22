@@ -29,6 +29,21 @@ module.exports = class BlockService {
     }
   }
 
+  async findById(id, callback) {
+    try {
+      this.block.GetBlock({ ID: id }, (err, result) => {
+        if (err) {
+          callback(err.details, null);
+          return;
+        }
+        Converter.formatDataGRPC2(result);
+        callback(null, result);
+      });
+    } catch (error) {
+      throw Error(error.message);
+    }
+  }
+
   async graphPeriod({ start_date, end_date, ChainType, Limit, Height }, callback) {
     try {
       const startDateTimestamp = moment(start_date, 'DD-MM-YYYY').startOf('day');

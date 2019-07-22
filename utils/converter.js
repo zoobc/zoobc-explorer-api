@@ -5,6 +5,7 @@ const isValidByteArray = array => {
   return false;
 };
 
+// for argument type of array
 const formatDataGRPC = Payload => {
   Payload.map(function(item) {
     Object.entries(item).forEach(([key, value]) => {
@@ -38,6 +39,19 @@ const formatDataGRPC = Payload => {
   });
 };
 
+// for argument type of object
+const formatDataGRPC2 = Payload => {
+  Object.entries(Payload).forEach(([key, value]) => {
+    if (isValidByteArray(value)) {
+      Payload[key] = Buffer.from(value).toString('base64');
+    }
+    if (key === 'Timestamp') {
+      Payload[key] = moment.unix(value).format('DD-MMM-YYYY HH:mm:ss');
+    }
+  });
+};
+
 module.exports = {
   formatDataGRPC,
+  formatDataGRPC2,
 };

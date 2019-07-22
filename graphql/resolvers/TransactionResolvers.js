@@ -8,24 +8,26 @@ module.exports = {
     transactions: combineResolvers(async (parent, args, context, info) => {
       try {
         return new Promise((resolve, reject) => {
-          if (args.BlockID) {
-            Transaction.GetTransactionsByBlockID({ BlockID: args.BlockID }, (err, result) => {
-              if (err) return reject(err);
-              const { Transactions = null } = result;
-              Converter.formatDataGRPC(Transactions);
-              resolve(Transactions);
-            });
-          } else {
-            Transaction.GetTransactionsByAccountPublicKey(
-              { AccountPublicKey: args.AccountPublicKey },
-              (err, result) => {
-                if (err) return reject(err);
-                const { Transactions = null } = result;
-                Converter.formatDataGRPC(Transactions);
-                resolve(Transactions);
-              }
-            );
-          }
+          Transaction.GetTransactions({ Limit: args.Limit, Offset: args.Offset }, (err, result) => {
+            if (err) return reject(err);
+            const { Transactions = null } = result;
+            Converter.formatDataGRPC(Transactions);
+            resolve(Transactions);
+          });
+        });
+      } catch (error) {
+        throw new ForbiddenError('Get Transactions Error:', error);
+      }
+    }),
+
+    transaction: combineResolvers(async (parent, args, context, info) => {
+      try {
+        return new Promise((resolve, reject) => {
+          Transaction.GetTransaction({ ID: args.ID }, (err, result) => {
+            if (err) return reject(err);
+            Converter.formatDataGRPC2(result);
+            resolve(result);
+          });
         });
       } catch (error) {
         throw new ForbiddenError('Get Transactions Error:', error);

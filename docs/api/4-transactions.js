@@ -1,41 +1,35 @@
 /**
  * @swagger
  * tags:
- *  - name: Blocks
- *    description: Rest API List Block.
+ *  - name: Transactions
+ *    description: Rest API Transactions.
  * paths:
- *  /blocks:
+ *  /transactions:
  *    get:
  *      tags:
- *        - Blocks
+ *        - Transactions
  *      parameters:
- *        - in: query
- *          name: ChainType
- *          schema:
- *            type: integer
- *            example: 1
- *          description: Number indicating chaintype
  *        - in: query
  *          name: Limit
  *          schema:
  *            type: integer
  *            example: 5
- *          description: Number of block to fetch
+ *          description: Number of transactions to fetch
  *        - in: query
- *          name: Height
+ *          name: Offset
  *          schema:
  *            type: integer
  *            example: 1
- *          description: Fetch block from `n` height
- *      summary: Get Blocks
- *      description: Get list block.
+ *          description: Fetch transactions from specific BlockID
+ *      summary: Get Transactions
+ *      description: Get list transactions.
  *      responses:
  *        200:
  *          description: response status
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/definitions/PageBlocks'
+ *                $ref: '#/definitions/PageTransactions'
  *        500:
  *          description: response status
  *          content:
@@ -43,60 +37,66 @@
  *              schema:
  *                $ref: '#/definitions/SendInternalServerError'
  * definitions:
- *  PageBlocks:
+ *  PageTransactions:
  *    properties:
  *      data:
  *        type: array
  *        items:
- *          $ref: '#/definitions/Blocks'
- *  Blocks:
+ *          $ref: '#/definitions/Transactions'
+ *  Transactions:
  *    properties:
  *      ID:
  *        type: string
  *        example: '-9217256230337793364'
- *      PreviousBlockHash:
+ *      BlockID:
  *        type: string
- *        example: 'phqSwa3IJiN1/l7bXgKiSdWIzHYCez44fmEfTAErUSHNCAglqhYWa8Mu5P+gM0UffgiumLGoB644gc1tyAc0cA=='
+ *        example: '4545420970999433273'
+ *      Version:
+ *        type: Number
+ *        example: '1'
  *      Height:
  *        type: Number
  *        example: 379
- *      Timestamp:
+ *      SenderAccountType:
  *        type: string
  *        example: '16-Jul-2019 03:31:19'
- *      BlockSeed:
+ *      SenderAccountAddress:
  *        type: string
  *        example: 'L8BqsLkQ8j1v72uErTeX3FQe77khcHeE6uFiFLT7/UTA9cLlwmYdrgRzyG++vCnjK3Jn9pRc1qvvRjpg7DIUjQ=='
- *      BlockSignature:
+ *      RecipientAccountType:
  *        type: string
  *        example: 'g8laoR+unV2WxUiartNxbB2sXGDFuvUxXqj372xfdcMyh7VCb1qvdb4v7riUB1Gp9uGYLTpCvsWb1be+Mi/XDQ=='
- *      CumulativeDifficulty:
+ *      RecipientAccountAddress:
  *        type: string
  *        example: '62619300479358'
- *      SmithScale:
- *        type: string
+ *      TransactionType:
+ *        type: Number
  *        example: '76112951'
- *      BlocksmithID:
- *        type: string
- *        example: 'BCZEGOb3WNx3fDOVf9ZS4EjvOIv/UeW4TVBQJ/6tHKk='
- *      TotalAmount:
- *        type: string
- *        example: '0'
- *      TotalFee:
- *        type: string
- *        example: '0'
- *      TotalCoinBase:
- *        type: string
- *        example: '0'
- *      Version:
+ *      Fee:
  *        type: Number
- *        example: 1
- *      PayloadLength:
+ *        example: '0'
+ *      Timestamp:
  *        type: Number
- *        example: 0
- *      PayloadHash:
+ *        example: '1562806389280'
+ *      TransactionHash:
  *        type: string
  *        example: ''
+ *      TransactionBodyLength:
+ *        type: Number
+ *        example: 1
+ *      TransactionBodyBytes:
+ *        type: string
+ *        example: ''
+ *      Signature:
+ *        type: string
+ *        example: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
  *      Transactions:
  *        type: array
  *        items: []
+ *      Total:
+ *        type: Number
+ *        example: 4
+ *      Count:
+ *        type: Number
+ *        example: 1
  */

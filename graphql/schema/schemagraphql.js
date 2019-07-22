@@ -2,22 +2,20 @@ const { gql } = require('apollo-server-express');
 
 module.exports = gql`
   type Query {
-    block(ChainType: Int, Limit: Int, Height: Int): Block
-    transactions(BlockID: String, AccountPublicKey: String): [Transactions!]
-    accountBalances: [AccountBalance!]
-    accountBalance(PublicKey: String): AccountBalance!
-    peers: [Peers!]
-    mapPeers: [MapPeers!]
+    blocks(ChainType: Int, Limit: Int, Height: Int): Blocks
+    block(ChainType: Int, ID: ID, Height: Int): Block!
+    transactions(Limit: Int, Offset: Int): [Transactions!]
+    transaction(ID: ID): Transactions!
   }
 
-  type Block {
-    blocks: [Blocks!]
+  type Blocks {
+    blocks: [Block!]
     ChainType: Int
     Count: Int
     Height: Int
   }
 
-  type Blocks {
+  type Block {
     ID: ID!
     PreviousBlockHash: String
     Height: Int
@@ -33,53 +31,24 @@ module.exports = gql`
     Version: Int
     PayloadLength: Int
     PayloadHash: String
-    # Transactions: [Transactions]
+    Transactions: [Transactions]
   }
 
   type Transactions {
+    Version: String
     ID: ID!
     BlockID: String
-    Deadline: Int
-    SenderPublicKey: String
-    RecipientPublicKey: String
-    AmountNQT: String
-    FeeNQT: String
-    EcBlockHeight: Int
-    EcBlockID: String
-    Version: String
+    Height: Int
+    SenderAccountType: Int
+    SenderAccountAddress: String
+    RecipientAccountType: Int
+    RecipientAccountAddress: String
+    TransactionType: Int
+    Fee: String
     Timestamp: String
+    TransactionHash: String
+    TransactionBodyLength: Int
     Signature: String
-    Type: String
-    Height: Int
-    Hash: String
-  }
-
-  type AccountBalance {
-    ID: ID!
-    PublicKey: String
-    Balance: String
-    UnconfirmedBalance: String
-    ForgedBalance: Int
-    Height: Int
-  }
-
-  type Peers {
-    Address: String
-    AnnouncedAddress: String
-    Port: String
-    State: String
-    Version: String
-  }
-
-  type MapPeers {
-    Address: String
-    Lat: Float
-    Long: Float
-    Region: String
-    City: String
-    AnnouncedAddress: String
-    Port: String
-    State: String
-    Version: String
+    TransactionBodyBytes: String
   }
 `;
