@@ -38,8 +38,7 @@ module.exports = class TransactionService {
   }
 
   async transStat({ limit = 1, offSet = 1 }, callback) {
-    limit = limit || 1;
-    offSet = offSet || 1;
+
     try {
       this.transaction.GetTransactions({ Limit: limit, Offset: offSet }, async (err, result) => {
         if (err) {

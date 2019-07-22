@@ -8,35 +8,10 @@ module.exports = class TransactionController extends BaseController {
     super(new TransactionService());
   }
 
-  async get(req, res) {
-    const responseBuilder = new ResponseBuilder();
-    const handleError = new HandleError();
-
-    try {
-      this.service.findAll(req.query, (err, result) => {
-        if (err) {
-          handleError.sendCatchError(res, err);
-          return;
-        }
-
-        this.sendSuccessResponse(
-          res,
-          responseBuilder
-            .setData(result.data)
-            .setMessage('Transactions fetched successfully')
-            .build()
-        );
-      });
-    } catch (error) {
-      handleError.sendCatchError(res, error);
-    }
-  }
-
   async getAll(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
     const { limit, offSet } = req.query;
-
     this.service.transStat({ limit, offSet }, (err, result) => {
       if (err) {
         handleError.sendCatchError(res, err);
