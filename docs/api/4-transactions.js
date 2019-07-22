@@ -79,17 +79,17 @@
  *        type: Number
  *        example: '1562806389280'
  *      TransactionHash:
- *        type: array
- *        items: []
+ *        type: string
+ *        example: ''
  *      TransactionBodyLength:
  *        type: Number
  *        example: 1
  *      TransactionBodyBytes:
- *        type: Objects
- *        example: 0
- *      Signature:
- *        type: Objects
+ *        type: string
  *        example: ''
+ *      Signature:
+ *        type: string
+ *        example: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
  *      Transactions:
  *        type: array
  *        items: []
