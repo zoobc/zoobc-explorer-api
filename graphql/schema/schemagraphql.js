@@ -46,7 +46,7 @@ module.exports = gql`
     Height: Int
     SenderAccountAddress: String
     RecipientAccountAddress: String
-    TransactionType: Int
+    TransactionType: String
     Fee: String
     Timestamp: String
     TransactionHash: String
