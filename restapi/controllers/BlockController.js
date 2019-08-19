@@ -9,12 +9,12 @@ module.exports = class BlockController extends BaseController {
     super(new BlockService());
   }
 
-  async get(req, res) {
+  async getAll(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
 
     try {
-      this.service.findAll(req.query, (err, result) => {
+      this.service.getAll(req.query, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
@@ -33,7 +33,7 @@ module.exports = class BlockController extends BaseController {
     }
   }
 
-  async find(req, res) {
+  async getOne(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
     const idReq = req.params.id;
@@ -47,7 +47,7 @@ module.exports = class BlockController extends BaseController {
         return;
       }
 
-      this.service.findById(idReq, (err, result) => {
+      this.service.getOne(idReq, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
