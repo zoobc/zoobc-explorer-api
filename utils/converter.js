@@ -25,15 +25,13 @@ const formatDataGRPC = Payload => {
     });
 
     // Transaction Type Conversion Value
-    if (item.Type === 0 && item.Subtype === 0) {
-      item.Type = 'Empty';
-    } else if (item.Type === 1 && item.Subtype === 0) {
-      item.Type = 'Ordinary Payment';
-    } else if (item.Type === 3 && item.Subtype === 0) {
-      item.Type = 'Node Registration';
+    if (item.TransactionType === 0) {
+      item.TransactionType = 'Empty';
+    } else if (item.TransactionType === 1) {
+      item.TransactionType = 'Ordinary Payment';
+    } else if (item.TransactionType === 3) {
+      item.TransactionType = 'Node Registration';
     }
-
-    delete item.Subtype;
 
     return item;
   });

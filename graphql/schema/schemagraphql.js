@@ -4,8 +4,8 @@ module.exports = gql`
   type Query {
     blocks(ChainType: Int, Limit: Int, Height: Int): Blocks
     block(ChainType: Int, ID: ID, Height: Int): Block!
-    transactions(Limit: Int, Offset: Int): [Transactions!]
-    transaction(ID: ID): Transactions!
+    transactions(Limit: Int, Page: Int, AccountAddress: String): Transactions
+    transaction(ID: ID): Transaction!
   }
 
   type Blocks {
@@ -31,24 +31,27 @@ module.exports = gql`
     Version: Int
     PayloadLength: Int
     PayloadHash: String
-    Transactions: [Transactions]
+    Transactions: [Transaction]
   }
 
   type Transactions {
-    Version: String
+    Transactions: [Transaction!]
+    Total: Int
+  }
+
+  type Transaction {
+    Version: Int
     ID: ID!
     BlockID: String
     Height: Int
-    SenderAccountType: Int
     SenderAccountAddress: String
-    RecipientAccountType: Int
     RecipientAccountAddress: String
     TransactionType: Int
     Fee: String
     Timestamp: String
     TransactionHash: String
     TransactionBodyLength: Int
-    Signature: String
     TransactionBodyBytes: String
+    Signature: String
   }
 `;

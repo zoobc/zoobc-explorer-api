@@ -3,12 +3,12 @@ const { blockController } = require('../controllers');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  blockController.getAll(req, res);
+router.get('/period', (req, res) => {
+  blockController.graphPeriod(req, res);
 });
 
-router.get('/:id', (req, res) => {
-  blockController.getOne(req, res);
+router.get('/summary', (req, res) => {
+  blockController.graphSummary(req, res);
 });
 
 module.exports = router;
