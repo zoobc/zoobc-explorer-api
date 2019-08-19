@@ -46,6 +46,17 @@ const formatDataGRPC2 = Payload => {
     if (key === 'Timestamp') {
       Payload[key] = moment.unix(value).format('DD-MMM-YYYY HH:mm:ss');
     }
+
+    // Transaction Type Conversion Value
+    if (key === 'TransactionType') {
+      if (Payload[key] === 0) {
+        Payload[key] = 'Empty';
+      } else if (Payload[key] === 1) {
+        Payload[key] = 'Ordinary Payment';
+      } else if (Payload[key] === 3) {
+        Payload[key] = 'Node Registration';
+      }
+    }
   });
 };
 
