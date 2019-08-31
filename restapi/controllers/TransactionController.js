@@ -11,8 +11,10 @@ module.exports = class TransactionController extends BaseController {
   async getAll(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
+    const { Limit, Page, AccountAddress } = req.query;
+
     try {
-      this.service.getAll(req.query, (err, result) => {
+      this.service.getAll({ Limit, Page, AccountAddress }, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
@@ -34,18 +36,21 @@ module.exports = class TransactionController extends BaseController {
   async getOne(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const idReq = req.params.id;
+    const id = req.params.id;
 
     try {
-      if (!this.checkReqParam(idReq)) {
+      if (!this.checkReqParam(id)) {
         this.sendInvalidPayloadResponse(
           res,
-          responseBuilder.setMessage('Invalid Payload Parameter').build()
+          responseBuilder
+            .setData({})
+            .setMessage('Invalid Payload Parameter')
+            .build()
         );
         return;
       }
 
-      this.service.getOne(idReq, (err, result) => {
+      this.service.getOne(id, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
@@ -67,9 +72,10 @@ module.exports = class TransactionController extends BaseController {
   async graphAmount(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
+    const { Limit, Page, AccountAddress } = req.query;
 
     try {
-      this.service.graphAmount(req.query, (err, result) => {
+      this.service.graphAmount({ Limit, Page, AccountAddress }, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
@@ -91,9 +97,10 @@ module.exports = class TransactionController extends BaseController {
   async graphType(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
+    const { Limit, Page, AccountAddress } = req.query;
 
     try {
-      this.service.graphType(req.query, (err, result) => {
+      this.service.graphType({ Limit, Page, AccountAddress }, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
