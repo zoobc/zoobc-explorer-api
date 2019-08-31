@@ -3,12 +3,12 @@ const { transactionController } = require('../controllers');
 
 const router = express.Router();
 
-router.get('/graph/amounts', (req, res) => {
-  transactionController.graphTransStat(req, res);
+router.get('/amount', (req, res) => {
+  transactionController.graphAmount(req, res);
 });
 
-router.get('/graph/type', (req, res) => {
-  transactionController.graph(req, res);
+router.get('/type', (req, res) => {
+  transactionController.graphType(req, res);
 });
 
 module.exports = router;

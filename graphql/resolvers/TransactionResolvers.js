@@ -8,12 +8,15 @@ module.exports = {
     transactions: combineResolvers(async (parent, args, context, info) => {
       try {
         return new Promise((resolve, reject) => {
-          Transaction.GetTransactions({ Limit: args.Limit, Offset: args.Offset }, (err, result) => {
-            if (err) return reject(err);
-            const { Transactions = null } = result;
-            Converter.formatDataGRPC(Transactions);
-            resolve(Transactions);
-          });
+          Transaction.GetTransactions(
+            { Limit: args.Limit, Page: args.Page, AccountAddress: args.AccountAddress },
+            (err, result) => {
+              if (err) return reject(err);
+              const { Transactions = null } = result;
+              Converter.formatDataGRPC(Transactions);
+              resolve(result);
+            }
+          );
         });
       } catch (error) {
         throw new ForbiddenError('Get Transactions Error:', error);
@@ -30,7 +33,7 @@ module.exports = {
           });
         });
       } catch (error) {
-        throw new ForbiddenError('Get Transactions Error:', error);
+        throw new ForbiddenError('Get Transaction Error:', error);
       }
     }),
   },

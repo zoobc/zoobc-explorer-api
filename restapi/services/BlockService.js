@@ -7,11 +7,11 @@ module.exports = class BlockService {
     this.block = Block;
   }
 
-  async findAll({ ChainType, Limit, Height }, callback) {
+  async getAll({ ChainType, Limit, Height }, callback) {
     try {
       this.block.GetBlocks(
         { ChainType: ChainType, Limit: Limit, Height: Height },
-        (err, result) => {
+        async (err, result) => {
           if (err) {
             callback(err.details, null);
             return;
@@ -29,9 +29,9 @@ module.exports = class BlockService {
     }
   }
 
-  async findById(id, callback) {
+  async getOne(id, callback) {
     try {
-      this.block.GetBlock({ ID: id }, (err, result) => {
+      this.block.GetBlock({ ID: id }, async (err, result) => {
         if (err) {
           callback(err.details, null);
           return;
@@ -51,7 +51,7 @@ module.exports = class BlockService {
 
       this.block.GetBlocks(
         { ChainType: ChainType, Limit: Limit, Height: Height },
-        (err, result) => {
+        async (err, result) => {
           if (err) {
             callback(err.details, null);
             return;
@@ -104,7 +104,7 @@ module.exports = class BlockService {
     try {
       this.block.GetBlocks(
         { ChainType: ChainType, Limit: Limit, Height: Height },
-        (err, result) => {
+        async (err, result) => {
           if (err) {
             callback(err.details, null);
             return;
