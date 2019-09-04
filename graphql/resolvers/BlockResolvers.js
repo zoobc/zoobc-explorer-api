@@ -3,17 +3,21 @@ const { combineResolvers } = require('graphql-resolvers');
 const { Block } = require('../../models');
 const { Converter } = require('../../utils');
 
+const chainType = 0;
+const limit = 10;
+const height = 1;
+
 module.exports = {
   Query: {
     blocks: combineResolvers(async (parent, args, context, info) => {
       try {
         return new Promise((resolve, reject) => {
           Block.GetBlocks(
-            { ChainType: args.ChainType, Limit: args.Limit, Height: args.Height },
+            { ChainType: (args.ChainType = chainType), Limit: (args.Limit = limit), Height: (args.Height = height) },
             (err, result) => {
               if (err) return reject(err);
-              const { blocks = null } = result;
-              Converter.formatDataGRPC(blocks);
+              const { Blocks = null } = result;
+              Converter.formatDataGRPC(Blocks);
               resolve(result);
             }
           );
@@ -27,7 +31,7 @@ module.exports = {
       try {
         return new Promise((resolve, reject) => {
           Block.GetBlock(
-            { ChainType: args.ChainType, ID: args.ID, Height: args.Height },
+            { ChainType: (args.ChainType = chainType), ID: args.ID, Height: (args.Height = height) },
             (err, result) => {
               if (err) return reject(err);
               Converter.formatDataGRPC2(result);
