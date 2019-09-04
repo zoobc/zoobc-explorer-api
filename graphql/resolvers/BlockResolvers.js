@@ -11,16 +11,15 @@ module.exports = {
   Query: {
     blocks: combineResolvers(async (parent, args, context, info) => {
       try {
+        const { ChainType = chainType, Limit = limit, Height = height } = args;
+
         return new Promise((resolve, reject) => {
-          Block.GetBlocks(
-            { ChainType: (args.ChainType = chainType), Limit: (args.Limit = limit), Height: (args.Height = height) },
-            (err, result) => {
-              if (err) return reject(err);
-              const { Blocks = null } = result;
-              Converter.formatDataGRPC(Blocks);
-              resolve(result);
-            }
-          );
+          Block.GetBlocks({ ChainType, Limit, Height }, (err, result) => {
+            if (err) return reject(err);
+            const { Blocks = null } = result;
+            Converter.formatDataGRPC(Blocks);
+            resolve(result);
+          });
         });
       } catch (error) {
         throw new ForbiddenError('Get Blocks Error:', error);
@@ -29,15 +28,14 @@ module.exports = {
 
     block: combineResolvers(async (parent, args, context, info) => {
       try {
+        const { ChainType = chainType, Height = height, ID } = args;
+
         return new Promise((resolve, reject) => {
-          Block.GetBlock(
-            { ChainType: (args.ChainType = chainType), ID: args.ID, Height: (args.Height = height) },
-            (err, result) => {
-              if (err) return reject(err);
-              Converter.formatDataGRPC2(result);
-              resolve(result);
-            }
-          );
+          Block.GetBlock({ ChainType, ID, Height }, (err, result) => {
+            if (err) return reject(err);
+            Converter.formatDataGRPC2(result);
+            resolve(result);
+          });
         });
       } catch (error) {
         throw new ForbiddenError('Get Block Error:', error);
