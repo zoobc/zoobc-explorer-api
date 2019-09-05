@@ -11,9 +11,10 @@ module.exports = class TransactionController extends BaseController {
   async getAll(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const { limit, offSet } = req.query;
+    const { Limit, Page, AccountAddress } = req.query;
+
     try {
-      this.service.transStat({ limit, offSet }, (err, result) => {
+      this.service.getAll({ Limit, Page, AccountAddress }, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
@@ -22,7 +23,7 @@ module.exports = class TransactionController extends BaseController {
         this.sendSuccessResponse(
           res,
           responseBuilder
-            .setData(result)
+            .setData(result.data)
             .setMessage('Transactions fetched successfully')
             .build()
         );
@@ -35,18 +36,21 @@ module.exports = class TransactionController extends BaseController {
   async getOne(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const { id } = req.params;
+    const id = req.params.id;
 
     try {
-      if (!id) {
+      if (!this.checkReqParam(id)) {
         this.sendInvalidPayloadResponse(
           res,
-          responseBuilder.setMessage('Invalid Payload Parameter').build()
+          responseBuilder
+            .setData({})
+            .setMessage('Invalid Payload Parameter')
+            .build()
         );
         return;
       }
 
-      this.service.getTransaction({ id }, (err, result) => {
+      this.service.getOne(id, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
@@ -56,7 +60,7 @@ module.exports = class TransactionController extends BaseController {
           res,
           responseBuilder
             .setData(result)
-            .setMessage('Transactions fetched successfully')
+            .setMessage('Transaction fetched successfully')
             .build()
         );
       });
@@ -65,12 +69,13 @@ module.exports = class TransactionController extends BaseController {
     }
   }
 
-  async graphTransStat(req, res) {
+  async graphAmount(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const { limit, offSet } = req.query;
+    const { Limit, Page, AccountAddress } = req.query;
+
     try {
-      this.service.transStat({ limit, offSet }, (err, result) => {
+      this.service.graphAmount({ Limit, Page, AccountAddress }, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
@@ -79,7 +84,7 @@ module.exports = class TransactionController extends BaseController {
         this.sendSuccessResponse(
           res,
           responseBuilder
-            .setData(result)
+            .setData(result.data)
             .setMessage('Transactions Amount Graph fetched successfully')
             .build()
         );
@@ -89,12 +94,13 @@ module.exports = class TransactionController extends BaseController {
     }
   }
 
-  async graph(req, res) {
+  async graphType(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
+    const { Limit, Page, AccountAddress } = req.query;
 
     try {
-      this.service.graph(req.query, (err, result) => {
+      this.service.graphType({ Limit, Page, AccountAddress }, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
@@ -111,5 +117,13 @@ module.exports = class TransactionController extends BaseController {
     } catch (error) {
       handleError.sendCatchError(res, error);
     }
+  }
+
+  checkReqParam(param) {
+    if (!param || typeof param === 'undefined' || param === 'null') {
+      return false;
+    }
+
+    return true;
   }
 };

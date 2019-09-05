@@ -9,12 +9,13 @@ module.exports = class BlockController extends BaseController {
     super(new BlockService());
   }
 
-  async get(req, res) {
+  async getAll(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
+    const { ChainType, Limit, Height } = req.query;
 
     try {
-      this.service.findAll(req.query, (err, result) => {
+      this.service.getAll({ ChainType, Limit, Height }, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
@@ -33,21 +34,24 @@ module.exports = class BlockController extends BaseController {
     }
   }
 
-  async find(req, res) {
+  async getOne(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const idReq = req.params.id;
+    const id = req.params.id;
 
     try {
-      if (!this.checkReqParam(idReq)) {
+      if (!this.checkReqParam(id)) {
         this.sendInvalidPayloadResponse(
           res,
-          responseBuilder.setMessage('Invalid Payload Parameter').build()
+          responseBuilder
+            .setData({})
+            .setMessage('Invalid Payload Parameter')
+            .build()
         );
         return;
       }
 
-      this.service.findById(idReq, (err, result) => {
+      this.service.getOne(id, (err, result) => {
         if (err) {
           handleError.sendCatchError(res, err);
           return;
@@ -70,30 +74,36 @@ module.exports = class BlockController extends BaseController {
   async graphPeriod(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const { start_date, end_date } = req.query;
+    const { start_date, end_date, ChainType, Limit, Height } = req.query;
 
     try {
       if (!start_date || !end_date) {
         this.sendInvalidPayloadResponse(
           res,
-          responseBuilder.setMessage('Invalid Payload Parameter').build()
+          responseBuilder
+            .setData({})
+            .setMessage('Invalid Payload Parameter')
+            .build()
         );
         return;
       }
 
-      if (
-        !moment(start_date, 'DD-MM-YYYY').isValid() ||
-        !moment(end_date, 'DD-MM-YYYY').isValid()
-      ) {
+      if (!moment(start_date, 'DD-MM-YYYY').isValid() || !moment(end_date, 'DD-MM-YYYY').isValid()) {
         this.sendInvalidPayloadResponse(
           res,
-          responseBuilder.setMessage('Invalid Date Format, must be (DD-MM-YYYY)').build()
+          responseBuilder
+            .setData({})
+            .setMessage('Invalid Date Format, must be (DD-MM-YYYY)')
+            .build()
         );
         return;
       }
 
-      this.service.graphPeriod(req.query, (err, result) => {
-        if (err) handleError.sendCatchError(res, err);
+      this.service.graphPeriod({ start_date, end_date, ChainType, Limit, Height }, (err, result) => {
+        if (err) {
+          handleError.sendCatchError(res, err);
+          return;
+        }
         this.sendSuccessResponse(
           res,
           responseBuilder
@@ -110,10 +120,14 @@ module.exports = class BlockController extends BaseController {
   async graphSummary(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
+    const { ChainType, Limit, Height } = req.query;
 
     try {
-      this.service.graphSummary(req.query, (err, result) => {
-        if (err) handleError.sendCatchError(res, err);
+      this.service.graphSummary({ ChainType, Limit, Height }, (err, result) => {
+        if (err) {
+          handleError.sendCatchError(res, err);
+          return;
+        }
         this.sendSuccessResponse(
           res,
           responseBuilder

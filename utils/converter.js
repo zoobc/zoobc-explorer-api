@@ -25,15 +25,13 @@ const formatDataGRPC = Payload => {
     });
 
     // Transaction Type Conversion Value
-    if (item.Type === 0 && item.Subtype === 0) {
-      item.Type = 'Empty';
-    } else if (item.Type === 1 && item.Subtype === 0) {
-      item.Type = 'Ordinary Payment';
-    } else if (item.Type === 3 && item.Subtype === 0) {
-      item.Type = 'Node Registration';
+    if (item.TransactionType === 0) {
+      item.TransactionType = 'Empty';
+    } else if (item.TransactionType === 1) {
+      item.TransactionType = 'Ordinary Payment';
+    } else if (item.TransactionType === 3) {
+      item.TransactionType = 'Node Registration';
     }
-
-    delete item.Subtype;
 
     return item;
   });
@@ -47,6 +45,17 @@ const formatDataGRPC2 = Payload => {
     }
     if (key === 'Timestamp') {
       Payload[key] = moment.unix(value).format('DD-MMM-YYYY HH:mm:ss');
+    }
+
+    // Transaction Type Conversion Value
+    if (key === 'TransactionType') {
+      if (Payload[key] === 0) {
+        Payload[key] = 'Empty';
+      } else if (Payload[key] === 1) {
+        Payload[key] = 'Ordinary Payment';
+      } else if (Payload[key] === 3) {
+        Payload[key] = 'Node Registration';
+      }
     }
   });
 };
