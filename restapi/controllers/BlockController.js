@@ -57,6 +57,17 @@ module.exports = class BlockController extends BaseController {
           return;
         }
 
+        if (!result) {
+          this.sendNotFoundResponse(
+            res,
+            responseBuilder
+              .setData({})
+              .setMessage('Block not found')
+              .build()
+          );
+          return;
+        }
+
         this.sendSuccessResponse(
           res,
           responseBuilder

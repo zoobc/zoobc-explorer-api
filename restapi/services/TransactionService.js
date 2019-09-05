@@ -17,6 +17,7 @@ module.exports = class TransactionService {
           callback(err.details, null);
           return;
         }
+        
         const { Total, Transactions } = result;
         Converter.formatDataGRPC(Transactions);
         callback(null, { data: { Total, Transactions } });
@@ -29,10 +30,16 @@ module.exports = class TransactionService {
   async getOne(id, callback) {
     try {
       this.transaction.GetTransaction({ ID: id }, async (err, result) => {
-        if (err) {
+        if (err && err.details !== 'TransactionNotFound') {
           callback(err.details, null);
           return;
         }
+
+        if (err && err.details === 'TransactionNotFound') {
+          callback(null, null);
+          return;
+        }
+
         Converter.formatDataGRPC2(result);
         callback(null, result);
       });

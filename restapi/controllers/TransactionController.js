@@ -56,6 +56,17 @@ module.exports = class TransactionController extends BaseController {
           return;
         }
 
+        if (!result) {
+          this.sendNotFoundResponse(
+            res,
+            responseBuilder
+              .setData({})
+              .setMessage('Transaction not found')
+              .build()
+          );
+          return;
+        }
+
         this.sendSuccessResponse(
           res,
           responseBuilder
