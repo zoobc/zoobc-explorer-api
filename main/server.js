@@ -35,9 +35,9 @@ module.exports = {
     require('./compression')(app);
     require('./log')(app);
     require('./routes')(app);
-    require('./graphql')(app);
     require('./swagger')(app);
-    require('./cluster')(server, port, config.app.modeCluster);
+    require('./graphql')(app, server);
+    require('./cluster')(server, config.app.modeCluster);
   },
 
   start: () => {
@@ -45,9 +45,9 @@ module.exports = {
     require('./compression')(app);
     require('./log')(app);
     require('./routes')(app);
-    require('./graphql')(app);
     require('./swagger')(app);
-    require('./cluster')(server, port, false);
+    require('./graphql')(app, server);
+    require('./cluster')(server, false);
   },
 
   stop: () => {

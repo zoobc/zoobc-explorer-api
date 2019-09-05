@@ -1,7 +1,9 @@
-const { ForbiddenError } = require('apollo-server');
+const { ForbiddenError, PubSub } = require('apollo-server');
 const { combineResolvers } = require('graphql-resolvers');
 const { Block } = require('../../models');
 const { Converter } = require('../../utils');
+
+const pubsub = new PubSub();
 
 const chainType = 0;
 const limit = 10;
@@ -41,5 +43,17 @@ module.exports = {
         throw new ForbiddenError('Get Block Error:', error);
       }
     }),
+  },
+
+  Subscription: {
+    blocks: {
+      subscribe: async () => {
+        try {
+          pubsub.asyncIterator(['BLOCKS']);
+        } catch (error) {
+          throw new ForbiddenError('Get Blocks Error:', error);
+        }
+      },
+    },
   },
 };
