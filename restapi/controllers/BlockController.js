@@ -1,8 +1,8 @@
 const moment = require('moment');
 const BaseController = require('./BaseController');
 const HandleError = require('./HandleError');
-const { ResponseBuilder, Converter } = require('../../utils');
-const { BlockService, RedisService } = require('../services');
+const { BlockService } = require('../services');
+const { ResponseBuilder, Converter, RedisCache } = require('../../utils');
 
 const cache = {
   blocks: 'blocks',
@@ -14,7 +14,6 @@ const cache = {
 module.exports = class BlockController extends BaseController {
   constructor() {
     super(new BlockService());
-    this.redisService = new RedisService();
   }
 
   async getAll(req, res) {
@@ -24,7 +23,7 @@ module.exports = class BlockController extends BaseController {
 
     try {
       const cacheBlocks = Converter.formatCache(cache.blocks, req.query);
-      this.redisService.get(cacheBlocks, (errRedis, resRedis) => {
+      RedisCache.get(cacheBlocks, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
           return;
@@ -47,7 +46,7 @@ module.exports = class BlockController extends BaseController {
             return;
           }
 
-          this.redisService.set(cache.blocks, result.data, (errRedis, resRedis) => {
+          RedisCache.set(cache.blocks, result.data, (errRedis, resRedis) => {
             if (errRedis) {
               handleError.sendCatchError(res, errRedis);
               return;
@@ -87,7 +86,7 @@ module.exports = class BlockController extends BaseController {
       }
 
       const cacheBlock = Converter.formatCache(cache.block, id);
-      this.redisService.get(cacheBlock, (errRedis, resRedis) => {
+      RedisCache.get(cacheBlock, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
           return;
@@ -121,7 +120,7 @@ module.exports = class BlockController extends BaseController {
             return;
           }
 
-          this.redisService.set(cacheBlock, result, errRedis => {
+          RedisCache.set(cacheBlock, result, errRedis => {
             if (errRedis) {
               handleError.sendCatchError(res, errRedis);
               return;
@@ -172,7 +171,7 @@ module.exports = class BlockController extends BaseController {
       }
 
       const cachePeriod = Converter.formatCache(cache.period, req.query);
-      this.redisService.get(cachePeriod, (errRedis, resRedis) => {
+      RedisCache.get(cachePeriod, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
           return;
@@ -195,7 +194,7 @@ module.exports = class BlockController extends BaseController {
             return;
           }
 
-          this.redisService.set(cachePeriod, result.data, errRedis => {
+          RedisCache.set(cachePeriod, result.data, errRedis => {
             if (errRedis) {
               handleError.sendCatchError(res, errRedis);
               return;
@@ -223,7 +222,7 @@ module.exports = class BlockController extends BaseController {
 
     try {
       const cacheSummary = Converter.formatCache(cache.summary, req.query);
-      this.redisService.get(cacheSummary, (errRedis, resRedis) => {
+      RedisCache.get(cacheSummary, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
           return;
@@ -245,7 +244,7 @@ module.exports = class BlockController extends BaseController {
             return;
           }
 
-          this.redisService.set(cacheSummary, result.data, errRedis => {
+          RedisCache.set(cacheSummary, result.data, errRedis => {
             if (errRedis) {
               handleError.sendCatchError(res, errRedis);
               return;

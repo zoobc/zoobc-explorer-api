@@ -1,7 +1,7 @@
-const BaseController = require('./BaseController');
 const HandleError = require('./HandleError');
-const { ResponseBuilder, Converter } = require('../../utils');
-const { TransactionService, RedisService } = require('../services');
+const BaseController = require('./BaseController');
+const { TransactionService } = require('../services');
+const { ResponseBuilder, Converter, RedisCache } = require('../../utils');
 
 const cache = {
   transactions: 'transactions',
@@ -13,7 +13,6 @@ const cache = {
 module.exports = class TransactionController extends BaseController {
   constructor() {
     super(new TransactionService());
-    this.redisService = new RedisService();
   }
 
   async getAll(req, res) {
@@ -23,7 +22,7 @@ module.exports = class TransactionController extends BaseController {
 
     try {
       const cacheTransactions = Converter.formatCache(cache.transactions, req.query);
-      this.redisService.get(cacheTransactions, (errRedis, resRedis) => {
+      RedisCache.get(cacheTransactions, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
           return;
@@ -46,7 +45,7 @@ module.exports = class TransactionController extends BaseController {
             return;
           }
 
-          this.redisService.set(cacheTransactions, result.data, errRedis => {
+          RedisCache.set(cacheTransactions, result.data, errRedis => {
             if (errRedis) {
               handleError.sendCatchError(res, errRedis);
               return;
@@ -85,7 +84,7 @@ module.exports = class TransactionController extends BaseController {
       }
 
       const cacheTransaction = Converter.formatCache(cache.transaction, req.query);
-      this.redisService.get(cacheTransaction, (errRedis, resRedis) => {
+      RedisCache.get(cacheTransaction, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
           return;
@@ -118,7 +117,7 @@ module.exports = class TransactionController extends BaseController {
             return;
           }
 
-          this.redisService.set(cacheTransaction, result, errRedis => {
+          RedisCache.set(cacheTransaction, result, errRedis => {
             if (errRedis) {
               handleError.sendCatchError(res, errRedis);
               return;
@@ -146,7 +145,7 @@ module.exports = class TransactionController extends BaseController {
 
     try {
       const cacheAmount = Converter.formatCache(cache.amount, req.query);
-      this.redisService.get(cacheAmount, (errRedis, resRedis) => {
+      RedisCache.get(cacheAmount, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
           return;
@@ -168,7 +167,7 @@ module.exports = class TransactionController extends BaseController {
             return;
           }
 
-          this.redisService.set(cacheAmount, result.data, errRedis => {
+          RedisCache.set(cacheAmount, result.data, errRedis => {
             if (errRedis) {
               handleError.sendCatchError(res, errRedis);
               return;
@@ -196,7 +195,7 @@ module.exports = class TransactionController extends BaseController {
 
     try {
       const cacheType = Converter.formatCache(cache.type, req.query);
-      this.redisService.get(cacheType, (errRedis, resRedis) => {
+      RedisCache.get(cacheType, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
           return;
@@ -218,7 +217,7 @@ module.exports = class TransactionController extends BaseController {
             return;
           }
 
-          this.redisService.set(cacheType, result.data, errRedis => {
+          RedisCache.set(cacheType, result.data, errRedis => {
             if (errRedis) {
               handleError.sendCatchError(res, errRedis);
               return;
