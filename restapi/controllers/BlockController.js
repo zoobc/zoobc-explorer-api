@@ -1,12 +1,20 @@
+const moment = require('moment');
 const BaseController = require('./BaseController');
 const HandleError = require('./HandleError');
-const { ResponseBuilder } = require('../../utils');
-const { BlockService } = require('../services');
-const moment = require('moment');
+const { ResponseBuilder, Converter } = require('../../utils');
+const { BlockService, RedisService } = require('../services');
+
+const cache = {
+  blocks: 'blocks',
+  block: 'block',
+  period: 'block:period',
+  summary: 'block:summary',
+};
 
 module.exports = class BlockController extends BaseController {
   constructor() {
     super(new BlockService());
+    this.redisService = new RedisService();
   }
 
   async getAll(req, res) {
@@ -15,19 +23,46 @@ module.exports = class BlockController extends BaseController {
     const { ChainType, Limit, Height } = req.query;
 
     try {
-      this.service.getAll({ ChainType, Limit, Height }, (err, result) => {
-        if (err) {
-          handleError.sendCatchError(res, err);
+      const cacheBlocks = Converter.formatCache(cache.blocks, req.query);
+      this.redisService.get(cacheBlocks, (errRedis, resRedis) => {
+        if (errRedis) {
+          handleError.sendCatchError(res, errRedis);
           return;
         }
 
-        this.sendSuccessResponse(
-          res,
-          responseBuilder
-            .setData(result.data)
-            .setMessage('Blocks fetched successfully')
-            .build()
-        );
+        if (resRedis) {
+          this.sendSuccessResponse(
+            res,
+            responseBuilder
+              .setData(resRedis)
+              .setMessage('Blocks fetched successfully')
+              .build()
+          );
+          return;
+        }
+
+        this.service.getAll({ ChainType, Limit, Height }, (err, result) => {
+          if (err) {
+            handleError.sendCatchError(res, err);
+            return;
+          }
+
+          this.redisService.set(cache.blocks, result.data, (errRedis, resRedis) => {
+            if (errRedis) {
+              handleError.sendCatchError(res, errRedis);
+              return;
+            }
+
+            this.sendSuccessResponse(
+              res,
+              responseBuilder
+                .setData(result.data)
+                .setMessage('Blocks fetched successfully')
+                .build()
+            );
+            return;
+          });
+        });
       });
     } catch (error) {
       handleError.sendCatchError(res, error);
@@ -40,7 +75,7 @@ module.exports = class BlockController extends BaseController {
     const id = req.params.id;
 
     try {
-      if (!this.checkReqParam(id)) {
+      if (!id) {
         this.sendInvalidPayloadResponse(
           res,
           responseBuilder
@@ -51,31 +86,57 @@ module.exports = class BlockController extends BaseController {
         return;
       }
 
-      this.service.getOne(id, (err, result) => {
-        if (err) {
-          handleError.sendCatchError(res, err);
+      const cacheBlock = Converter.formatCache(cache.block, id);
+      this.redisService.get(cacheBlock, (errRedis, resRedis) => {
+        if (errRedis) {
+          handleError.sendCatchError(res, errRedis);
           return;
         }
 
-        if (!result) {
-          this.sendNotFoundResponse(
+        if (resRedis) {
+          this.sendSuccessResponse(
             res,
             responseBuilder
-              .setData({})
-              .setMessage('Block not found')
+              .setData(resRedis)
+              .setMessage('Block fetched successfully')
               .build()
           );
           return;
         }
 
-        this.sendSuccessResponse(
-          res,
-          responseBuilder
-            .setData(result)
-            .setMessage('Block fetched successfully')
-            .build()
-        );
-        return;
+        this.service.getOne(id, (err, result) => {
+          if (err) {
+            handleError.sendCatchError(res, err);
+            return;
+          }
+
+          if (!result) {
+            this.sendNotFoundResponse(
+              res,
+              responseBuilder
+                .setData({})
+                .setMessage('Block not found')
+                .build()
+            );
+            return;
+          }
+
+          this.redisService.set(cacheBlock, result, errRedis => {
+            if (errRedis) {
+              handleError.sendCatchError(res, errRedis);
+              return;
+            }
+
+            this.sendSuccessResponse(
+              res,
+              responseBuilder
+                .setData(result)
+                .setMessage('Block fetched successfully')
+                .build()
+            );
+            return;
+          });
+        });
       });
     } catch (error) {
       handleError.sendCatchError(res, error);
@@ -110,18 +171,45 @@ module.exports = class BlockController extends BaseController {
         return;
       }
 
-      this.service.graphPeriod({ start_date, end_date, ChainType, Limit, Height }, (err, result) => {
-        if (err) {
-          handleError.sendCatchError(res, err);
+      const cachePeriod = Converter.formatCache(cache.period, req.query);
+      this.redisService.get(cachePeriod, (errRedis, resRedis) => {
+        if (errRedis) {
+          handleError.sendCatchError(res, errRedis);
           return;
         }
-        this.sendSuccessResponse(
-          res,
-          responseBuilder
-            .setData(result.data)
-            .setMessage('Block Transaction Period Graph fetched successfully')
-            .build()
-        );
+
+        if (resRedis) {
+          this.sendSuccessResponse(
+            res,
+            responseBuilder
+              .setData(resRedis)
+              .setMessage('Block Transaction Period Graph fetched successfully')
+              .build()
+          );
+          return;
+        }
+
+        this.service.graphPeriod({ start_date, end_date, ChainType, Limit, Height }, (err, result) => {
+          if (err) {
+            handleError.sendCatchError(res, err);
+            return;
+          }
+
+          this.redisService.set(cachePeriod, result.data, errRedis => {
+            if (errRedis) {
+              handleError.sendCatchError(res, errRedis);
+              return;
+            }
+
+            this.sendSuccessResponse(
+              res,
+              responseBuilder
+                .setData(result.data)
+                .setMessage('Block Transaction Period Graph fetched successfully')
+                .build()
+            );
+          });
+        });
       });
     } catch (error) {
       handleError.sendCatchError(res, error);
@@ -134,29 +222,47 @@ module.exports = class BlockController extends BaseController {
     const { ChainType, Limit, Height } = req.query;
 
     try {
-      this.service.graphSummary({ ChainType, Limit, Height }, (err, result) => {
-        if (err) {
-          handleError.sendCatchError(res, err);
+      const cacheSummary = Converter.formatCache(cache.summary, req.query);
+      this.redisService.get(cacheSummary, (errRedis, resRedis) => {
+        if (errRedis) {
+          handleError.sendCatchError(res, errRedis);
           return;
         }
-        this.sendSuccessResponse(
-          res,
-          responseBuilder
-            .setData(result.data)
-            .setMessage('Block Transaction Summary Graph fetched successfully')
-            .build()
-        );
+
+        if (resRedis) {
+          this.sendSuccessResponse(
+            res,
+            responseBuilder
+              .setData(resRedis)
+              .setMessage('Block Transaction Summary Graph fetched successfully')
+              .build()
+          );
+        }
+
+        this.service.graphSummary({ ChainType, Limit, Height }, (err, result) => {
+          if (err) {
+            handleError.sendCatchError(res, err);
+            return;
+          }
+
+          this.redisService.set(cacheSummary, result.data, errRedis => {
+            if (errRedis) {
+              handleError.sendCatchError(res, errRedis);
+              return;
+            }
+
+            this.sendSuccessResponse(
+              res,
+              responseBuilder
+                .setData(result.data)
+                .setMessage('Block Transaction Summary Graph fetched successfully')
+                .build()
+            );
+          });
+        });
       });
     } catch (error) {
       handleError.sendCatchError(res, error);
     }
-  }
-
-  checkReqParam(param) {
-    if (!param || typeof param === 'undefined' || param === 'null') {
-      return false;
-    }
-
-    return true;
   }
 };

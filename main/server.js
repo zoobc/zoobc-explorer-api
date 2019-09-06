@@ -1,9 +1,9 @@
 require('dotenv').config();
 const fs = require('fs');
+const path = require('path');
 const http = require('http');
 const https = require('https');
 const express = require('express');
-const path = require('path');
 
 const config = require('../config/config');
 const port = config.app.port;
@@ -30,7 +30,7 @@ const server =
 
 module.exports = {
   init: () => {
-    require('./redis')();
+    require('./redis')(app);
     require('./cors')(app);
     require('./compression')(app);
     require('./log')(app);
@@ -38,6 +38,7 @@ module.exports = {
     require('./swagger')(app);
     require('./graphql')(app, server);
     require('./cluster')(server, config.app.modeCluster);
+    require('./scheduler')();
   },
 
   start: () => {
