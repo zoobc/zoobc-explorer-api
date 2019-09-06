@@ -8,8 +8,12 @@ module.exports = gql`
     transaction(ID: ID): Transaction!
   }
 
+  type Subscription {
+    blocks: Blocks
+  }
+
   type Blocks {
-    blocks: [Block!]
+    Blocks: [Block!]
     ChainType: Int
     Count: Int
     Height: Int
