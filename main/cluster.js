@@ -25,6 +25,7 @@ module.exports = (server, modeCluster) => {
           console.log(`%s Error Express Server : ${err}`, chalk.red('🚀'));
           process.exit(1);
         } else {
+          require('./scheduler').stop;
           console.log(`%s Close Express Server on Port ${port} Handled by Process ${process.pid}`, chalk.red('🚀'));
           process.exit(0);
         }

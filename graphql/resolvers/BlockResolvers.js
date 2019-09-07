@@ -1,9 +1,8 @@
-const { ForbiddenError, PubSub } = require('apollo-server');
+const { ForbiddenError } = require('apollo-server');
 const { combineResolvers } = require('graphql-resolvers');
 const { Block } = require('../../models');
+const { pubsub, events } = require('../subscription');
 const { Converter, RedisCache } = require('../../utils');
-
-const pubsub = new PubSub();
 
 const chainType = 0;
 const limit = 10;
@@ -68,15 +67,27 @@ module.exports = {
     }),
   },
 
+  Mutation: {
+    pushBlocks: combineResolvers(async (parent, args, context, info) => {
+      try {
+        return new Promise((resolve, reject) => {
+          Block.GetBlocks({ ChainType: 0, Limit: 2, Height: 1 }, (err, result) => {
+            if (err) return reject(err);
+            const { Blocks = null } = result;
+            Converter.formatDataGRPC(Blocks);
+            pubsub.publish(events.blocks, { blocks: result });
+            return resolve(result);
+          });
+        });
+      } catch (error) {
+        throw new ForbiddenError('Set Push Block:', error);
+      }
+    }),
+  },
+
   Subscription: {
     blocks: {
-      subscribe: async () => {
-        try {
-          pubsub.asyncIterator(['BLOCKS']);
-        } catch (error) {
-          throw new ForbiddenError('Get Blocks Error:', error);
-        }
-      },
+      subscribe: () => pubsub.asyncIterator([events.blocks]),
     },
   },
 };

@@ -38,7 +38,7 @@ module.exports = {
     require('./swagger')(app);
     require('./graphql')(app, server);
     require('./cluster')(server, config.app.modeCluster);
-    require('./scheduler')();
+    require('./scheduler').start;
   },
 
   start: () => {
@@ -57,5 +57,6 @@ module.exports = {
 
   port: () => {
     console.info(port);
+    ``;
   },
 };

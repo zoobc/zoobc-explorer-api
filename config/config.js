@@ -9,7 +9,7 @@ module.exports = {
     modeCluster: true,
     modeRedis: true,
     redisStorageKey: 'zooBcExpl0rer4PI',
-    scheduler: false,
+    scheduler: true,
     scheduleEvent: 1 /** minutes */,
     openSslKeyPath: './key.pem',
     openSslCertPath: './cert.pem',
