@@ -1,5 +1,6 @@
 const chalk = require('chalk');
-const schedule = require('node-schedule');
+const cron = require('cron');
+const moment = require('moment');
 const request = require('request-promise');
 const config = require('../config/config');
 
@@ -36,31 +37,14 @@ const graphqlRequest = async payload => {
   await request(options);
 };
 
-const rule = new schedule.RecurrenceRule();
-rule.minute = config.app.scheduleEvent;
-const scheduleJobs = schedule.scheduleJob(rule, async () => {
+const CronJob = cron.CronJob;
+const scheduler = new CronJob(`0 */${config.app.scheduleEvent} * * * *`, async () => {
   try {
     await graphqlRequest('PushBlocks');
-    console.log('Fetched for push blocks');
+    console.log(`%s Fetched for push blocks at ${moment().format('DD-MM-YYYY hh:mm')}`, chalk.green('🚀'));
   } catch (error) {
-    console.error('Schedule Error ', error.message);
+    console.error(`%s Schedule Error: ${error.message}`, chalk.red('🚀'));
   }
 });
-
-function start() {
-  if (config.app.scheduler) {
-    console.log(`%s Start Schedule Event in Every ${config.app.scheduleEvent} minutes`, chalk.green('🚀'));
-    scheduleJobs.reschedule();
-  }
-}
-function stop() {
-  console.log(`%s Stop Schedule Event`, chalk.red('🚀'));
-  scheduleJobs.cancel();
-}
-
-const scheduler = {
-  start: start(),
-  stop: stop(),
-};
 
 module.exports = scheduler;

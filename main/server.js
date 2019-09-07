@@ -38,7 +38,7 @@ module.exports = {
     require('./swagger')(app);
     require('./graphql')(app, server);
     require('./cluster')(server, config.app.modeCluster);
-    require('./scheduler').start;
+    require('./scheduler').start();
   },
 
   start: () => {
