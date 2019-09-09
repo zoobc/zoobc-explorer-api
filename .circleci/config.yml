@@ -10,9 +10,18 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies-
-      - run: npm install
+      - run:
+          name: Open SSL RSA
+          command: openssl req -newkey rsa:2048 -new -nodes -x509 -days
+      - run:
+          name: Install Node Modules
+          command: |
+            npm install
+            npm start
+      - run:
+          name: Update Schema Sub-module
+          command: ./schema.sh
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      - run: npm start
