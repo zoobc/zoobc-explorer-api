@@ -60,7 +60,13 @@ const formatDataGRPC2 = Payload => {
   });
 };
 
+const formatCache = (name, payload) => {
+  const valPayload = typeof payload === 'string' ? payload : Object.values(payload).join(',');
+  return `${name}:${valPayload}`;
+};
+
 module.exports = {
   formatDataGRPC,
   formatDataGRPC2,
+  formatCache,
 };
