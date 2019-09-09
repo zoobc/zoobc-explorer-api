@@ -13,10 +13,10 @@ module.exports = class SearchController extends BaseController {
   async SearchIdHash(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const id = req.params.id;
+    const { ID } = req.query;
 
     try {
-      if (!id) {
+      if (!ID) {
         this.sendInvalidPayloadResponse(
           res,
           responseBuilder
@@ -27,7 +27,7 @@ module.exports = class SearchController extends BaseController {
         return;
       }
 
-      this.blockService.getOne(id, (errBlock, resultBlock) => {
+      this.blockService.getOne(ID, (errBlock, resultBlock) => {
         if (errBlock) {
           handleError.sendCatchError(res, errBlock);
           return;
@@ -42,7 +42,7 @@ module.exports = class SearchController extends BaseController {
           );
           return;
         } else {
-          this.transactionService.getOne(id, (errTrans, resultTrans) => {
+          this.transactionService.getOne(ID, (errTrans, resultTrans) => {
             if (errTrans) {
               handleError.sendCatchError(res, errTrans);
               return;

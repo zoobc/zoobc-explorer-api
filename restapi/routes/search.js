@@ -3,7 +3,7 @@ const { searchController } = require('../controllers');
 
 const router = express.Router();
 
-router.get('/:id', (req, res) => {
+router.get('/', (req, res) => {
   searchController.SearchIdHash(req, res);
 });
 
