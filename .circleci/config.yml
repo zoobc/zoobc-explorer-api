@@ -12,7 +12,9 @@ jobs:
             - v1-dependencies-
       - run:
           name: Open SSL RSA
-          command: openssl req -newkey rsa:2048 -new -nodes -x509 -days
+          command: |
+            ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
+            ssh root@139.162.15.80 pwd
       - run:
           name: Install Node Modules
           command: |
