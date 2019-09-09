@@ -7,7 +7,7 @@ module.exports = class SearchService {
     this.transaction = Transaction;
   }
 
-  async getOneBlock(id, callback) {
+  async getOneBlock({ id }, callback) {
     try {
       this.block.GetBlock({ ID: id }, async (err, result) => {
         if (err) {
@@ -24,13 +24,13 @@ module.exports = class SearchService {
 
   async getOneTransaction(id, callback) {
     try {
-      this.transaction.GetTransaction({ ID: id }, async (err, result) => {
+      this.transaction.GetTransaction({ ID: id }, async (err, resultTrans) => {
         if (err) {
           callback(err.details, null);
           return;
         }
-        Converter.formatDataGRPC2(result);
-        callback(null, result);
+        Converter.formatDataGRPC2(resultTrans);
+        callback(null, resultTrans);
       });
     } catch (error) {
       throw Error(error.message);

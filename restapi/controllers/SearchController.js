@@ -1,20 +1,22 @@
 const BaseController = require('./BaseController');
 const HandleError = require('./HandleError');
 const { ResponseBuilder } = require('../../utils');
-const { SearchService } = require('../services');
+const { BlockService, TransactionService } = require('../services');
 
 module.exports = class SearchController extends BaseController {
   constructor() {
-    super(new SearchService());
+    super();
+    this.blockService = new BlockService();
+    this.transactionService = new TransactionService();
   }
 
   async SearchIdHash(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const idHash = req.params.id;
+    const id = req.params.id;
 
     try {
-      if (!this.checkReqParam(id)) {
+      if (!id) {
         this.sendInvalidPayloadResponse(
           res,
           responseBuilder
@@ -25,35 +27,42 @@ module.exports = class SearchController extends BaseController {
         return;
       }
 
-      this.service.getOneBlock(id, (err, result) => {
-        if (err) {
-          this.service.getOneTransaction(id, (err, result) => {
-            if (err) {
-              handleError.sendCatchError(res, err);
+      this.blockService.getOne(id, (errBlock, resultBlock) => {
+        console.log('ERROR BLOCK', errBlock);
+        console.log('RESULT BLOCK', resultBlock);
+        if (errBlock) {
+          handleError.sendCatchError(res, errBlock);
+          return;
+        }
+        if (resultBlock) {
+          this.sendSuccessResponse(
+            res,
+            responseBuilder
+              .setData(resultBlock)
+              .setMessage('Block fetched successfully')
+              .build()
+          );
+          return;
+        } else {
+          this.transactionService.getOne(id, (errTrans, resultTrans) => {
+            if (errTrans) {
+              handleError.sendCatchError(res, errTrans);
               return;
             }
-        }
-      }
 
-        this.sendSuccessResponse(
-          res,
-          responseBuilder
-            .setData(result)
-            .setMessage('Data fetched successfully')
-            .build()
-        );
-        return;
+            this.sendSuccessResponse(
+              res,
+              responseBuilder
+                .setData(resultTrans)
+                .setMessage('Transaction fetched successfully')
+                .build()
+            );
+            return;
+          });
+        }
       });
     } catch (error) {
       handleError.sendCatchError(res, error);
     }
-  }
-
-  checkReqParam(param) {
-    if (!param || typeof param === 'undefined' || param === 'null') {
-      return false;
-    }
-
-    return true;
   }
 };

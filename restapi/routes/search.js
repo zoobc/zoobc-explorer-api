@@ -1,10 +1,10 @@
 const express = require('express');
-const { SearchController } = require('../controllers');
+const { searchController } = require('../controllers');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  SearchController.SearchIdHash(req, res);
+router.get('/:id', (req, res) => {
+  searchController.SearchIdHash(req, res);
 });
 
 module.exports = router;
