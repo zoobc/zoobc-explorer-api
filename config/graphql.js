@@ -1,12 +1,11 @@
-const { ApolloServer } = require('apollo-server-express');
-
 const config = require('./config');
 const typeDefs = require('../graphql/schema/schemagraphql.js');
 const resolvers = require('../graphql/resolvers');
 
-const connectToServer = app => {
-  const server = new ApolloServer({ typeDefs, resolvers });
-  server.applyMiddleware({ app, path: config.app.mainRoute + '/graphql' });
+const configGraphql = {
+  path: config.app.mainRoute + '/graphql',
+  typeDefs,
+  resolvers,
 };
 
-module.exports = { connectToServer };
+module.exports = configGraphql;
