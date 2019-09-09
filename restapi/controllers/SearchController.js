@@ -28,8 +28,6 @@ module.exports = class SearchController extends BaseController {
       }
 
       this.blockService.getOne(id, (errBlock, resultBlock) => {
-        console.log('ERROR BLOCK', errBlock);
-        console.log('RESULT BLOCK', resultBlock);
         if (errBlock) {
           handleError.sendCatchError(res, errBlock);
           return;
