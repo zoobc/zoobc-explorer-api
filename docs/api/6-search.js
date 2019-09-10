@@ -9,8 +9,8 @@
  *      tags:
  *        - Search
  *      parameters:
- *        - in: path
- *          name: id
+ *        - in: query
+ *          name: ID
  *          schema:
  *            type: integer
  *            example: -8411591260855429783
