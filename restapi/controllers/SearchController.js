@@ -32,7 +32,7 @@ module.exports = class SearchController extends BaseController {
           res,
           responseBuilder
             .setData({})
-            .setMessage('Invalid SearchKey ')
+            .setMessage('Invalid data: unable to add value by zero.')
             .build()
         );
         return;
