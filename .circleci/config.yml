@@ -1,11 +1,21 @@
 version: 2
 jobs:
-  build:
+  deploy:
     docker:
       - image: circleci/node:8.10
     # working_directory: ~/zoobc-explorer-api
     steps:
-      - add_ssh_keys
+      - run:
+          name: Fix SSH could not resolve hostname
+          command: ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
+      - add_ssh_keys:
+          fingerprints:
+            - "14:09:a1:b2:b3:c4:d5:e6:f7:g8:h9:81:"
+      - run:
+          name: Deploy Over SSH
+          command: |
+            ssh root@139.162.15.80 "ls -ltr"
+      # - add_ssh_keys
           # fingerprints:
           #   - "95:c3:f9:41:99:ba:43:26:75:1d:dc:23:bb:58:c4:6d"
       # - run:
@@ -13,10 +23,10 @@ jobs:
       #     command: |
             # ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
             # ssh root@139.162.15.80 pwd
-      - run:
-          name: Deploy Over SSH
-          command: |
-            ssh root@139.162.15.80 "ls -ltr"
+      # - run:
+      #     name: Deploy Over SSH
+      #     command: |
+      #       ssh root@139.162.15.80 "ls -ltr"
       # - checkout
       # - run:
       #     name: Open SSL RSA
@@ -46,4 +56,4 @@ workflows:
   version: 2
   build:
     jobs:
-      - build
+      - deploy
