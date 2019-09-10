@@ -11,6 +11,10 @@ jobs:
           command: |
             ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
             # ssh root@139.162.15.80 pwd
+      - run:
+          name: Deploy Over SSH
+          command: |
+            ssh root@139.162.15.80 "ls -ltr"
       # - checkout
       # - run:
       #     name: Open SSL RSA
