@@ -6,11 +6,11 @@ jobs:
     # working_directory: ~/zoobc-explorer-api
     steps:
       - add_ssh_keys
-      - run:
-          name: Add SSH key to known hosts
-          command: |
-            ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
-            ssh root@139.162.15.80 pwd
+      # - run:
+      #     name: Add SSH key to known hosts
+      #     command: |
+            # ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
+            # ssh root@139.162.15.80 pwd
       - run:
           name: Deploy Over SSH
           command: |
