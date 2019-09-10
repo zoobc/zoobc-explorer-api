@@ -47,7 +47,6 @@ module.exports = class SearchController extends BaseController {
               handleError.sendCatchError(res, errTrans);
               return;
             }
-
             this.sendSuccessResponse(
               res,
               responseBuilder
