@@ -8,6 +8,7 @@ yarn.lock
 # openssl
 cert.pem
 key.pem
+dump.rdb
 
 # testing
 /coverage
