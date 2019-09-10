@@ -15,18 +15,18 @@ jobs:
           name: Install Node Modules
           command: |
             npm install
-            npm start
-      - run:
-          name: Update Schema Sub-module
-          command: ./schema.sh
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+            # npm start
+      # - run:
+      #     name: Update Schema Sub-module
+      #     command: ./schema.sh
+      # - restore_cache:
+      #     keys:
+      #       - v1-dependencies-{{ checksum "package.json" }}
+      #       - v1-dependencies-
+      # - save_cache:
+      #     paths:
+      #       - node_modules
+      #     key: v1-dependencies-{{ checksum "package.json" }}
 
 workflows:
   version: 2
