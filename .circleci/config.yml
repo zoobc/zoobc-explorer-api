@@ -5,7 +5,9 @@ jobs:
       - image: circleci/node:8.10
     # working_directory: ~/zoobc-explorer-api
     steps:
-      - add_ssh_keys
+      - add_ssh_keys:
+          fingerprints:
+            - "af:b9:da:8a:bc:7a:8d:5e:b2:dd:26:58:38:c6:0d:2c"
       # - run:
       #     name: Add SSH key to known hosts
       #     command: |
