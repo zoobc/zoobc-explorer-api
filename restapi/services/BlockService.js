@@ -30,10 +30,16 @@ module.exports = class BlockService {
   async getOne(id, callback) {
     try {
       this.block.GetBlock({ ID: id }, async (err, result) => {
-        if (err) {
+        if (err && err.details !== 'BlockNotFound') {
           callback(err.details, null);
           return;
         }
+
+        if (err && err.details === 'BlockNotFound') {
+          callback(null, null);
+          return;
+        }
+
         Converter.formatDataGRPC2(result);
         callback(null, result);
       });
