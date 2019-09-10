@@ -27,7 +27,7 @@ module.exports = class SearchController extends BaseController {
         return;
       }
 
-      if (ID == 0 || ID == '0') {
+      if (ID == 0) {
         this.sendInvalidPayloadResponse(
           res,
           responseBuilder
