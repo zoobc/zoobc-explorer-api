@@ -10,7 +10,7 @@ jobs:
           name: Add SSH key to known hosts
           command: |
             ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
-            # ssh root@139.162.15.80 pwd
+            ssh root@139.162.15.80 pwd
       - run:
           name: Deploy Over SSH
           command: |
