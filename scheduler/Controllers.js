@@ -32,14 +32,17 @@ module.exports = class Controllers {
               console.error('%s Upsert blocks - %s', chalk.red('✗'), err);
               return;
             }
+
             if (!result) {
               console.log(`%s Nothing upsert blocks`, chalk.green('🚀'));
               return;
             }
+
             if (result && result.ok === 1) {
               console.log(`%s Upsert ${items.length} blocks successfully`, chalk.green('🚀'));
               return;
             }
+
             console.error('%s Upsert blocks failed', chalk.red('✗'));
           });
         }
