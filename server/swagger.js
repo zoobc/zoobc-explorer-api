@@ -1,7 +1,8 @@
-const swaggerUi = require('swagger-ui-express');
 const path = require('path');
+const swaggerUi = require('swagger-ui-express');
+
 const config = require('../config/config');
-const { apiLimiter } = require('../main/apiLimiter');
+const { apiLimiter } = require('./apiLimiter');
 const swaggerConfig = require('../config/swagger').config();
 
 const swaggerOptions = {
@@ -12,17 +13,13 @@ const swaggerOptions = {
 module.exports = function(app) {
   /** static api doc with execute */
   app.use(config.app.mainRoute, apiLimiter);
-  app.use(
-    config.app.mainRoute + '/demo',
-    swaggerUi.serve,
-    swaggerUi.setup(swaggerConfig, swaggerOptions)
-  );
+  app.use(config.app.mainRoute + '/demo', swaggerUi.serve, swaggerUi.setup(swaggerConfig, swaggerOptions));
 
   /** static api doc */
   app.get(
     config.app.mainRoute,
     (req, res) => {
-      res.sendFile(path.join(__dirname, '../apidoc/apidoc.html'));
+      res.sendFile(path.join(__dirname, '../html/index.html'));
     },
     swaggerUi.setup(swaggerConfig, swaggerOptions)
   );

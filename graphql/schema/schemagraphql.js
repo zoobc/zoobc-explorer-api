@@ -17,7 +17,7 @@ module.exports = gql`
   }
 
   type Blocks {
-    Blocks: [Block!]
+    Blocks: [Block]
     ChainType: Int
     Count: Int
     Height: Int

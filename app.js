@@ -1,22 +1,33 @@
-const argv = process.argv[2];
+require('dotenv').config();
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const express = require('express');
 
-switch (argv) {
-  case 'start':
-    require('./main/server').start();
-    break;
-  case 'stop':
-    require('./main/server').stop();
-    break;
-  case 'port':
-    require('./main/server').port();
-    break;
-  case '--help':
-    require('./main/help')();
-    break;
-  case '-h':
-    require('./main/help')();
-    break;
-  default:
-    require('./main/server').init();
-    break;
-}
+const config = require('./config/config');
+const port = config.app.port;
+const app = express().set('port', port);
+
+const server =
+  config.app.modeServer === 'http'
+    ? http.createServer(app)
+    : https.createServer(
+        {
+          key: fs.readFileSync(config.app.openSslKeyPath),
+          cert: fs.readFileSync(config.app.openSslCertPath),
+        },
+        app
+      );
+
+require('./server/redis')(app);
+require('./server/cors')(app);
+require('./server/compression')(app);
+require('./server/log')(app);
+require('./server/routes')(app);
+require('./server/swagger')(app);
+require('./server/graphql')(app, server);
+require('./server/cluster')(server, config.app.modeCluster);
+// require('./scheduler').start();
+require('./scheduler').stop();
+
+module.exports = app;
