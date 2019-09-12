@@ -1,6 +1,6 @@
-const Accounts = require('./AccountBalances');
+const AccountBalances = require('./AccountBalances');
 const Blocks = require('./Blocks');
-const Nodes = require('./NodeRegistrations');
+const NodeRegistrations = require('./NodeRegistrations');
 const Transactions = require('./Transactions');
 
 module.exports = {

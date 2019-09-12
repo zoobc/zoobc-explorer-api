@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const { upsertMany } = require('../utils');
 
-
 const schema = new mongoose.Schema({
   _id: { type: String },
   AccountAddress: { type: String },
