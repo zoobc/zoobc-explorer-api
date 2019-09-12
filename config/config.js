@@ -25,7 +25,7 @@ module.exports = {
     password: process.env.DB_PASSWORD,
   },
   proto: {
-    host: '18.139.3.139:7000',
+    host: `${process.env.PROTO_HOST}:${process.env.PROTO_PORT}`,
     path: path.resolve(__dirname, '../zoobc-schema'),
   },
 };
