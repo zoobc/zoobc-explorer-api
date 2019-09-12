@@ -13,7 +13,7 @@ const cronjob = new cron.CronJob(`0 */${events} * * * *`, async () => {
     // await controllers.updateAccount();
     // await controllers.updateNodeRegistrations();
   } catch (error) {
-    console.error(`%s Schedule Error: ${error.message}`, chalk.red('🚀'));
+    console.error('%s Schedule Error: %s', chalk.red('✗'), error.message);
   }
 });
 
