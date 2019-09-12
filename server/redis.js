@@ -21,7 +21,7 @@ module.exports = app => {
         saveUninitialized: true,
         cookie: { secure: false },
         secret: config.app.redisStorageKey,
-        store: new redisStore({ host: config.app.host, port: 6379, client: redisClient, ttl: 86400 }),
+        store: new redisStore({ host: config.app.host, port: 6379, client: redisClient, ttl: 3600 }),
       })
     );
   }
