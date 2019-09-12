@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 
-const { BlocksService, TransactionsService, NodesService } = require('../api/services');
+const { BlocksService, TransactionsService } = require('../api/services');
 const { Block, Transaction, AccountBalance, NodeRegistration } = require('./Protos');
 
 module.exports = class Controllers {
@@ -16,8 +16,8 @@ module.exports = class Controllers {
         return;
       }
 
-      const Height = resp ? parseInt(resp.Height + 1) : 1;
-      const params = { ChainType: 0, Limit: 250, Height };
+      const Height = resp ? parseInt(resp.Height + 1) : 0;
+      const params = { Limit: 250, Height };
       Block.GetBlocks(params, async (err, resp) => {
         if (err) {
           console.error('%s Get blocks - %s', chalk.red('✗'), err);
@@ -32,17 +32,14 @@ module.exports = class Controllers {
               console.error('%s Upsert blocks - %s', chalk.red('✗'), err);
               return;
             }
-
             if (!result) {
               console.log(`%s Nothing upsert blocks`, chalk.green('🚀'));
               return;
             }
-
             if (result && result.ok === 1) {
               console.log(`%s Upsert ${items.length} blocks successfully`, chalk.green('🚀'));
               return;
             }
-
             console.error('%s Upsert blocks failed', chalk.red('✗'));
           });
         }

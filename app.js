@@ -19,7 +19,6 @@ const server =
         app
       );
 
-require('./server/redis')(app);
 require('./server/cors')(app);
 require('./server/compression')(app);
 require('./server/log')(app);
@@ -27,6 +26,7 @@ require('./server/routes')(app);
 require('./server/swagger')(app);
 require('./server/graphql')(app, server);
 require('./server/cluster')(server);
+require('./server/redis')();
 require('./server/mongoose')();
 require('./scheduler').start();
 
