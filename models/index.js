@@ -1,11 +1,11 @@
-const Accounts = require('./Accounts');
+const Accounts = require('./AccountBalances');
 const Blocks = require('./Blocks');
-const Nodes = require('./Nodes');
+const Nodes = require('./NodeRegistrations');
 const Transactions = require('./Transactions');
 
 module.exports = {
-  Accounts,
+  AccountBalances,
   Blocks,
-  Nodes,
+  NodeRegistrations,
   Transactions,
 };

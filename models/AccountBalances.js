@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const { upsertMany } = require('../utils');
 
-const { Schema } = mongoose;
-const schema = new Schema({
+
+const schema = new mongoose.Schema({
+  _id: { type: String },
   AccountAddress: { type: String },
   BlockHeight: { type: Number },
   SpendableBalance: { type: String },
@@ -13,4 +14,4 @@ const schema = new Schema({
 
 schema.plugin(upsertMany);
 
-module.exports = mongoose.model('Accounts', schema);
+module.exports = mongoose.model('AccountBalances', schema);

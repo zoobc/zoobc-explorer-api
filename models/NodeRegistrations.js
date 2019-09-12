@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const { upsertMany } = require('../utils');
 
-const { Schema } = mongoose;
-const schema = new Schema({
+const schema = new mongoose.Schema({
+  _id: { type: String },
   NodeID: { type: String },
   NodePublicKey: { type: Buffer},
   AccountAddress: { type: String },
