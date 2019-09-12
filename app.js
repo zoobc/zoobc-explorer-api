@@ -26,8 +26,8 @@ require('./server/log')(app);
 require('./server/routes')(app);
 require('./server/swagger')(app);
 require('./server/graphql')(app, server);
-require('./server/cluster')(server, config.app.modeCluster);
-// require('./scheduler').start();
-require('./scheduler').stop();
+require('./server/cluster')(server);
+require('./server/mongoose')();
+require('./scheduler').start();
 
 module.exports = app;

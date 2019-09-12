@@ -1,7 +1,7 @@
-const Block = require('./Block');
+const Blocks = require('./Blocks');
 const Transaction = require('./Transaction');
 
 module.exports = {
-  Block,
+  Blocks,
   Transaction,
 };

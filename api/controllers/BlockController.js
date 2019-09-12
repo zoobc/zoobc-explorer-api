@@ -1,7 +1,7 @@
 const moment = require('moment');
 const BaseController = require('./BaseController');
 const HandleError = require('./HandleError');
-const { BlockService } = require('../services');
+const { BlocksService } = require('../services');
 const { ResponseBuilder, Converter, RedisCache } = require('../../utils');
 
 const cache = {
@@ -13,7 +13,7 @@ const cache = {
 
 module.exports = class BlockController extends BaseController {
   constructor() {
-    super(new BlockService());
+    super(new BlocksService());
   }
 
   async getAll(req, res) {
