@@ -1,5 +1,4 @@
-const chalk = require('chalk');
-
+const { msg } = require('../utils');
 const { BlocksService, TransactionsService } = require('../api/services');
 const { Block, Transaction, AccountBalance, NodeRegistration } = require('./Protos');
 
@@ -12,7 +11,7 @@ module.exports = class Controllers {
   async updateBlocks() {
     this.blocksService.getLastHeight((err, resp) => {
       if (err) {
-        console.error('%s Get last height blocks - %s', chalk.red('✗'), err);
+        msg.red('⛔️', `Get last height blocks - ${err}`);
         return;
       }
 
@@ -20,7 +19,7 @@ module.exports = class Controllers {
       const params = { Limit: 250, Height };
       Block.GetBlocks(params, async (err, resp) => {
         if (err) {
-          console.error('%s Get blocks - %s', chalk.red('✗'), err);
+          msg.red('⛔️', `Get blocks - ${err}`);
           return;
         }
 
@@ -29,21 +28,21 @@ module.exports = class Controllers {
           const matchs = ['Height'];
           this.blocksService.upsert(items, matchs, (err, result) => {
             if (err) {
-              console.error('%s Upsert blocks - %s', chalk.red('✗'), err);
+              msg.red('⛔️', `Upsert blocks - ${err}`);
               return;
             }
 
             if (!result) {
-              console.log(`%s Nothing upsert blocks`, chalk.green('🚀'));
+              msg.yellow('⚠️', 'Nothing additional blocks');
               return;
             }
 
             if (result && result.ok === 1) {
-              console.log(`%s Upsert ${items.length} blocks successfully`, chalk.green('🚀'));
+              msg.green('✅', `Upsert ${items.length} blocks successfully`);
               return;
             }
 
-            console.error('%s Upsert blocks failed', chalk.red('✗'));
+            msg.red('⛔️', 'Upsert blocks failed');
           });
         }
       });
@@ -53,7 +52,7 @@ module.exports = class Controllers {
   async updateTransactions() {
     this.transactionsService.getLastHeight((err, resp) => {
       if (err) {
-        console.error('%s Get last height transactions - %s', chalk.red('✗'), err);
+        msg.red('⛔️', `Get last height transactions - ${err}`);
         return;
       }
 
@@ -61,7 +60,7 @@ module.exports = class Controllers {
       const params = { Pagination: { Limit: 1, OrderField: 'block_height', OrderBy: 'ASC' } };
       Transaction.GetTransactions(params, async (err, resp) => {
         if (err) {
-          console.error('%s Get transactions - %s', chalk.red('✗'), err);
+          msg.red('⛔️', `Get transactions - ${err}`);
           return;
         }
 
@@ -75,7 +74,7 @@ module.exports = class Controllers {
     const params = { BlockHeight: 1 };
     AccountBalance.GetAccountBalances(params, async (err, resp) => {
       if (err) {
-        console.error('%s Get account balances - %s', chalk.red('✗'), err);
+        msg.red('⛔️', `Get account balances - ${err}`);
         return;
       }
 
@@ -88,7 +87,7 @@ module.exports = class Controllers {
     const params = { RegistrationHeight: 1 };
     NodeRegistration.GetNodeRegistrations(params, async (err, resp) => {
       if (err) {
-        console.error('%s Get node registrations - %s', chalk.red('✗'), err);
+        msg.red('⛔️', `Get node registrations - ${err}`);
         return;
       }
 

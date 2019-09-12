@@ -1,16 +1,21 @@
-const chalk = require('chalk');
 const { ApolloServer } = require('apollo-server-express');
 
+const models = require('../models');
+const resolvers = require('../graphql/resolvers');
+const typeDefs = require('../graphql/schema/schemagraphql.js');
+
+const { msg } = require('../utils');
 const config = require('../config/config');
-const configGraphql = require('../config/graphql');
 
 module.exports = (app, server) => {
-  const apolloServer = new ApolloServer({ typeDefs: configGraphql.typeDefs, resolvers: configGraphql.resolvers });
-  apolloServer.applyMiddleware({ app, path: configGraphql.path });
-  apolloServer.installSubscriptionHandlers(server);
+  const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: { models },
+  });
 
-  const host = `${config.app.modeServer}://${config.app.host}:${config.app.port}${apolloServer.graphqlPath}`;
-  const ws = `ws://${config.app.host}:${config.app.port}${apolloServer.subscriptionsPath}`;
-  console.log(`%s Start Graphql Server at ${host}`, chalk.green('🚀'));
-  console.log(`%s Start Subscriptions at ${ws}`, chalk.green('🚀'));
+  apolloServer.applyMiddleware({ app, path: `${config.app.mainRoute}/graphql` });
+  msg.green('🚀', `${config.app.modeServer}://${config.app.host}:${config.app.port}${apolloServer.graphqlPath}`);
+  // apolloServer.installSubscriptionHandlers(server);
+  // msg.green('🚀', `ws://${config.app.host}:${config.app.port}${apolloServer.subscriptionsPath}`);
 };
