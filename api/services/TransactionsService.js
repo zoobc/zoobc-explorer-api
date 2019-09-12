@@ -1,13 +1,13 @@
 const BaseService = require('./BaseService');
-const { Blocks } = require('../../models');
+const { Transactions } = require('../../models');
 
-module.exports = class BlocksService extends BaseService {
+module.exports = class TransactionsService extends BaseService {
   constructor() {
-    super(Blocks);
+    super(Transactions);
   }
 
   getLastHeight(callback) {
-    Blocks.findOne()
+    Transactions.findOne()
       .select('Height')
       .sort('-Height')
       .exec(callback);

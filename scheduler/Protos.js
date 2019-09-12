@@ -21,4 +21,24 @@ const Transaction = createClient(
   config.proto.host
 );
 
-module.exports = { Block, Transaction };
+const AccountBalance = createClient(
+  {
+    protoPath: config.proto.path,
+    protoName: 'accountBalance.proto',
+    servicePath: 'service',
+    serviceName: 'AccountBalanceService',
+  },
+  config.proto.host
+);
+
+const NodeRegistration = createClient(
+  {
+    protoPath: config.proto.path,
+    protoName: 'nodeRegistration.proto',
+    servicePath: 'service',
+    serviceName: 'NodeRegistrationService',
+  },
+  config.proto.host
+);
+
+module.exports = { Block, Transaction, AccountBalance, NodeRegistration };

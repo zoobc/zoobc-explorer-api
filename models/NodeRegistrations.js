@@ -4,7 +4,7 @@ const { upsertMany } = require('../utils');
 const schema = new mongoose.Schema({
   _id: { type: String },
   NodeID: { type: String },
-  NodePublicKey: { type: Buffer},
+  NodePublicKey: { type: Buffer },
   AccountAddress: { type: String },
   RegistrationHeight: { type: Number },
   NodeAddress: { type: String },
@@ -16,4 +16,4 @@ const schema = new mongoose.Schema({
 
 schema.plugin(upsertMany);
 
-module.exports = mongoose.model('Nodes', schema);
+module.exports = mongoose.model('NodeRegistrations', schema);

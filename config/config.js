@@ -6,7 +6,7 @@ module.exports = {
     host: process.env.HOST || 'localhost',
     mainRoute: '/zoobc/api/v1',
     modeServer: 'http',
-    modeCluster: false,
+    modeCluster: true,
     modeRedis: true,
     redisStorageKey: 'zooBcExpl0rer4PI',
     scheduler: true,
