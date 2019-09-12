@@ -1,7 +1,7 @@
 const { ForbiddenError, UserInputError } = require('apollo-server');
 const { formatApolloErrors, ApolloError } = require('apollo-server-core');
 const { combineResolvers } = require('graphql-resolvers');
-const { Block } = require('../../models');
+// const { Block } = require('../../models');
 const { pubsub, events } = require('../subscription');
 const { Converter, RedisCache } = require('../../utils');
 
@@ -16,11 +16,11 @@ const cache = {
 module.exports = {
   Query: {
     blocks: combineResolvers(async (parent, args, context, info) => {
-      const cacheBlocks = Converter.formatCache(cache.blocks, args);
-      RedisCache.get(cacheBlocks, (errRedis, resRedis) => {
-        console.log('===errRedis', errRedis);
-        console.log('===resRedis', resRedis);
-      });
+      // const cacheBlocks = Converter.formatCache(cache.blocks, args);
+      // RedisCache.get(cacheBlocks, (errRedis, resRedis) => {
+      //   console.log('===errRedis', errRedis);
+      //   console.log('===resRedis', resRedis);
+      // });
 
       // return new Promise((resolve, reject) => {
       //   const { ChainType = chainType, Limit = limit, Height = height } = args;
@@ -155,15 +155,15 @@ module.exports = {
   Mutation: {
     pushBlocks: combineResolvers(async (parent, args, context, info) => {
       try {
-        return new Promise((resolve, reject) => {
-          Block.GetBlocks({ ChainType: 0, Limit: 2, Height: 1 }, (err, result) => {
-            if (err) return reject(err);
-            const { Blocks = null } = result;
-            Converter.formatDataGRPC(Blocks);
-            pubsub.publish(events.blocks, { blocks: result });
-            return resolve(result);
-          });
-        });
+        // return new Promise((resolve, reject) => {
+        //   Block.GetBlocks({ ChainType: 0, Limit: 2, Height: 1 }, (err, result) => {
+        //     if (err) return reject(err);
+        //     const { Blocks = null } = result;
+        //     Converter.formatDataGRPC(Blocks);
+        //     pubsub.publish(events.blocks, { blocks: result });
+        //     return resolve(result);
+        //   });
+        // });
       } catch (error) {
         throw new ForbiddenError('Set Push Block:', error);
       }

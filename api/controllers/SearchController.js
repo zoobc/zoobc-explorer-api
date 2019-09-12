@@ -1,12 +1,12 @@
 const BaseController = require('./BaseController');
 const HandleError = require('./HandleError');
 const { ResponseBuilder } = require('../../utils');
-const { BlockService, TransactionService } = require('../services');
+const { BlocksService, TransactionService } = require('../services');
 
 module.exports = class SearchController extends BaseController {
   constructor() {
     super();
-    this.blockService = new BlockService();
+    this.blockService = new BlocksService();
     this.transactionService = new TransactionService();
   }
 

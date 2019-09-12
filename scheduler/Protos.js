@@ -11,4 +11,14 @@ const Block = createClient(
   config.proto.host
 );
 
-module.exports = Block;
+const Transaction = createClient(
+  {
+    protoPath: config.proto.path,
+    protoName: 'transaction.proto',
+    servicePath: 'service',
+    serviceName: 'TransactionService',
+  },
+  config.proto.host
+);
+
+module.exports = { Block, Transaction };

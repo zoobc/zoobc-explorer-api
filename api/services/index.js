@@ -1,7 +1,7 @@
-const BlockService = require('./BlockService');
+const BlocksService = require('./BlocksService');
 const TransactionService = require('./TransactionService');
 
 module.exports = {
-  BlockService,
+  BlocksService,
   TransactionService,
 };
