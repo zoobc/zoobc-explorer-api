@@ -30,6 +30,7 @@ module.exports = class BaseService {
         .limit(limit)
         .skip(page * limit)
         .sort(order)
+        .lean()
         .exec((err, data) => {
           if (err) {
             callback(err, null);
@@ -54,6 +55,7 @@ module.exports = class BaseService {
       .find()
       .where(where)
       .limit(1)
+      .lean()
       .exec((err, results) => {
         if (err) {
           callback(err, null);
