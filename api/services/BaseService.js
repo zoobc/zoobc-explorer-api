@@ -52,9 +52,8 @@ module.exports = class BaseService {
 
   findOne(where, callback) {
     this.model
-      .find()
+      .findOne()
       .where(where)
-      .limit(1)
       .lean()
       .exec((err, results) => {
         if (err) {
