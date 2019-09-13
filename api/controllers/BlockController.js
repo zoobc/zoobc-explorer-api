@@ -1,4 +1,4 @@
-const moment = require('moment');
+// const moment = require('moment');
 const BaseController = require('./BaseController');
 const HandleError = require('./HandleError');
 const { BlocksService } = require('../services');
@@ -19,7 +19,7 @@ module.exports = class BlockController extends BaseController {
   async getAll(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const { ChainType, Limit, Height } = req.query;
+    const { page, limit, fields, order } = req.query;
 
     try {
       const cacheBlocks = Converter.formatCache(cache.blocks, req.query);
@@ -40,15 +40,15 @@ module.exports = class BlockController extends BaseController {
           return;
         }
 
-        this.service.getAll({ ChainType, Limit, Height }, (err, result) => {
+        this.service.paginate({ page, limit, fields, order }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;
           }
 
-          RedisCache.set(cache.blocks, result.data, (errRedis, resRedis) => {
-            if (errRedis) {
-              handleError.sendCatchError(res, errRedis);
+          RedisCache.set(cacheBlocks, result, err => {
+            if (err) {
+              handleError.sendCatchError(res, err);
               return;
             }
 
@@ -56,6 +56,7 @@ module.exports = class BlockController extends BaseController {
               res,
               responseBuilder
                 .setData(result.data)
+                .setPaginate(result.paginate)
                 .setMessage('Blocks fetched successfully')
                 .build()
             );
@@ -103,7 +104,7 @@ module.exports = class BlockController extends BaseController {
           return;
         }
 
-        this.service.getOne(id, (err, result) => {
+        this.service.findOne({ ID: id }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;
@@ -120,9 +121,9 @@ module.exports = class BlockController extends BaseController {
             return;
           }
 
-          RedisCache.set(cacheBlock, result, errRedis => {
-            if (errRedis) {
-              handleError.sendCatchError(res, errRedis);
+          RedisCache.set(cacheBlock, result, err => {
+            if (err) {
+              handleError.sendCatchError(res, err);
               return;
             }
 
@@ -145,71 +146,65 @@ module.exports = class BlockController extends BaseController {
   async graphPeriod(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const { start_date, end_date, ChainType, Limit, Height } = req.query;
+    // const { start_date, end_date, ChainType, Limit, Height } = req.query;
 
     try {
-      if (!start_date || !end_date) {
-        this.sendInvalidPayloadResponse(
-          res,
-          responseBuilder
-            .setData({})
-            .setMessage('Invalid Payload Parameter')
-            .build()
-        );
-        return;
-      }
-
-      if (!moment(start_date, 'DD-MM-YYYY').isValid() || !moment(end_date, 'DD-MM-YYYY').isValid()) {
-        this.sendInvalidPayloadResponse(
-          res,
-          responseBuilder
-            .setData({})
-            .setMessage('Invalid Date Format, must be (DD-MM-YYYY)')
-            .build()
-        );
-        return;
-      }
-
-      const cachePeriod = Converter.formatCache(cache.period, req.query);
-      RedisCache.get(cachePeriod, (errRedis, resRedis) => {
-        if (errRedis) {
-          handleError.sendCatchError(res, errRedis);
-          return;
-        }
-
-        if (resRedis) {
-          this.sendSuccessResponse(
-            res,
-            responseBuilder
-              .setData(resRedis)
-              .setMessage('Block Transaction Period Graph fetched successfully')
-              .build()
-          );
-          return;
-        }
-
-        this.service.graphPeriod({ start_date, end_date, ChainType, Limit, Height }, (err, result) => {
-          if (err) {
-            handleError.sendCatchError(res, err);
-            return;
-          }
-
-          RedisCache.set(cachePeriod, result.data, errRedis => {
-            if (errRedis) {
-              handleError.sendCatchError(res, errRedis);
-              return;
-            }
-
-            this.sendSuccessResponse(
-              res,
-              responseBuilder
-                .setData(result.data)
-                .setMessage('Block Transaction Period Graph fetched successfully')
-                .build()
-            );
-          });
-        });
-      });
+      // if (!start_date || !end_date) {
+      //   this.sendInvalidPayloadResponse(
+      //     res,
+      //     responseBuilder
+      //       .setData({})
+      //       .setMessage('Invalid Payload Parameter')
+      //       .build()
+      //   );
+      //   return;
+      // }
+      // if (!moment(start_date, 'DD-MM-YYYY').isValid() || !moment(end_date, 'DD-MM-YYYY').isValid()) {
+      //   this.sendInvalidPayloadResponse(
+      //     res,
+      //     responseBuilder
+      //       .setData({})
+      //       .setMessage('Invalid Date Format, must be (DD-MM-YYYY)')
+      //       .build()
+      //   );
+      //   return;
+      // }
+      // const cachePeriod = Converter.formatCache(cache.period, req.query);
+      // RedisCache.get(cachePeriod, (errRedis, resRedis) => {
+      //   if (errRedis) {
+      //     handleError.sendCatchError(res, errRedis);
+      //     return;
+      //   }
+      //   if (resRedis) {
+      //     this.sendSuccessResponse(
+      //       res,
+      //       responseBuilder
+      //         .setData(resRedis)
+      //         .setMessage('Block Transaction Period Graph fetched successfully')
+      //         .build()
+      //     );
+      //     return;
+      //   }
+      //   this.service.graphPeriod({ start_date, end_date, ChainType, Limit, Height }, (err, result) => {
+      //     if (err) {
+      //       handleError.sendCatchError(res, err);
+      //       return;
+      //     }
+      //     RedisCache.set(cachePeriod, result.data, errRedis => {
+      //       if (errRedis) {
+      //         handleError.sendCatchError(res, errRedis);
+      //         return;
+      //       }
+      //       this.sendSuccessResponse(
+      //         res,
+      //         responseBuilder
+      //           .setData(result.data)
+      //           .setMessage('Block Transaction Period Graph fetched successfully')
+      //           .build()
+      //       );
+      //     });
+      //   });
+      // });
     } catch (error) {
       handleError.sendCatchError(res, error);
     }
@@ -218,48 +213,44 @@ module.exports = class BlockController extends BaseController {
   async graphSummary(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const { ChainType, Limit, Height } = req.query;
+    // const { ChainType, Limit, Height } = req.query;
 
     try {
-      const cacheSummary = Converter.formatCache(cache.summary, req.query);
-      RedisCache.get(cacheSummary, (errRedis, resRedis) => {
-        if (errRedis) {
-          handleError.sendCatchError(res, errRedis);
-          return;
-        }
-
-        if (resRedis) {
-          this.sendSuccessResponse(
-            res,
-            responseBuilder
-              .setData(resRedis)
-              .setMessage('Block Transaction Summary Graph fetched successfully')
-              .build()
-          );
-        }
-
-        this.service.graphSummary({ ChainType, Limit, Height }, (err, result) => {
-          if (err) {
-            handleError.sendCatchError(res, err);
-            return;
-          }
-
-          RedisCache.set(cacheSummary, result.data, errRedis => {
-            if (errRedis) {
-              handleError.sendCatchError(res, errRedis);
-              return;
-            }
-
-            this.sendSuccessResponse(
-              res,
-              responseBuilder
-                .setData(result.data)
-                .setMessage('Block Transaction Summary Graph fetched successfully')
-                .build()
-            );
-          });
-        });
-      });
+      // const cacheSummary = Converter.formatCache(cache.summary, req.query);
+      // RedisCache.get(cacheSummary, (errRedis, resRedis) => {
+      //   if (errRedis) {
+      //     handleError.sendCatchError(res, errRedis);
+      //     return;
+      //   }
+      //   if (resRedis) {
+      //     this.sendSuccessResponse(
+      //       res,
+      //       responseBuilder
+      //         .setData(resRedis)
+      //         .setMessage('Block Transaction Summary Graph fetched successfully')
+      //         .build()
+      //     );
+      //   }
+      //   this.service.graphSummary({ ChainType, Limit, Height }, (err, result) => {
+      //     if (err) {
+      //       handleError.sendCatchError(res, err);
+      //       return;
+      //     }
+      //     RedisCache.set(cacheSummary, result.data, errRedis => {
+      //       if (errRedis) {
+      //         handleError.sendCatchError(res, errRedis);
+      //         return;
+      //       }
+      //       this.sendSuccessResponse(
+      //         res,
+      //         responseBuilder
+      //           .setData(result.data)
+      //           .setMessage('Block Transaction Summary Graph fetched successfully')
+      //           .build()
+      //       );
+      //     });
+      //   });
+      // });
     } catch (error) {
       handleError.sendCatchError(res, error);
     }

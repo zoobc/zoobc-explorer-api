@@ -6,9 +6,8 @@ module.exports = {
     host: process.env.HOST || 'localhost',
     mainRoute: '/zoobc/api/v1',
     modeServer: 'http',
-    modeCluster: true,
-    modeRedis: true,
-    redisStorageKey: 'zooBcExpl0rer4PI',
+    modeCluster: false,
+    redisExpired: 60 /** seconds */,
     scheduler: true,
     scheduleEvent: 1 /** minutes */,
     openSslKeyPath: process.env.SSL_KEYPATH,
@@ -26,7 +25,7 @@ module.exports = {
     password: process.env.DB_PASSWORD,
   },
   proto: {
-    host: '18.139.3.139:7000',
+    host: `${process.env.PROTO_HOST}:${process.env.PROTO_PORT}`,
     path: path.resolve(__dirname, '../zoobc-schema'),
   },
 };
