@@ -27,9 +27,10 @@ module.exports = class BaseService {
       this.model
         .find()
         .select(fields)
+        .skip((page - 1) * limit)
         .limit(limit)
-        .skip(page * limit)
         .sort(order)
+        .lean()
         .exec((err, data) => {
           if (err) {
             callback(err, null);
@@ -51,9 +52,9 @@ module.exports = class BaseService {
 
   findOne(where, callback) {
     this.model
-      .find()
+      .findOne()
       .where(where)
-      .limit(1)
+      .lean()
       .exec((err, results) => {
         if (err) {
           callback(err, null);

@@ -1,10 +1,10 @@
-const chalk = require('chalk');
 const cron = require('cron');
 
 const config = require('../config/config');
 const Controllers = require('./Controllers');
-const controllers = new Controllers();
+const { msg } = require('../utils');
 
+const controllers = new Controllers();
 const events = config.app.scheduleEvent;
 const cronjob = new cron.CronJob(`0 */${events} * * * *`, async () => {
   try {
@@ -13,20 +13,20 @@ const cronjob = new cron.CronJob(`0 */${events} * * * *`, async () => {
     // await controllers.updateAccount();
     // await controllers.updateNodeRegistrations();
   } catch (error) {
-    console.error('%s Schedule Error: %s', chalk.red('✗'), error.message);
+    msg.red('❌', `Schedule Error.\n${error.message}`);
   }
 });
 
 function start() {
   if (config.app.scheduler) {
-    console.log(`%s Start Scheduler with Events Every ${events} Minutes`, chalk.green('🚀'));
+    msg.green('🚀', `Start Scheduler with Events Every ${events} Minutes`);
     cronjob.start();
   }
 }
 
 function stop() {
   cronjob.stop();
-  console.log(`%s Close Scheduler`, chalk.red('🚀'));
+  msg.green('🚀', 'Close Scheduler');
 }
 
 module.exports = { start, stop };
