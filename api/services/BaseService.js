@@ -27,8 +27,8 @@ module.exports = class BaseService {
       this.model
         .find()
         .select(fields)
+        .skip((page - 1) * limit)
         .limit(limit)
-        .skip(page * limit)
         .sort(order)
         .lean()
         .exec((err, data) => {

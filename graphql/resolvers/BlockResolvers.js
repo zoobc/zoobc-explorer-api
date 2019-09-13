@@ -35,7 +35,7 @@ module.exports = {
           models.Blocks.find()
             .select()
             .limit(lm)
-            .skip(pg * lm)
+            .skip((pg - 1) * lm)
             .sort(od)
             .lean()
             .exec((err, result) => {
