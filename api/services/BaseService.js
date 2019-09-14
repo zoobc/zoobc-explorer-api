@@ -15,8 +15,8 @@ module.exports = class BaseService {
   paginate({ page, limit, fields, order }, callback) {
     page = page !== undefined ? parseInt(page) : 1;
     limit = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
-    order = order !== undefined ? BaseService.parseOrder(order) : { _id: 'asc' };
     fields = fields !== undefined ? fields.replace(/,/g, ' ') : {};
+    order = order !== undefined ? BaseService.parseOrder(order) : { _id: 'asc' };
 
     this.model.countDocuments((err, total) => {
       if (err) {
@@ -62,6 +62,26 @@ module.exports = class BaseService {
         }
 
         const result = Array.isArray(results) ? results[0] : results;
+        callback(null, result);
+      });
+  }
+
+  findAll({ fields, where, order }, callback) {
+    where = where !== undefined ? where : {};
+    fields = fields !== undefined ? fields.replace(/,/g, ' ') : {};
+    order = order !== undefined ? BaseService.parseOrder(order) : { _id: 'asc' };
+
+    this.model
+      .find(where)
+      .select(fields)
+      .sort(order)
+      .lean()
+      .exec((err, result) => {
+        if (err) {
+          callback(err, null);
+          return;
+        }
+
         callback(null, result);
       });
   }
