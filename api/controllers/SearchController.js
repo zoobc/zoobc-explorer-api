@@ -4,17 +4,13 @@ const { ResponseBuilder, Converter, RedisCache } = require('../../utils');
 const { BlocksService, TransactionsService } = require('../services');
 
 const cacheBlock = {
-  searchs: 'searchs',
-  search: 'search',
-  period: 'block:period',
-  summary: 'block:summary',
+  blocks: 'blocks',
+  block: 'block',
 };
 
 const cacheTransaction = {
   transactions: 'transactions',
   transactions: 'transactions',
-  amount: 'transaction:amount',
-  type: 'transaction:type',
 };
 
 module.exports = class SearchController extends BaseController {
