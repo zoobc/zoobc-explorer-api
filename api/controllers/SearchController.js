@@ -34,7 +34,7 @@ module.exports = class SearchController extends BaseController {
         );
         return;
       }
-      if (id == 0) {
+      if (id === 0) {
         this.sendInvalidPayloadResponse(
           res,
           responseBuilder
@@ -66,13 +66,25 @@ module.exports = class SearchController extends BaseController {
             handleError.sendCatchError(res, errBlock);
             return;
           }
+
           if (resultBlock) {
-            this.sendSuccessResponse(
-              res,
-              responseBuilder
-                .setData(resultBlock)
-                .setMessage('Block fetched successfully')
-                .build()
+            RedisCache.set(
+              cacheBlocks,
+              resultBlock,
+              err => {
+                if (err) {
+                  handleError.sendCatchError(res, err);
+                  return;
+                }
+              },
+
+              this.sendSuccessResponse(
+                res,
+                responseBuilder
+                  .setData(resultBlock)
+                  .setMessage('Block fetched successfully')
+                  .build()
+              )
             );
             return;
           } else {
@@ -88,7 +100,7 @@ module.exports = class SearchController extends BaseController {
                   res,
                   responseBuilder
                     .setData(resRedis)
-                    .setMessage('Block fetched successfully')
+                    .setMessage('Transaction fetched successfully')
                     .build()
                 );
                 return;
@@ -98,14 +110,28 @@ module.exports = class SearchController extends BaseController {
                   handleError.sendCatchError(res, errTrans);
                   return;
                 }
-                this.sendSuccessResponse(
-                  res,
-                  responseBuilder
-                    .setData(resultTrans)
-                    .setMessage('Transaction fetched successfully')
-                    .build()
-                );
-                return;
+
+                if (resultTrans != {}) {
+                  RedisCache.set(
+                    cacheTransactions,
+                    resultTrans,
+                    err => {
+                      if (err) {
+                        handleError.sendCatchError(res, err);
+                        return;
+                      }
+                    },
+
+                    this.sendSuccessResponse(
+                      res,
+                      responseBuilder
+                        .setData(resultTrans)
+                        .setMessage('Transaction fetched successfully')
+                        .build()
+                    )
+                  );
+                  return;
+                }
               });
             });
           }
