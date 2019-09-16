@@ -1,14 +1,14 @@
 const os = require('os');
-const chalk = require('chalk');
 const cluster = require('cluster');
 
 const config = require('../config/config');
+const { msg } = require('../utils');
 
 module.exports = server => {
   if (cluster.isMaster && config.app.modeCluster) {
     const cpus = os.cpus().length;
 
-    console.log(`%s Mode Cluster. Forking for ${cpus} CPUs`, chalk.green('🚀'));
+    msg.green('🚀', `Mode Cluster. Forking for ${cpus} CPUs`);
     for (let i = 0; i < cpus; i++) {
       cluster.fork();
     }
@@ -16,7 +16,7 @@ module.exports = server => {
     const port = config.app.port;
 
     server.listen(port, () => {
-      console.log(`%s Start Express Server on Port ${port} Handled by Process ${process.pid}`, chalk.green('🚀'));
+      msg.green('🚀', `Start Express Server on Port ${port} Handled by Process ${process.pid}`);
     });
 
     process.on('SIGINT', () => {
@@ -24,10 +24,10 @@ module.exports = server => {
         require('../scheduler').stop();
 
         if (err) {
-          console.log(`%s Error Express Server : ${err}`, chalk.red('🚀'));
+          msg.red('❌', `Error Express Server : ${err}`);
           process.exit(1);
         } else {
-          console.log(`%s Close Express Server on Port ${port} Handled by Process ${process.pid}`, chalk.red('🚀'));
+          msg.green('🚀', `Close Express Server on Port ${port} Handled by Process ${process.pid}`);
           process.exit(0);
         }
       });
