@@ -73,6 +73,28 @@ module.exports = class Controllers {
       });
     }
 
+    function UpsertTransactions(Height) {
+      const matchs = ['ID', 'BlockID', 'Height'];
+      const items = resp.map(item => {
+        item.Timestamp = moment.unix(item.Timestamp).valueOf();
+        return item;
+      });
+
+      this.transactionsService.upsert(items, matchs, (err, result) => {
+        if (err) {
+          msg.red('⛔️', `[Transactions - Height ${Height}] transactionsService.upsert: ${err}`);
+        }
+
+        if (result && result.ok === 1) {
+          msg.green('✅', `[Transactions - Height ${Height}] Upsert ${items.length} data successfully at ${dateNow}`);
+          return;
+        }
+
+        msg.red('⛔️', `[Transactions - Height ${Height}] Upsert data failed at ${dateNow}`);
+        return;
+      });
+    }
+
     this.transactionsService.getLastHeight((err, result) => {
       if (err) {
         msg.red('⛔️', `[Transactions] transactionsService.getLastHeight: ${err}`);
@@ -88,72 +110,69 @@ module.exports = class Controllers {
           }
 
           if (resp && resp.length > 0) {
-            const matchs = ['ID', 'BlockID', 'Height'];
-            const items = resp.map(item => {
-              item.Timestamp = moment.unix(item.Timestamp).valueOf();
-              return item;
-            });
-            this.transactionsService.upsert(items, matchs, (err, result) => {
-              if (err) {
-                msg.red('⛔️', `[Transactions - Height ${Height}] transactionsService.upsert: ${err}`);
-              }
-
-              if (result && result.ok === 1) {
-                msg.green('✅', `[Transactions - Height ${Height}] Upsert ${items.length} data successfully at ${dateNow}`);
-                return;
-              }
-
-              msg.red('⛔️', `[Transactions - Height ${Height}] Upsert data failed at ${dateNow}`);
-              return;
-            });
+            UpsertTransactions(Height);
           } else {
             msg.yellow('⚠️', `[Transactions - Height ${Height}] Nothing additional data at ${dateNow}`);
             return;
           }
         });
       } else {
-        const unixDaysBefore = moment()
-          .subtract(7, 'days')
-          .valueOf();
-        const paramsDaysBefore = { fields: 'ID,Height,Timestamp', where: { Timestamp: { $gte: unixDaysBefore } }, order: 'Height' };
-        this.blocksService.findAll(paramsDaysBefore, (err, result) => {
+        const paramsTransactions = { fields: 'ID,Height,Timestamp', where: { Height: { $gte: 1 } }, order: 'Height' };
+        this.transactionsService.findAll(paramsTransactions, (err, result) => {
           if (err) {
-            msg.red('⛔️', `[Transactions] blocksService.findAll(Timestamp=7daysbefore): ${err}`);
+            msg.red('⛔️', `[Transactions] transactionsService.findAll(Height>=1): ${err}`);
             return;
           }
 
           if (result && result.length > 0) {
-            result.map(item => {
-              GetTransactionsByHeight(item.Height, (err, resp) => {
-                if (err) {
-                  msg.red('⛔️', err);
-                  return;
-                }
+            this.blocksService.getLastHeight((err, result) => {
+              if (err) {
+                msg.red('⛔️', `[Transactions] blocksService.getLastHeight: ${err}`);
+                return;
+              }
 
-                if (resp && resp.length > 0) {
-                  const matchs = ['ID', 'BlockID', 'Height'];
-                  const items = resp.map(item => {
-                    item.Timestamp = moment.unix(item.Timestamp).valueOf();
-                    return item;
-                  });
-                  this.transactionsService.upsert(items, matchs, (err, result) => {
+              if (result) {
+                const paramsHeight = result.Height;
+                GetTransactionsByHeight(paramsHeight, (err, resp) => {
+                  if (err) {
+                    msg.red('⛔️', `[Transactions] GetTransactionsByHeight(Height=${paramsHeight}): ${err}`);
+                    return;
+                  }
+
+                  if (resp && resp.length > 0) {
+                    UpsertTransactions(paramsHeight);
+                  } else {
+                    msg.yellow('⚠️', `[Transactions - Height ${paramsHeight}] Nothing additional data at ${dateNow}`);
+                    return;
+                  }
+                });
+              }
+            });
+          } else {
+            const paramsBlocks = { fields: 'ID,Height,Timestamp', order: 'Height' };
+            this.blocksService.findAll(paramsBlocks, (err, result) => {
+              if (err) {
+                msg.red('⛔️', `[Transactions] blocksService.findAll: ${err}`);
+                return;
+              }
+
+              if (result && result.length > 0) {
+                result.map(item => {
+                  GetTransactionsByHeight(item.Height, (err, resp) => {
                     if (err) {
-                      msg.red('⛔️', `[Transactions - Height ${item.Height}] transactionsService.upsert: ${err}`);
-                    }
-
-                    if (result && result.ok === 1) {
-                      msg.green('✅', `[Transactions - Height ${item.Height}] Upsert ${items.length} data successfully at ${dateNow}`);
+                      msg.red('⛔️', err);
                       return;
                     }
 
-                    msg.red('⛔️', `[Transactions - Height ${item.Height}] Upsert data failed at ${dateNow}`);
-                    return;
+                    if (resp && resp.length > 0) {
+                      UpsertTransactions(item.Height);
+                    } else {
+                      msg.yellow('⚠️', `[Transactions - Height ${item.Height}] Nothing additional data at ${dateNow}`);
+                      return;
+                    }
                   });
-                } else {
-                  msg.yellow('⚠️', `[Transactions - Height ${item.Height}] Nothing additional data at ${dateNow}`);
-                  return;
-                }
-              });
+                });
+              }
             });
           }
         });
