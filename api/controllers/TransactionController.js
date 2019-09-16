@@ -59,70 +59,70 @@ module.exports = class TransactionController extends BaseController {
       handleError.sendCatchError(res, error);
     }
   }
-  // async getOne(req, res) {
-  //   const responseBuilder = new ResponseBuilder();
-  //   const handleError = new HandleError();
-  //   const id = req.params.id;
-  //   try {
-  //     if (!id) {
-  //       this.sendInvalidPayloadResponse(
-  //         res,
-  //         responseBuilder
-  //           .setData({})
-  //           .setMessage('Invalid Payload Parameter')
-  //           .build()
-  //       );
-  //       return;
-  //     }
-  //     const cacheTransaction = Converter.formatCache(cache.transaction, req.query);
-  //     RedisCache.get(cacheTransaction, (errRedis, resRedis) => {
-  //       if (errRedis) {
-  //         handleError.sendCatchError(res, errRedis);
-  //         return;
-  //       }
-  //       if (resRedis) {
-  //         this.sendSuccessResponse(
-  //           res,
-  //           responseBuilder
-  //             .setData(resRedis)
-  //             .setMessage('Transaction fetched successfully')
-  //             .build()
-  //         );
-  //       }
-  //       this.service.getOne(id, (err, result) => {
-  //         if (err) {
-  //           handleError.sendCatchError(res, err);
-  //           return;
-  //         }
-  //         if (!result) {
-  //           this.sendNotFoundResponse(
-  //             res,
-  //             responseBuilder
-  //               .setData({})
-  //               .setMessage('Transaction not found')
-  //               .build()
-  //           );
-  //           return;
-  //         }
-  //         RedisCache.set(cacheTransaction, result, errRedis => {
-  //           if (errRedis) {
-  //             handleError.sendCatchError(res, errRedis);
-  //             return;
-  //           }
-  //           this.sendSuccessResponse(
-  //             res,
-  //             responseBuilder
-  //               .setData(result)
-  //               .setMessage('Transaction fetched successfully')
-  //               .build()
-  //           );
-  //         });
-  //       });
-  //     });
-  //   } catch (error) {
-  //     handleError.sendCatchError(res, error);
-  //   }
-  // }
+  async getOne(req, res) {
+    const responseBuilder = new ResponseBuilder();
+    const handleError = new HandleError();
+    const id = req.params.id;
+    try {
+      if (!id) {
+        this.sendInvalidPayloadResponse(
+          res,
+          responseBuilder
+            .setData({})
+            .setMessage('Invalid Payload Parameter')
+            .build()
+        );
+        return;
+      }
+      const cacheTransaction = Converter.formatCache(cache.transaction, req.query);
+      RedisCache.get(cacheTransaction, (errRedis, resRedis) => {
+        if (errRedis) {
+          handleError.sendCatchError(res, errRedis);
+          return;
+        }
+        if (resRedis) {
+          this.sendSuccessResponse(
+            res,
+            responseBuilder
+              .setData(resRedis)
+              .setMessage('Transaction fetched successfully')
+              .build()
+          );
+        }
+        this.service.findOne({ ID: id }, (err, result) => {
+          if (err) {
+            handleError.sendCatchError(res, err);
+            return;
+          }
+          if (!result) {
+            this.sendNotFoundResponse(
+              res,
+              responseBuilder
+                .setData({})
+                .setMessage('Transaction not found')
+                .build()
+            );
+            return;
+          }
+          RedisCache.set(cacheTransaction, result, errRedis => {
+            if (errRedis) {
+              handleError.sendCatchError(res, errRedis);
+              return;
+            }
+            this.sendSuccessResponse(
+              res,
+              responseBuilder
+                .setData(result)
+                .setMessage('Transaction fetched successfully')
+                .build()
+            );
+          });
+        });
+      });
+    } catch (error) {
+      handleError.sendCatchError(res, error);
+    }
+  }
   // async graphAmount(req, res) {
   //   const responseBuilder = new ResponseBuilder();
   //   const handleError = new HandleError();
