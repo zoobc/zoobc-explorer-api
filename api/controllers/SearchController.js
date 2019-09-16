@@ -4,12 +4,10 @@ const { ResponseBuilder, Converter, RedisCache } = require('../../utils');
 const { BlocksService, TransactionsService } = require('../services');
 
 const cacheBlock = {
-  blocks: 'blocks',
   block: 'block',
 };
 
 const cacheTransaction = {
-  transactions: 'transactions',
   transaction: 'transaction',
 };
 
@@ -19,6 +17,7 @@ module.exports = class SearchController extends BaseController {
     this.blockService = new BlocksService();
     this.transactionService = new TransactionsService();
   }
+
   async SearchIdHash(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
@@ -88,7 +87,7 @@ module.exports = class SearchController extends BaseController {
             );
             return;
           } else {
-            const cacheTransactions = Converter.formatCache(cacheTransaction.transactions, id);
+            const cacheTransactions = Converter.formatCache(cacheTransaction.transaction, id);
             RedisCache.get(cacheTransactions, (errRedis, resRedis) => {
               if (errRedis) {
                 handleError.sendCatchError(res, errRedis);
@@ -111,7 +110,8 @@ module.exports = class SearchController extends BaseController {
                   return;
                 }
 
-                if (resultTrans != {}) {
+                console.log(resultTrans);
+                if (resultTrans != null) {
                   RedisCache.set(
                     cacheTransactions,
                     resultTrans,
@@ -129,6 +129,15 @@ module.exports = class SearchController extends BaseController {
                         .setMessage('Transaction fetched successfully')
                         .build()
                     )
+                  );
+                  return;
+                } else {
+                  this.sendSuccessResponse(
+                    res,
+                    responseBuilder
+                      .setData({})
+                      .setMessage('No Data fetched')
+                      .build()
                   );
                   return;
                 }
