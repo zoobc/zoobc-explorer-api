@@ -110,7 +110,7 @@ module.exports = class SearchController extends BaseController {
                   return;
                 }
 
-                if (resultTrans != null) {
+                if (resultTrans !== null) {
                   RedisCache.set(
                     cacheTransactions,
                     resultTrans,
