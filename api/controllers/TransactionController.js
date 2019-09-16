@@ -49,6 +49,7 @@ module.exports = class TransactionController extends BaseController {
               res,
               responseBuilder
                 .setData(result.data)
+                .setPaginate(result.paginate)
                 .setMessage('Transactions fetched successfully')
                 .build()
             );
