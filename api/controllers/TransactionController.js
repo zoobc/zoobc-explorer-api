@@ -14,6 +14,7 @@ module.exports = class TransactionController extends BaseController {
   constructor() {
     super(new TransactionsService());
   }
+
   async getAll(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
@@ -61,6 +62,7 @@ module.exports = class TransactionController extends BaseController {
       handleError.sendCatchError(res, error);
     }
   }
+
   async getOne(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
