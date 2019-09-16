@@ -2,7 +2,7 @@
  * @swagger
  * tags:
  *  - name: Blocks
- *    description: Rest API List Block.
+ *    description: Rest API of Blocks.
  * paths:
  *  /blocks:
  *    get:
@@ -10,34 +10,34 @@
  *        - Blocks
  *      parameters:
  *        - in: query
- *          name: ChainType
+ *          name: page
  *          schema:
  *            type: integer
  *            example: 1
- *          description: Number indicating chaintype
+ *          description: Number of pagination.
  *        - in: query
- *          name: Limit
+ *          name: limit
  *          schema:
  *            type: integer
  *            example: 5
- *          description: Number of block to fetch
+ *          description: Total of blocks showed per page.
  *        - in: query
- *          name: Height
+ *          name: order
  *          schema:
- *            type: integer
- *            example: 1
- *          description: Fetch block from `n` height
- *      summary: Get Blocks
- *      description: Get list block.
+ *            type: string
+ *            example: "Height"
+ *          description: Order blocks field by asc "Height" or desc "-Height".
+ *      summary: List of blocks
+ *      description: Get blocks response with query parameters 'page', 'limit', and 'order'
  *      responses:
- *        200:
- *          description: response status
+ *        200 - OK:
+ *          description: Everything worked as expected.
  *          content:
  *            application/json:
  *              schema:
  *                $ref: '#/definitions/PageBlocks'
- *        500:
- *          description: response status
+ *        500 - Internal Server Error:
+ *          description: Something went wrong on Blocks server.
  *          content:
  *            application/json:
  *              schema:
@@ -53,31 +53,31 @@
  *    properties:
  *      ID:
  *        type: string
- *        example: '-9217256230337793364'
+ *        example: '4704416403202874266'
  *      PreviousBlockHash:
  *        type: string
- *        example: 'phqSwa3IJiN1/l7bXgKiSdWIzHYCez44fmEfTAErUSHNCAglqhYWa8Mu5P+gM0UffgiumLGoB644gc1tyAc0cA=='
+ *        example: '3bfb90330d7e7fd439ec4afaa6ba6808e790276d83ab10196262a374dd7d6cd8'
  *      Height:
  *        type: Number
- *        example: 379
+ *        example: 10
  *      Timestamp:
  *        type: string
- *        example: '16-Jul-2019 03:31:19'
+ *        example: '20-Sep-2019 03:31:19'
  *      BlockSeed:
  *        type: string
- *        example: 'L8BqsLkQ8j1v72uErTeX3FQe77khcHeE6uFiFLT7/UTA9cLlwmYdrgRzyG++vCnjK3Jn9pRc1qvvRjpg7DIUjQ=='
+ *        example: '670cf4093aca3170801b6605ab236dbe3c96f62ec78086b2b9ab96b363e8335b'
  *      BlockSignature:
  *        type: string
- *        example: 'g8laoR+unV2WxUiartNxbB2sXGDFuvUxXqj372xfdcMyh7VCb1qvdb4v7riUB1Gp9uGYLTpCvsWb1be+Mi/XDQ=='
+ *        example: 'f3831afb0cfbaca8e9fca6523d0b23d14aa2e6f9ac1726f12c30acd4d622bb0a'
  *      CumulativeDifficulty:
  *        type: string
- *        example: '62619300479358'
+ *        example: '56081443881549597'
  *      SmithScale:
  *        type: string
- *        example: '76112951'
- *      BlocksmithID:
+ *        example: '107765422'
+ *      BlocksmithAddress:
  *        type: string
- *        example: 'BCZEGOb3WNx3fDOVf9ZS4EjvOIv/UeW4TVBQJ/6tHKk='
+ *        example: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
  *      TotalAmount:
  *        type: string
  *        example: '0'
@@ -89,14 +89,11 @@
  *        example: '0'
  *      Version:
  *        type: Number
- *        example: 1
+ *        example: 0
  *      PayloadLength:
  *        type: Number
  *        example: 0
  *      PayloadHash:
  *        type: string
- *        example: ''
- *      Transactions:
- *        type: array
- *        items: []
+ *        example: '758fe235ef9986dd50394e88ac84e67e371b45cdc6f1b0c769d4c59add22be0e'
  */

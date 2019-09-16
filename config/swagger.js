@@ -15,7 +15,7 @@ const options = {
       version,
       description,
       contact: {
-        email: author,
+        email: 'technical.associate@blockchainzoo.com',
       },
       license: {
         name: license,
