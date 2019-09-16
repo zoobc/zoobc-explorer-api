@@ -10,7 +10,7 @@ const cacheBlock = {
 
 const cacheTransaction = {
   transactions: 'transactions',
-  transactions: 'transactions',
+  transaction: 'transaction',
 };
 
 module.exports = class SearchController extends BaseController {
