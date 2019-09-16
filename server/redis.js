@@ -1,11 +1,15 @@
 const redis = require('redis');
 const chalk = require('chalk');
+const { msg } = require('../utils');
 
 const redisClient = redis.createClient();
-redisClient.on('ready', error => {
-  error
-    ? console.error('%s Redis connection error\n%s', chalk.red('🚀'), error)
-    : console.log('%s Redis client connection success', chalk.green('🚀'));
-});
+redisClient
+  .once('ready', () => {
+    // msg.green('🚀', 'Redis client connection success');
+    console.log(chalk.green('🚀 Redis client connection success'));
+  })
+  .on('error', error => {
+    msg.red('❌', `Redis connection error.\n${error}`);
+  });
 
 module.exports = () => redisClient;
