@@ -11,54 +11,57 @@ const cache = {
 };
 
 module.exports = class TransactionController extends BaseController {
-  // constructor() {
-  //   super(new TransactionService());
-  // }
-  // async getAll(req, res) {
-  //   const responseBuilder = new ResponseBuilder();
-  //   const handleError = new HandleError();
-  //   const { Limit, Page, AccountAddress } = req.query;
-  //   try {
-  //     const cacheTransactions = Converter.formatCache(cache.transactions, req.query);
-  //     RedisCache.get(cacheTransactions, (errRedis, resRedis) => {
-  //       if (errRedis) {
-  //         handleError.sendCatchError(res, errRedis);
-  //         return;
-  //       }
-  //       if (resRedis) {
-  //         this.sendSuccessResponse(
-  //           res,
-  //           responseBuilder
-  //             .setData(resRedis)
-  //             .setMessage('Transactions fetched successfully')
-  //             .build()
-  //         );
-  //         return;
-  //       }
-  //       this.service.getAll({ Limit, Page, AccountAddress }, (err, result) => {
-  //         if (err) {
-  //           handleError.sendCatchError(res, err);
-  //           return;
-  //         }
-  //         RedisCache.set(cacheTransactions, result.data, errRedis => {
-  //           if (errRedis) {
-  //             handleError.sendCatchError(res, errRedis);
-  //             return;
-  //           }
-  //           this.sendSuccessResponse(
-  //             res,
-  //             responseBuilder
-  //               .setData(result.data)
-  //               .setMessage('Transactions fetched successfully')
-  //               .build()
-  //           );
-  //         });
-  //       });
-  //     });
-  //   } catch (error) {
-  //     handleError.sendCatchError(res, error);
-  //   }
-  // }
+  constructor() {
+    super(new TransactionService());
+  }
+  async getAll(req, res) {
+    const responseBuilder = new ResponseBuilder();
+    const handleError = new HandleError();
+    const { page, limit, fields, order } = req.query;
+
+    try {
+      const cacheTransactions = Converter.formatCache(cache.transactions, req.query);
+      RedisCache.get(cacheTransactions, (errRedis, resRedis) => {
+        if (errRedis) {
+          handleError.sendCatchError(res, errRedis);
+          return;
+        }
+        if (resRedis) {
+          this.sendSuccessResponse(
+            res,
+            responseBuilder
+              .setData(resRedis)
+              .setMessage('Transactions fetched successfully')
+              .build()
+          );
+          return;
+        }
+
+        this.service.paginate({ page, limit, fields, order }, (err, result) => {
+          if (err) {
+            handleError.sendCatchError(res, err);
+            return;
+          }
+
+          RedisCache.set(cacheTransactions, result.data, errRedis => {
+            if (errRedis) {
+              handleError.sendCatchError(res, errRedis);
+              return;
+            }
+            this.sendSuccessResponse(
+              res,
+              responseBuilder
+                .setData(result.data)
+                .setMessage('Transactions fetched successfully')
+                .build()
+            );
+          });
+        });
+      });
+    } catch (error) {
+      handleError.sendCatchError(res, error);
+    }
+  }
   // async getOne(req, res) {
   //   const responseBuilder = new ResponseBuilder();
   //   const handleError = new HandleError();
