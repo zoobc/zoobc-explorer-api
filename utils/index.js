@@ -1,9 +1,13 @@
-const ResponseBuilder = require('./ResponseBuilder');
-const Converter = require('./converter');
+const msg = require('./msg');
 const RedisCache = require('./redis');
+const Converter = require('./converter');
+const upsertMany = require('./upsertMany');
+const ResponseBuilder = require('./ResponseBuilder');
 
 module.exports = {
-  ResponseBuilder,
+  msg,
   Converter,
   RedisCache,
+  upsertMany,
+  ResponseBuilder,
 };

@@ -1,28 +1,15 @@
 const redis = require('redis');
 const chalk = require('chalk');
-const session = require('express-session');
-const redisStore = require('connect-redis')(session);
+const { msg } = require('../utils');
 
 const redisClient = redis.createClient();
-const config = require('../config/config');
+redisClient
+  .once('ready', () => {
+    // msg.green('🚀', 'Redis client connection success');
+    console.log(chalk.green('🚀 Redis client connection success'));
+  })
+  .on('error', error => {
+    msg.red('❌', `Redis connection error.\n${error}`);
+  });
 
-module.exports = app => {
-  if (config.app.modeRedis) {
-    redisClient.on('ready', err => {
-      err
-        ? console.error('%s Redis connection error', err, chalk.red('🚀'))
-        : console.log('%s Redis client connection success', chalk.green('🚀'));
-    });
-
-    app.use(
-      session({
-        resave: false,
-        name: '_ZoobcAPI',
-        saveUninitialized: true,
-        cookie: { secure: false },
-        secret: config.app.redisStorageKey,
-        store: new redisStore({ host: config.app.host, port: 6379, client: redisClient, ttl: 3600 }),
-      })
-    );
-  }
-};
+module.exports = () => redisClient;

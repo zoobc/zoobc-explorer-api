@@ -2,25 +2,10 @@ const { gql } = require('apollo-server-express');
 
 module.exports = gql`
   type Query {
-    blocks(ChainType: Int, Limit: Int, Height: Int): Blocks!
-    block(ChainType: Int, ID: ID, Height: Int): Block!
+    Blocks(page: Int, limit: Int, order: String): [Block]
+    Block(ID: ID!): Block!
     transactions(Limit: Int, Page: Int, AccountAddress: String): Transactions!
     transaction(ID: ID): Transaction!
-  }
-
-  type Mutation {
-    pushBlocks: Blocks!
-  }
-
-  type Subscription {
-    blocks: Blocks!
-  }
-
-  type Blocks {
-    Blocks: [Block]
-    ChainType: Int
-    Count: Int
-    Height: Int
   }
 
   type Block {
@@ -32,7 +17,7 @@ module.exports = gql`
     BlockSignature: String
     CumulativeDifficulty: String
     SmithScale: String
-    BlocksmithID: String
+    BlocksmithAddress: String
     TotalAmount: String
     TotalFee: String
     TotalCoinBase: String

@@ -1,50 +1,32 @@
-const chalk = require('chalk');
 const cron = require('cron');
-const moment = require('moment');
-const request = require('request-promise');
+
 const config = require('../config/config');
+const Controllers = require('./Controllers');
+const { msg } = require('../utils');
 
-const queries = {
-  PushBlocks: `
-    mutation pushBlocks {
-      pushBlocks {
-        Blocks {
-          ID
-          PreviousBlockHash
-          Height
-          Timestamp
-        }
-        ChainType
-        Count
-        Height
-      }
-    }  
-    `,
-};
-
-const graphqlRequest = async payload => {
-  const host = `${config.app.modeServer}://${config.app.host}:${config.app.port}${config.app.mainRoute}/graphql`;
-  const options = {
-    uri: host,
-    method: 'POST',
-    json: true,
-    body: {
-      operationName: null,
-      variables: {},
-      query: queries[payload],
-    },
-  };
-  await request(options);
-};
-
-const CronJob = cron.CronJob;
-const scheduler = new CronJob(`0 */${config.app.scheduleEvent} * * * *`, async () => {
+const controllers = new Controllers();
+const events = config.app.scheduleEvent;
+const cronjob = new cron.CronJob(`0 */${events} * * * *`, async () => {
   try {
-    await graphqlRequest('PushBlocks');
-    console.log(`%s Fetched for push blocks at ${moment().format('DD-MM-YYYY hh:mm')}`, chalk.green('🚀'));
+    await controllers.updateBlocks();
+    // await controllers.updateTransactions();
+    // await controllers.updateAccount();
+    // await controllers.updateNodeRegistrations();
   } catch (error) {
-    console.error(`%s Schedule Error: ${error.message}`, chalk.red('🚀'));
+    msg.red('❌', `Schedule Error.\n${error.message}`);
   }
 });
 
-module.exports = scheduler;
+function start() {
+  if (config.app.scheduler) {
+    msg.green('🚀', `Start Scheduler with Events Every ${events} Minutes`);
+    cronjob.start();
+  }
+}
+
+function stop() {
+  cronjob.stop();
+  msg.green('🚀', 'Close Scheduler');
+}
+
+module.exports = { start, stop };
