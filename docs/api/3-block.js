@@ -23,7 +23,7 @@
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/definitions/PageBlock'
+ *                $ref: '#/definitions/PageBlocks'
  *        500 - Internal Server Error:
  *          description: Something went wrong on Blocks server.
  *          content:
@@ -35,7 +35,7 @@
  *    properties:
  *      data:
  *        type: object
- *        $ref: '#/definitions/Block'
+ *        $ref: '#/definitions/Blocks'
  *  Block:
  *    properties:
  *      ID:
