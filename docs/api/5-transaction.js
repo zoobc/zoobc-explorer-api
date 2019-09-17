@@ -1,87 +1,84 @@
 /**
  * @swagger
  * tags:
- *  - name: Transaction
- *    description: Rest API Transaction.
+ *  - name: Transactions
+ *    description: Rest API of single Transaction by __TransactionID__ param.
  * paths:
- *  /transaction:
+ *  /transactions/{id}:
  *    get:
  *      tags:
- *        - Transaction
+ *        - Transactions
  *      parameters:
- *        - in: query
- *          name: ID
+ *        - in: path
+ *          name: id
  *          schema:
  *            type: integer
- *            example: 23512315123
- *          description: BlockID to fetch
- *      summary: Get Transaction
- *      description: Get a transaction.
+ *            example: 4665691722858518568
+ *          description: Single transaction by `TransactionID`.
+ *      summary: Single transaction by ID
+ *      description: Get single transaction response with query parameters _TransactionID_.
  *      responses:
- *        200:
- *          description: response status
+ *        200 - OK:
+ *          description: Everything worked as expected.
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/definitions/PageTransaction'
- *        500:
- *          description: response status
+ *                $ref: '#/definitions/PageTransactions'
+ *        500 - Internal Server Error:
+ *          description: Something went wrong on Transactions server.
  *          content:
  *            application/json:
  *              schema:
  *                $ref: '#/definitions/SendInternalServerError'
  * definitions:
- *  PageTransaction:
+ *  PageTransactions:
  *    properties:
  *      data:
  *        type: array
  *        items:
- *          $ref: '#/definitions/Transaction'
+ *          $ref: '#/definitions/Transactions'
  *  Transaction:
  *    properties:
  *      ID:
  *        type: string
- *        example: '-9217256230337793364'
+ *        example: '4704416403202874266'
  *      BlockID:
  *        type: string
  *        example: '4545420970999433273'
  *      Version:
- *        type: Number
+ *        type: number
  *        example: '1'
  *      Height:
- *        type: Number
- *        example: 379
- *      SenderAccountType:
- *        type: string
- *        example: '16-Jul-2019 03:31:19'
+ *        type: number
+ *        example: 10
  *      SenderAccountAddress:
  *        type: string
- *        example: 'L8BqsLkQ8j1v72uErTeX3FQe77khcHeE6uFiFLT7/UTA9cLlwmYdrgRzyG++vCnjK3Jn9pRc1qvvRjpg7DIUjQ=='
- *      RecipientAccountType:
- *        type: string
- *        example: 'g8laoR+unV2WxUiartNxbB2sXGDFuvUxXqj372xfdcMyh7VCb1qvdb4v7riUB1Gp9uGYLTpCvsWb1be+Mi/XDQ=='
+ *        example: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
  *      RecipientAccountAddress:
  *        type: string
- *        example: '62619300479358'
+ *        example: 'f3831afb0cfbaca8e9fca6523d0b23d14aa2e6f9ac1726f12c30acd4d622bb0a'
  *      TransactionType:
- *        type: Number
- *        example: '76112951'
+ *        type: number
+ *        example: '1'
  *      Fee:
- *        type: Number
+ *        type: number
  *        example: '0'
  *      Timestamp:
- *        type: Number
- *        example: '1562806389280'
+ *        type: number
+ *        example: '20-Sep-2019 03:31:19'
  *      TransactionHash:
  *        type: string
- *        example: ''
+ *        example: '670cf4093aca3170801b6605ab236dbe3c96f62ec78086b2b9ab96b363e8335b'
  *      TransactionBodyLength:
- *        type: Number
+ *        type: number
  *        example: 1
  *      TransactionBodyBytes:
  *        type: string
- *        example: ''
+ *        example: '3bfb90330d7e7fd439ec4afaa6ba6808e790276d83ab10196262a374dd7d6cd8'
+ *      TransactionIndex:
+ *        type: number
+ *        example: '1'
  *      Signature:
  *        type: string
- *        example: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+ *        example: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
  */
