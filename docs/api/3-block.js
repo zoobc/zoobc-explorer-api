@@ -2,7 +2,7 @@
  * @swagger
  * tags:
  *  - name: Blocks
- *    description: Rest API Single Block by Block ID.
+ *    description: Rest API of single Block by __BlockID__ param.
  * paths:
  *  /blocks/{id}:
  *    get:
@@ -13,19 +13,19 @@
  *          name: id
  *          schema:
  *            type: integer
- *            example: -8411591260855429783
- *          description: Block ID
- *      summary: Get Single Block
- *      description: Get Single Block by Block ID.
+ *            example: 4704416403202874266
+ *          description: Single block by `BlockID`.
+ *      summary: Single block by ID
+ *      description: Get single block response with query parameters _BlockID_.
  *      responses:
- *        200:
- *          description: response status
+ *        200 - OK:
+ *          description: Everything worked as expected.
  *          content:
  *            application/json:
  *              schema:
- *                $ref: '#/definitions/PageBlock'
- *        500:
- *          description: response status
+ *                $ref: '#/definitions/PageBlocks'
+ *        500 - Internal Server Error:
+ *          description: Something went wrong on Blocks server.
  *          content:
  *            application/json:
  *              schema:
@@ -35,36 +35,36 @@
  *    properties:
  *      data:
  *        type: object
- *        $ref: '#/definitions/Block'
+ *        $ref: '#/definitions/Blocks'
  *  Block:
  *    properties:
  *      ID:
  *        type: string
- *        example: '-9217256230337793364'
+ *        example: '4704416403202874266'
  *      PreviousBlockHash:
  *        type: string
- *        example: 'phqSwa3IJiN1/l7bXgKiSdWIzHYCez44fmEfTAErUSHNCAglqhYWa8Mu5P+gM0UffgiumLGoB644gc1tyAc0cA=='
+ *        example: '3bfb90330d7e7fd439ec4afaa6ba6808e790276d83ab10196262a374dd7d6cd8'
  *      Height:
- *        type: Number
- *        example: 379
+ *        type: number
+ *        example: 10
  *      Timestamp:
  *        type: string
- *        example: '16-Jul-2019 03:31:19'
+ *        example: '20-Sep-2019 03:31:19'
  *      BlockSeed:
  *        type: string
- *        example: 'L8BqsLkQ8j1v72uErTeX3FQe77khcHeE6uFiFLT7/UTA9cLlwmYdrgRzyG++vCnjK3Jn9pRc1qvvRjpg7DIUjQ=='
+ *        example: '670cf4093aca3170801b6605ab236dbe3c96f62ec78086b2b9ab96b363e8335b'
  *      BlockSignature:
  *        type: string
- *        example: 'g8laoR+unV2WxUiartNxbB2sXGDFuvUxXqj372xfdcMyh7VCb1qvdb4v7riUB1Gp9uGYLTpCvsWb1be+Mi/XDQ=='
+ *        example: 'f3831afb0cfbaca8e9fca6523d0b23d14aa2e6f9ac1726f12c30acd4d622bb0a'
  *      CumulativeDifficulty:
  *        type: string
- *        example: '62619300479358'
+ *        example: '56081443881549597'
  *      SmithScale:
  *        type: string
- *        example: '76112951'
- *      BlocksmithID:
+ *        example: '107765422'
+ *      BlocksmithAddress:
  *        type: string
- *        example: 'BCZEGOb3WNx3fDOVf9ZS4EjvOIv/UeW4TVBQJ/6tHKk='
+ *        example: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
  *      TotalAmount:
  *        type: string
  *        example: '0'
@@ -75,15 +75,12 @@
  *        type: string
  *        example: '0'
  *      Version:
- *        type: Number
- *        example: 1
+ *        type: number
+ *        example: 0
  *      PayloadLength:
- *        type: Number
+ *        type: number
  *        example: 0
  *      PayloadHash:
  *        type: string
- *        example: ''
- *      Transactions:
- *        type: array
- *        items: []
+ *        example: '758fe235ef9986dd50394e88ac84e67e371b45cdc6f1b0c769d4c59add22be0e'
  */
