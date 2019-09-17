@@ -3,21 +3,20 @@ const { upsertMany } = require('../utils');
 
 const schema = new mongoose.Schema({
   _id: { type: String },
-  Version: { type: Number },
   ID: { type: String },
   BlockID: { type: String },
+  Version: { type: Number },
   Height: { type: Number },
   SenderAccountAddress: { type: String },
   RecipientAccountAddress: { type: String },
   TransactionType: { type: Number },
-  Fee: { type: String },
-  Timestamp: { type: String },
+  Fee: { type: Number },
+  Timestamp: { type: Date },
   TransactionHash: { type: Buffer },
   TransactionBodyLength: { type: Number },
   TransactionBodyBytes: { type: Buffer },
   TransactionIndex: { type: Number },
   Signature: { type: Buffer },
-  // TransactionBody: { type: String },
 });
 
 schema.plugin(upsertMany);
