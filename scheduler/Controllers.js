@@ -73,14 +73,14 @@ module.exports = class Controllers {
       });
     }
 
-    function UpsertTransactions(Height) {
+    function UpsertTransactions(service, datas, Height) {
       const matchs = ['ID', 'BlockID', 'Height'];
-      const items = resp.map(item => {
+      const items = datas.map(item => {
         item.Timestamp = moment.unix(item.Timestamp).valueOf();
         return item;
       });
 
-      this.transactionsService.upsert(items, matchs, (err, result) => {
+      service.upsert(items, matchs, (err, result) => {
         if (err) {
           msg.red('⛔️', `[Transactions - Height ${Height}] transactionsService.upsert: ${err}`);
         }
@@ -110,7 +110,7 @@ module.exports = class Controllers {
           }
 
           if (resp && resp.length > 0) {
-            UpsertTransactions(Height);
+            UpsertTransactions(this.transactionsService, resp, Height);
           } else {
             msg.yellow('⚠️', `[Transactions - Height ${Height}] Nothing additional data at ${dateNow}`);
             return;
@@ -140,7 +140,7 @@ module.exports = class Controllers {
                   }
 
                   if (resp && resp.length > 0) {
-                    UpsertTransactions(paramsHeight);
+                    UpsertTransactions(this.transactionsService, resp, paramsHeight);
                   } else {
                     msg.yellow('⚠️', `[Transactions - Height ${paramsHeight}] Nothing additional data at ${dateNow}`);
                     return;
@@ -165,7 +165,7 @@ module.exports = class Controllers {
                     }
 
                     if (resp && resp.length > 0) {
-                      UpsertTransactions(item.Height);
+                      UpsertTransactions(this.transactionsService, resp, item.Height);
                     } else {
                       msg.yellow('⚠️', `[Transactions - Height ${item.Height}] Nothing additional data at ${dateNow}`);
                       return;
