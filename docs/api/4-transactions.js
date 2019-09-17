@@ -26,9 +26,9 @@
  *          schema:
  *            type: string
  *            example: "Height"
- *          description: Order blocks field by asc "Height" or desc "-Height".
+ *          description: Order blocks field by asc `Height` or desc `-Height`.
  *      summary: List of transactions
- *      description: Get transactions response with query parameters 'page', 'limit', and 'order'.
+ *      description: Get transactions response with query parameters _page_, _limit_, and _order_.
  *      responses:
  *        200 - OK:
  *          description: Everything worked as expected.
