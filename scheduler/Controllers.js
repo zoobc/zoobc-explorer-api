@@ -1,13 +1,15 @@
 const moment = require('moment');
 const { msg } = require('../utils');
-const { BlocksService, TransactionsService } = require('../api/services');
 const { Block, Transaction, AccountBalance, NodeRegistration } = require('./Protos');
+const { BlocksService, TransactionsService, AccountsService } = require('../api/services');
 
 const dateNow = moment().format('DD MMM YYYY hh:mm:ss');
+
 module.exports = class Controllers {
   constructor() {
     this.blocksService = new BlocksService();
     this.transactionsService = new TransactionsService();
+    this.accountsService = new AccountsService();
   }
 
   async updateBlocks() {
@@ -180,19 +182,6 @@ module.exports = class Controllers {
     });
   }
 
-  async updateAccount() {
-    console.log('==AccountBalance', AccountBalance);
-    const params = { BlockHeight: 1 };
-    AccountBalance.GetAccountBalances(params, async (err, resp) => {
-      if (err) {
-        msg.red('⛔️', `Get account balances - ${err}`);
-        return;
-      }
-
-      console.log('===resp', resp);
-    });
-  }
-
   async updateNodeRegistrations() {
     console.log('====Node', NodeRegistration);
     const params = { RegistrationHeight: 1 };
@@ -203,6 +192,101 @@ module.exports = class Controllers {
       }
 
       console.log('===resp', resp);
+    });
+  }
+
+  async updateAccount() {
+    function UpsertAccount(service, data) {
+      const matchs = ['AccountAddress'];
+      const items = [
+        {
+          AccountAddress: data.AccountAddress,
+          Balance: data.Balance,
+          SpendableBalance: data.SpendableBalance,
+          FirstActive: null,
+          LastActive: null,
+          TotalRewards: null,
+          TotalFeesPaid: null,
+          NodePublicKey: null,
+          BlockHeight: data.BlockHeight,
+          PopRevenue: data.PopRevenue,
+        },
+      ];
+
+      service.upsert(items, matchs, (err, result) => {
+        if (err) {
+          msg.red('⛔️', `[Account] accountsService.upsert: ${err}`);
+        }
+
+        if (result && result.ok === 1) {
+          msg.green('✅', `[Account] Upsert ${items.length} data successfully at ${dateNow}`);
+          return;
+        }
+
+        msg.red('⛔️', `[Account] Upsert data failed at ${dateNow}`);
+        return;
+      });
+    }
+
+    this.accountsService.findAll({}, (err, results) => {
+      if (err) {
+        msg.red('⛔️', `[Account] accountsService.findAll: ${err}`);
+        return;
+      }
+
+      if (results && results.length > 0) {
+        const accounts = results.map(item => item.AccountAddress);
+        this.transactionsService.getAccountsByLastHeight((err, results) => {
+          if (err) {
+            msg.red('⛔️', `[Account] transactionsService.getAccountsByLastHeight: ${err}`);
+            return;
+          }
+
+          const newAccounts = results.filter(item => !accounts.includes(item));
+          if (results && newAccounts && newAccounts.length > 0) {
+            newAccounts.map(account => {
+              AccountBalance.GetAccountBalance({ AccountAddress: account }, (err, resp) => {
+                if (err) {
+                  msg.red('⛔️', `[Account] AccountBalance.GetAccountBalance(AccountAddress=${results}): ${err}`);
+                  return;
+                }
+
+                if (resp && resp.AccountBalance) {
+                  UpsertAccount(this.accountsService, resp.AccountBalance);
+                }
+              });
+            });
+          } else {
+            msg.yellow('⚠️', `[Account] Nothing additional data at ${dateNow}`);
+            return;
+          }
+        });
+      } else {
+        this.transactionsService.getAccountsFromTransactions((err, results) => {
+          if (err) {
+            msg.red('⛔️', `[Account] transactionsService.getAccountsFromTransactions: ${err}`);
+            return;
+          }
+
+          if (results && results.length > 0) {
+            results.map(account => {
+              AccountBalance.GetAccountBalance({ AccountAddress: account }, (err, resp) => {
+                if (err) {
+                  msg.red('⛔️', `[Account] AccountBalance.GetAccountBalance(AccountAddress=${account}): ${err}`);
+                  return;
+                }
+
+                if (resp && resp.AccountBalance) {
+                  UpsertAccount(this.accountsService, resp.AccountBalance);
+                }
+              });
+            });
+          } else {
+            msg.yellow('⚠️', `[Account] Nothing additional data at ${dateNow}`);
+            return;
+          }
+        });
+      }
     });
   }
 };
