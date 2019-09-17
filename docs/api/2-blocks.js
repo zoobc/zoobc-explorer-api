@@ -26,9 +26,9 @@
  *          schema:
  *            type: string
  *            example: "Height"
- *          description: Order blocks field by asc "Height" or desc "-Height".
+ *          description: Order blocks field by asc `Height` or desc `-Height`.
  *      summary: List of blocks
- *      description: Get blocks response with query parameters 'page', 'limit', and 'order'
+ *      description: Get blocks response with query parameters _page_, _limit_, and _order_.
  *      responses:
  *        200 - OK:
  *          description: Everything worked as expected.
@@ -58,7 +58,7 @@
  *        type: string
  *        example: '3bfb90330d7e7fd439ec4afaa6ba6808e790276d83ab10196262a374dd7d6cd8'
  *      Height:
- *        type: Number
+ *        type: number
  *        example: 10
  *      Timestamp:
  *        type: string
@@ -88,10 +88,10 @@
  *        type: string
  *        example: '0'
  *      Version:
- *        type: Number
+ *        type: number
  *        example: 0
  *      PayloadLength:
- *        type: Number
+ *        type: number
  *        example: 0
  *      PayloadHash:
  *        type: string
