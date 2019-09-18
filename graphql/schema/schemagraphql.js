@@ -4,7 +4,7 @@ module.exports = gql`
   type Query {
     Blocks(page: Int, limit: Int, order: String): [Block]
     Block(ID: ID!): Block!
-    transactions(Limit: Int, Page: Int, AccountAddress: String): Transactions!
+    transactions(page: Int, limit: Int, order: String): [Transaction]
     transaction(ID: ID): Transaction!
   }
 
