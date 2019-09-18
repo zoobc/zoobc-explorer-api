@@ -4,8 +4,6 @@ const { Transactions } = require('../../models');
 const { Converter, RedisCache } = require('../../utils');
 
 const pageLimit = require('../../config/config').app.pageLimit;
-const page = 1;
-
 const cache = {
   transactions: 'transactions',
   transaction: 'transaction',
