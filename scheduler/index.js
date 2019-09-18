@@ -6,13 +6,13 @@ const { msg } = require('../utils');
 
 const controllers = new Controllers();
 const events = config.app.scheduleEvent;
-// const cronjob = new cron.CronJob(`20 * * * * *`, async () => {
+// const cronjob = new cron.CronJob(`*/20 * * * * *`, async () => {
 const cronjob = new cron.CronJob(`0 */${events} * * * *`, async () => {
   try {
     await controllers.updateBlocks();
     await controllers.updateTransactions();
-    // await controllers.updateAccount();
     // await controllers.updateNodeRegistrations();
+    await controllers.updateAccount();
   } catch (error) {
     msg.red('❌', `Schedule Error.\n${error.message}`);
   }
