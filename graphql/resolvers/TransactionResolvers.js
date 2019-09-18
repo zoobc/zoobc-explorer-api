@@ -18,7 +18,7 @@ function parseOrder(string) {
 
 module.exports = {
   Query: {
-    transactions: combineResolvers(async (parent, args, { models }) => {
+    Transactions: combineResolvers((parent, args, { models }) => {
       const { page, limit, order } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
@@ -30,7 +30,7 @@ module.exports = {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
-          models.Transactions.find()
+          Transactions.find()
             .select()
             .limit(lm)
             .skip((pg - 1) * lm)
@@ -48,7 +48,7 @@ module.exports = {
       });
     }),
 
-    transaction: combineResolvers(async (parent, args, { models }) => {
+    Transaction: combineResolvers((parent, args, { models }) => {
       const { ID } = args;
       return new Promise((resolve, reject) => {
         const cacheTransaction = Converter.formatCache(cache.transaction, args);
@@ -56,7 +56,7 @@ module.exports = {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
-          models.Transactions.findOne()
+          Transactions.findOne()
             .where({ ID: ID })
             .lean()
             .exec((err, results) => {
