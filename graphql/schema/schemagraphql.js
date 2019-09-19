@@ -6,6 +6,12 @@ module.exports = gql`
     Block(ID: ID!): Block!
     Transactions(page: Int, limit: Int, order: String): [Transaction]
     Transaction(ID: ID!): Transaction!
+    Search(Id: ID!): Search!
+  }
+
+  type Search {
+    Block: Block
+    Transaction: Transaction
   }
 
   type Block {
