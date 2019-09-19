@@ -194,6 +194,7 @@ module.exports = class Controllers {
         this.nodesService.checkIsNewNodes(resp.NodeRegistrations, (err, results) => {
           if (err) {
             msg.red('⛔️', `[Nodes] nodesService.checkIsNewNodes: ${err}`);
+            return;
           }
 
           if (results && results.length > 0) {
@@ -202,6 +203,7 @@ module.exports = class Controllers {
             this.nodesService.upsert(items, matchs, (err, result) => {
               if (err) {
                 msg.red('⛔️', `[nodes] nodessService.upsert: ${err}`);
+                return;
               }
 
               if (result && result.ok === 1) {
@@ -212,11 +214,14 @@ module.exports = class Controllers {
               msg.red('⛔️', `[nodes] Upsert data failed at ${dateNow}`);
               return;
             });
+          } else {
+            msg.yellow('⚠️', `[Nodes] Nothing additional data at ${dateNow}`);
+            return;
           }
-
-          msg.yellow('⚠️', `[Nodes] Nothing additional data at ${dateNow}`);
-          return;
         });
+      } else {
+        msg.yellow('⚠️', `[Nodes] Nothing additional data at ${dateNow}`);
+        return;
       }
     });
   }

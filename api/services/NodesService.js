@@ -25,8 +25,7 @@ module.exports = class NodesService extends BaseService {
         .in(nodePublicKeys)
         .exec((err, results) => {
           if (err) {
-            callback(err, null);
-            return;
+            return callback(err, null);
           }
 
           if (results && results.length > 0) {
@@ -52,12 +51,12 @@ module.exports = class NodesService extends BaseService {
               });
 
               return callback(null, newNodes);
+            } else {
+              return callback(null, null);
             }
-
-            return callback(null, null);
+          } else {
+            return callback(null, nodes);
           }
-
-          return callback(null, nodes);
         });
     }
 
