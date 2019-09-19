@@ -6,6 +6,8 @@ module.exports = gql`
     Block(ID: ID!): Block!
     Transactions(page: Int, limit: Int, order: String): [Transaction]
     Transaction(ID: ID!): Transaction!
+    Accounts(page: Int, limit: Int, order: String): [Account]
+    Account(accountAddress: String): Account!
   }
 
   type Block {
@@ -46,5 +48,17 @@ module.exports = gql`
     TransactionBodyLength: Int
     TransactionBodyBytes: String
     Signature: String
+  }
+
+  type Account {
+    _Id: ID!
+    AccountAddress: String
+    Balance: String
+    SpendableBalance: Int
+    FirstActive: String
+    LastActive: String
+    TotalRewards: Int
+    TotalFeesPaid: Int
+    NodePublicKey: String
   }
 `;
