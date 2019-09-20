@@ -3,6 +3,7 @@ const { gql } = require('apollo-server-express');
 const blockSchema = require('./block.schema');
 const transactionSchema = require('./transaction.schema');
 const accountSchema = require('./account.schema');
+const searchSchema = require('./search.schema');
 
 const linkSchema = gql`
   type Query {
@@ -21,4 +22,4 @@ const linkSchema = gql`
   }
 `;
 
-module.exports = [linkSchema, blockSchema, transactionSchema, accountSchema];
+module.exports = [linkSchema, blockSchema, transactionSchema, accountSchema, searchSchema];
