@@ -16,4 +16,4 @@ const schema = new mongoose.Schema({
 
 schema.plugin(upsertMany);
 
-module.exports = mongoose.model('NodeRegistrations', schema);
+module.exports = mongoose.model('Nodes', schema);

@@ -8,10 +8,10 @@ module.exports = class AccountsService extends BaseService {
 
   checkIsNewAccounts(accounts, callback) {
     Accounts.find()
+      .lean()
       .select()
       .where('AccountAddress')
       .in(accounts)
-      // .nin(accounts)
       .exec((err, results) => {
         if (err) {
           callback(err, null);

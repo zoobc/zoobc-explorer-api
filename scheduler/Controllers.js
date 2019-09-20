@@ -1,15 +1,16 @@
 const moment = require('moment');
 const { msg } = require('../utils');
 const { Block, Transaction, AccountBalance, NodeRegistration } = require('./Protos');
-const { BlocksService, TransactionsService, AccountsService } = require('../api/services');
+const { BlocksService, TransactionsService, AccountsService, NodesService } = require('../api/services');
 
 const dateNow = moment().format('DD MMM YYYY hh:mm:ss');
 
 module.exports = class Controllers {
   constructor() {
+    this.nodesService = new NodesService();
     this.blocksService = new BlocksService();
-    this.transactionsService = new TransactionsService();
     this.accountsService = new AccountsService();
+    this.transactionsService = new TransactionsService();
   }
 
   async updateBlocks() {
@@ -182,16 +183,46 @@ module.exports = class Controllers {
     });
   }
 
-  async updateNodeRegistrations() {
-    console.log('====Node', NodeRegistration);
-    const params = { RegistrationHeight: 1 };
-    NodeRegistration.GetNodeRegistrations(params, async (err, resp) => {
+  async updateNodes() {
+    NodeRegistration.GetNodeRegistrations({}, async (err, resp) => {
       if (err) {
-        msg.red('⛔️', `Get node registrations - ${err}`);
+        msg.red('⛔️', `[Nodes] NodeRegistration.GetNodeRegistrations: ${err}`);
         return;
       }
 
-      console.log('===resp', resp);
+      if (resp && resp.NodeRegistrations && resp.NodeRegistrations.length > 0) {
+        this.nodesService.checkIsNewNodes(resp.NodeRegistrations, (err, results) => {
+          if (err) {
+            msg.red('⛔️', `[Nodes] nodesService.checkIsNewNodes: ${err}`);
+            return;
+          }
+
+          if (results && results.length > 0) {
+            const matchs = ['NodePublicKey'];
+            const items = results;
+            this.nodesService.upsert(items, matchs, (err, result) => {
+              if (err) {
+                msg.red('⛔️', `[nodes] nodessService.upsert: ${err}`);
+                return;
+              }
+
+              if (result && result.ok === 1) {
+                msg.green('✅', `[nodes] Upsert ${items.length} data successfully at ${dateNow}`);
+                return;
+              }
+
+              msg.red('⛔️', `[nodes] Upsert data failed at ${dateNow}`);
+              return;
+            });
+          } else {
+            msg.yellow('⚠️', `[Nodes] Nothing additional data at ${dateNow}`);
+            return;
+          }
+        });
+      } else {
+        msg.yellow('⚠️', `[Nodes] Nothing additional data at ${dateNow}`);
+        return;
+      }
     });
   }
 
