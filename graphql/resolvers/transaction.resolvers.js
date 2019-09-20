@@ -16,10 +16,9 @@ function parseOrder(string) {
 module.exports = {
   Query: {
     transactions: (parent, args, { models }) => {
-      const { page, limit, fields, order } = args;
+      const { page, limit, order } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
-      const fd = fields !== undefined ? fields.replace(/,/g, ' ') : {};
       const od = order !== undefined ? parseOrder(order) : { _id: 'asc' };
 
       return new Promise((resolve, reject) => {
@@ -33,7 +32,7 @@ module.exports = {
               return reject(err);
             }
             models.Transactions.find()
-              .select(fd)
+              .select()
               .limit(lm)
               .skip((pg - 1) * lm)
               .sort(od)
