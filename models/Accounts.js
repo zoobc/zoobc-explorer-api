@@ -6,11 +6,13 @@ const schema = new mongoose.Schema({
   AccountAddress: { type: String },
   Balance: { type: Number },
   SpendableBalance: { type: Number },
-  FirstActive: { type: Date },
-  LastActive: { type: Date },
-  TotalRewards: { type: Number },
-  TotalFeesPaid: { type: Number },
+  FirstActive: { type: Date } /** ..waiting core */,
+  LastActive: { type: Date } /** ..waiting core */,
+  TotalRewards: { type: Number } /** ..waiting core */,
+  TotalFeesPaid: { type: Number } /** ..waiting core */,
   NodePublicKey: { type: String },
+  BlockHeight: { type: Number } /** additional */,
+  PopRevenue: { type: Buffer } /** additional */,
 });
 
 schema.plugin(upsertMany);
