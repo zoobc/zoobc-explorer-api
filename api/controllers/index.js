@@ -7,5 +7,5 @@ module.exports = {
   blockController: new BlockController(),
   transactionController: new TransactionController(),
   searchController: new SearchController(),
-  AccountController: new AccountController(),
+  accountController: new AccountController(),
 };

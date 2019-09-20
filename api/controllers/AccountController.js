@@ -9,7 +9,7 @@ const cache = {
   account: 'account',
 };
 
-module.exports = class BlockController extends BaseController {
+module.exports = class AccountController extends BaseController {
   constructor() {
     super(new AccountsService());
   }
@@ -44,7 +44,7 @@ module.exports = class BlockController extends BaseController {
             return;
           }
 
-          RedisCache.set(cacheAccounts, result, err => {
+          RedisCache.set(cacheAccounts, result.data, errRedis => {
             if (err) {
               handleError.sendCatchError(res, err);
               return;
@@ -70,7 +70,7 @@ module.exports = class BlockController extends BaseController {
   async getOne(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const accountAddress = req.params.id;
+    const accountAddress = req.params.accountAddress  ;
 
     try {
       if (!accountAddress) {
@@ -119,9 +119,9 @@ module.exports = class BlockController extends BaseController {
             return;
           }
 
-          RedisCache.set(cacheAccount, result, err => {
-            if (err) {
-              handleError.sendCatchError(res, err);
+          RedisCache.set(cacheAccount, result, errRedis => {
+            if (errRedis) {
+              handleError.sendCatchError(res, errRedis);
               return;
             }
 
