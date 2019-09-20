@@ -11,9 +11,6 @@ module.exports = (app, server) => {
   const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
-    resolverValidationOptions: {
-      requireResolversForResolveType: false,
-    },
     context: { models },
   });
 
