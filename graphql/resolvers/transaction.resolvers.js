@@ -62,8 +62,8 @@ module.exports = {
       const { ID } = args;
 
       return new Promise((resolve, reject) => {
-        const cacheTransactions = Converter.formatCache(cache.transaction, args);
-        RedisCache.get(cacheTransactions, (err, resRedis) => {
+        const cacheTransaction = Converter.formatCache(cache.transaction, args);
+        RedisCache.get(cacheTransaction, (err, resRedis) => {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
@@ -74,7 +74,7 @@ module.exports = {
               if (err) return reject(err);
 
               const result = Array.isArray(results) ? results[0] : results;
-              RedisCache.set(cacheTransactions, result, err => {
+              RedisCache.set(cacheTransaction, result, err => {
                 if (err) return reject(err);
                 return resolve(result);
               });
