@@ -55,10 +55,9 @@ module.exports = {
                       if (results){
                       const result = Array.isArray(results) ? results[0] : results;
                       SearchResult.ID = result.ID
-                SearchResult.Height = result.Height
-                SearchResult.Timestamp = result.Timestamp
-                SearchResult.FoundIn = "Transaction"
-                      // resSearch.transaction = result;
+                      SearchResult.Height = result.Height
+                      SearchResult.Timestamp = result.Timestamp
+                      SearchResult.FoundIn = "Transaction"
                       RedisCache.set(cacheTransaction, SearchResult, err => {
                         if (err) return reject(err);
                         return resolve(SearchResult);
