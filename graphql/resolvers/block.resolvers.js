@@ -1,8 +1,3 @@
-const { combineResolvers } = require('graphql-resolvers');
-// const { ForbiddenError, UserInputError } = require('apollo-server');
-// const { formatApolloErrors, ApolloError } = require('apollo-server-core');
-
-// const { pubsub, events } = require('../subscription');
 const { Converter, RedisCache } = require('../../utils');
 
 const pageLimit = require('../../config/config').app.pageLimit;
@@ -20,7 +15,7 @@ function parseOrder(string) {
 
 module.exports = {
   Query: {
-    Blocks: combineResolvers((parent, args, { models }) => {
+    blocks: (parent, args, { models }) => {
       const { page, limit, order } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
@@ -32,25 +27,39 @@ module.exports = {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
-          models.Blocks.find()
-            .select()
-            .limit(lm)
-            .skip((pg - 1) * lm)
-            .sort(od)
-            .lean()
-            .exec((err, result) => {
-              if (err) return reject(err);
+          models.Blocks.countDocuments((err, total) => {
+            if (err) {
+              return reject(err);
+            }
 
-              RedisCache.set(cacheBlocks, result, err => {
+            models.Blocks.find()
+              .select()
+              .limit(lm)
+              .skip((pg - 1) * lm)
+              .sort(od)
+              .lean()
+              .exec((err, data) => {
                 if (err) return reject(err);
-                return resolve(result);
+
+                const result = {
+                  Blocks: data,
+                  Paginate: {
+                    Page: parseInt(pg),
+                    Count: data.length,
+                    Total: total,
+                  },
+                };
+
+                RedisCache.set(cacheBlocks, result, err => {
+                  if (err) return reject(err);
+                  return resolve(result);
+                });
               });
-            });
+          });
         });
       });
-    }),
-
-    Block: combineResolvers((parent, args, { models }) => {
+    },
+    block: (parent, args, { models }) => {
       const { ID } = args;
 
       return new Promise((resolve, reject) => {
@@ -73,30 +82,6 @@ module.exports = {
             });
         });
       });
-    }),
+    },
   },
-
-  // Mutation: {
-  //   pushBlocks: combineResolvers(async (parent, args, context, info) => {
-  //     try {
-  //       // return new Promise((resolve, reject) => {
-  //       //   Block.GetBlocks({ ChainType: 0, Limit: 2, Height: 1 }, (err, result) => {
-  //       //     if (err) return reject(err);
-  //       //     const { Blocks = null } = result;
-  //       //     Converter.formatDataGRPC(Blocks);
-  //       //     pubsub.publish(events.blocks, { blocks: result });
-  //       //     return resolve(result);
-  //       //   });
-  //       // });
-  //     } catch (error) {
-  //       throw new ForbiddenError('Set Push Block:', error);
-  //     }
-  //   }),
-  // },
-
-  // Subscription: {
-  //   blocks: {
-  //     subscribe: () => pubsub.asyncIterator([events.blocks]),
-  //   },
-  // },
 };

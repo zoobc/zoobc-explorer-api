@@ -1,5 +1,5 @@
 const config = require('./config');
-const typeDefs = require('../graphql/schema/schemagraphql.js');
+const typeDefs = require('../graphql/schema');
 const resolvers = require('../graphql/resolvers');
 
 const configGraphql = {
