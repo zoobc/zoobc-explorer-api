@@ -1,6 +1,3 @@
-// const { ForbiddenError } = require('apollo-server');
-const { combineResolvers } = require('graphql-resolvers');
-const { Transactions } = require('../../models');
 const { Converter, RedisCache } = require('../../utils');
 
 const pageLimit = require('../../config/config').app.pageLimit;
@@ -18,45 +15,59 @@ function parseOrder(string) {
 
 module.exports = {
   Query: {
-    Transactions: combineResolvers((parent, args, { models }) => {
+    transactions: (parent, args, { models }) => {
       const { page, limit, order } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { _id: 'asc' };
 
       return new Promise((resolve, reject) => {
-        const cacheTransaction = Converter.formatCache(cache.transactions, args);
-        RedisCache.get(cacheTransaction, (err, resRedis) => {
+        const cacheTransactions = Converter.formatCache(cache.transactions, args);
+        RedisCache.get(cacheTransactions, (err, resRedis) => {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
-          Transactions.find()
-            .select()
-            .limit(lm)
-            .skip((pg - 1) * lm)
-            .sort(od)
-            .lean()
-            .exec((err, result) => {
-              if (err) return reject(err);
-
-              RedisCache.set(cacheTransaction, result, err => {
+          models.Transactions.countDocuments((err, total) => {
+            if (err) {
+              return reject(err);
+            }
+            models.Transactions.find()
+              .select()
+              .limit(lm)
+              .skip((pg - 1) * lm)
+              .sort(od)
+              .lean()
+              .exec((err, data) => {
                 if (err) return reject(err);
-                return resolve(result);
+
+                const result = {
+                  Transactions: data,
+                  Paginate: {
+                    Page: parseInt(pg),
+                    Count: data.length,
+                    Total: total,
+                  },
+                };
+
+                RedisCache.set(cacheTransactions, result, err => {
+                  if (err) return reject(err);
+                  return resolve(result);
+                });
               });
-            });
+          });
         });
       });
-    }),
-
-    Transaction: combineResolvers((parent, args, { models }) => {
+    },
+    transaction: (parent, args, { models }) => {
       const { ID } = args;
+
       return new Promise((resolve, reject) => {
         const cacheTransaction = Converter.formatCache(cache.transaction, args);
         RedisCache.get(cacheTransaction, (err, resRedis) => {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
-          Transactions.findOne()
+          models.Transactions.findOne()
             .where({ ID: ID })
             .lean()
             .exec((err, results) => {
@@ -70,6 +81,6 @@ module.exports = {
             });
         });
       });
-    }),
+    },
   },
 };
