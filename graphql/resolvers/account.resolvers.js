@@ -60,7 +60,7 @@ module.exports = {
       });
     },
     account: (parent, args, { models }) => {
-      const { ID } = args;
+      const { AccountAddress } = args;
 
       return new Promise((resolve, reject) => {
         const cacheAccount = Converter.formatCache(cache.account, args);
@@ -69,7 +69,7 @@ module.exports = {
           if (resRedis) return resolve(resRedis);
 
           models.Accounts.findOne()
-            .where({ ID: ID })
+            .where({ AccountAddress: AccountAddress })
             .lean()
             .exec((err, results) => {
               if (err) return reject(err);
