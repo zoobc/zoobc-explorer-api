@@ -2,7 +2,7 @@ const { ApolloServer } = require('apollo-server-express');
 
 const models = require('../models');
 const resolvers = require('../graphql/resolvers');
-const typeDefs = require('../graphql/schema/schemagraphql.js');
+const typeDefs = require('../graphql/schema');
 
 const { msg } = require('../utils');
 const config = require('../config/config');
@@ -11,6 +11,9 @@ module.exports = (app, server) => {
   const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
+    resolverValidationOptions: {
+      requireResolversForResolveType: false,
+    },
     context: { models },
   });
 
