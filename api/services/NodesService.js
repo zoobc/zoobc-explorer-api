@@ -58,8 +58,8 @@ module.exports = class NodesService extends BaseService {
             return callback(null, nodes);
           }
         });
+    } else {
+      return callback(null, null);
     }
-
-    return callback(null, null);
   }
 };
