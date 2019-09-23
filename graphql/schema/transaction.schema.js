@@ -3,7 +3,7 @@ const { gql } = require('apollo-server-express');
 module.exports = gql`
   extend type Query {
     transactions(page: Int, limit: Int, order: String): Transactions!
-    transaction(ID: ID!): Transaction!
+    transaction(TransactionID: ID!): Transaction!
   }
 
   type Transactions {
@@ -13,15 +13,16 @@ module.exports = gql`
 
   type Transaction {
     _id: ID!
-    Version: Int
-    ID: String
+    TransactionID: String
+    Timestamp: String
+    TransactionType: Int
     BlockID: String
     Height: Int
-    SenderAccountAddress: String
-    RecipientAccountAddress: String
-    TransactionType: Int
+    Sender: String
+    Recipient: String
+    Confirmations: Boolean
     Fee: Float
-    Timestamp: String
+    Version: Int
     TransactionHash: String
     TransactionBodyLength: Int
     TransactionBodyBytes: String

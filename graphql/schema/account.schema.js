@@ -21,5 +21,7 @@ module.exports = gql`
     TotalRewards: Float
     TotalFeesPaid: Float
     NodePublicKey: String
+    BlockHeight: Int
+    PopRevenue: String
   }
 `;
