@@ -1,7 +1,7 @@
 const BaseService = require('./BaseService');
 const { Accounts } = require('../../models');
 
-module.exports = class accountsService extends BaseService {
+module.exports = class AccountsService extends BaseService {
   constructor() {
     super(Accounts);
   }

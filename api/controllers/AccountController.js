@@ -70,7 +70,7 @@ module.exports = class AccountController extends BaseController {
   async getOne(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const accountAddress = req.params.accountAddress  ;
+    const accountAddress = req.params.accountAddress;
 
     try {
       if (!accountAddress) {
