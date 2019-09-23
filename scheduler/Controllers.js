@@ -40,7 +40,7 @@ module.exports = class Controllers {
             TotalReceipts: item.TotalReceipts,
             ReceiptValue: item.ReceiptValue,
             BlocksmithID: item.BlocksmithAccountAddress,
-            PoPChange: item.PopChange,
+            PopChange: item.PopChange,
             PayloadLength: item.Block.PayloadLength,
             PayloadHash: item.Block.PayloadHash,
             TotalCoinBase: item.Block.TotalCoinBase,
