@@ -14,7 +14,7 @@ module.exports = class NodeController extends BaseController {
   }
 
 
-async getAll(req, res) {
+  async getAll(req, res) {
   const responseBuilder = new ResponseBuilder();
   const handleError = new HandleError();
   const { page, limit, fields, order } = req.query;
@@ -65,9 +65,9 @@ async getAll(req, res) {
   } catch (error) {
     handleError.sendCatchError(res, error);
   }
-}
+  }
 
-async getOne(req, res) {
+  async getOne(req, res) {
   const responseBuilder = new ResponseBuilder();
   const handleError = new HandleError();
   const nodeID = req.params.nodeID;
@@ -139,5 +139,5 @@ async getOne(req, res) {
   } catch (error) {
     handleError.sendCatchError(res, error);
   }
-}
+  }
 };
