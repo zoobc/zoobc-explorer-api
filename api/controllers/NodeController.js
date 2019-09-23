@@ -72,19 +72,19 @@ module.exports = class NodeController extends BaseController {
     const handleError = new HandleError();
     const nodeID = req.params.nodeID;
 
-  try {
-    if (!nodeID) {
-      this.sendInvalidPayloadResponse(
-        res,
-        responseBuilder
-          .setData({})
-          .setMessage('Invalid Payload Parameter')
-          .build()
-      );
-      return;
-    }
+    try {
+      if (!nodeID) {
+        this.sendInvalidPayloadResponse(
+         res,
+          responseBuilder
+           .setData({})
+           .setMessage('Invalid Payload Parameter')
+            .build()
+        );
+        return;
+      }
 
-    const cacheNode = Converter.formatCache(cache.node, nodeID);
+      const cacheNode = Converter.formatCache(cache.node, nodeID);
     RedisCache.get(cacheNode, (errRedis, resRedis) => {
       if (errRedis) {
         handleError.sendCatchError(res, errRedis);
@@ -136,8 +136,8 @@ module.exports = class NodeController extends BaseController {
         });
       });
     });
-  } catch (error) {
-    handleError.sendCatchError(res, error);
-  }
+    } catch (error) {
+      handleError.sendCatchError(res, error);
+    }
   }
 };
