@@ -1,4 +1,3 @@
-// const moment = require('moment');
 const BaseController = require('./BaseController');
 const HandleError = require('./HandleError');
 const { AccountsService } = require('../services');
