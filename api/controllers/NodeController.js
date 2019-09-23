@@ -13,7 +13,6 @@ module.exports = class NodeController extends BaseController {
     super(new NodesService());
   }
 
-
   async getAll(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
@@ -38,34 +37,34 @@ module.exports = class NodeController extends BaseController {
           return;
         }
 
-      this.service.paginate({ page, limit, fields, order }, (err, result) => {
-        if (err) {
-          handleError.sendCatchError(res, err);
-          return;
-        }
-
-        RedisCache.set(cacheNodes, result.data, err => {
+        this.service.paginate({ page, limit, fields, order }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;
           }
 
-          this.sendSuccessResponse(
-            res,
-            responseBuilder
-              .setData(result.data)
-              .setPaginate(result.paginate)
-              .setMessage('Nodes fetched successfully')
-              .build()
-          );
-          return;
+          RedisCache.set(cacheNodes, result.data, err => {
+            if (err) {
+              handleError.sendCatchError(res, err);
+              return;
+            }
+
+            this.sendSuccessResponse(
+              res,
+              responseBuilder
+                .setData(result.data)
+                .setPaginate(result.paginate)
+                .setMessage('Nodes fetched successfully')
+                .build()
+            );
+            return;
+          });
         });
-      });
       });
     } catch (error) {
       handleError.sendCatchError(res, error);
     }
-    }
+  }
 
   async getOne(req, res) {
     const responseBuilder = new ResponseBuilder();
@@ -75,67 +74,67 @@ module.exports = class NodeController extends BaseController {
     try {
       if (!nodeID) {
         this.sendInvalidPayloadResponse(
-         res,
+          res,
           responseBuilder
-           .setData({})
-           .setMessage('Invalid Payload Parameter')
+            .setData({})
+            .setMessage('Invalid Payload Parameter')
             .build()
         );
         return;
       }
 
       const cacheNode = Converter.formatCache(cache.node, nodeID);
-    RedisCache.get(cacheNode, (errRedis, resRedis) => {
-      if (errRedis) {
-        handleError.sendCatchError(res, errRedis);
-        return;
-      }
-
-      if (resRedis) {
-        this.sendSuccessResponse(
-          res,
-          responseBuilder
-            .setData(resRedis)
-            .setMessage('Node fetched successfully')
-            .build()
-        );
-        return;
-      }
-
-      this.service.findOne({ NodeID: nodeID }, (err, result) => {
-        if (err) {
-          handleError.sendCatchError(res, err);
+      RedisCache.get(cacheNode, (errRedis, resRedis) => {
+        if (errRedis) {
+          handleError.sendCatchError(res, errRedis);
           return;
         }
 
-        if (!result) {
-          this.sendNotFoundResponse(
+        if (resRedis) {
+          this.sendSuccessResponse(
             res,
             responseBuilder
-              .setData({})
-              .setMessage('Node not found')
+              .setData(resRedis)
+              .setMessage('Node fetched successfully')
               .build()
           );
           return;
         }
 
-        RedisCache.set(cacheNode, result, err => {
+        this.service.findOne({ NodeID: nodeID }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;
           }
 
-          this.sendSuccessResponse(
-            res,
-            responseBuilder
-              .setData(result)
-              .setMessage('Node fetched successfully')
-              .build()
-          );
-          return;
+          if (!result) {
+            this.sendNotFoundResponse(
+              res,
+              responseBuilder
+                .setData({})
+                .setMessage('Node not found')
+                .build()
+            );
+            return;
+          }
+
+          RedisCache.set(cacheNode, result, err => {
+            if (err) {
+              handleError.sendCatchError(res, err);
+              return;
+            }
+
+            this.sendSuccessResponse(
+              res,
+              responseBuilder
+                .setData(result)
+                .setMessage('Node fetched successfully')
+                .build()
+            );
+            return;
+          });
         });
       });
-    });
     } catch (error) {
       handleError.sendCatchError(res, error);
     }
