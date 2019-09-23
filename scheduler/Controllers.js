@@ -35,7 +35,7 @@ module.exports = class Controllers {
             BlocksmithAddress: item.BlocksmithAddress,
             TotalAmount: item.TotalAmount,
             TotalFee: item.TotalFee,
-            TotalRewards: null,
+            TotalRewards: parseFloat(item.TotalCoinBase) + parseFloat(item.TotalFee),
             Version: item.Version,
             TotalReceipts: null,
             ReceiptValue: null,
