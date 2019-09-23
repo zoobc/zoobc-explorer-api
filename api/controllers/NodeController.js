@@ -15,28 +15,28 @@ module.exports = class NodeController extends BaseController {
 
 
   async getAll(req, res) {
-  const responseBuilder = new ResponseBuilder();
-  const handleError = new HandleError();
-  const { page, limit, fields, order } = req.query;
+    const responseBuilder = new ResponseBuilder();
+    const handleError = new HandleError();
+    const { page, limit, fields, order } = req.query;
 
-  try {
-    const cacheNodes = Converter.formatCache(cache.nodes, req.query);
-    RedisCache.get(cacheNodes, (errRedis, resRedis) => {
-      if (errRedis) {
-        handleError.sendCatchError(res, errRedis);
-        return;
-      }
+    try {
+      const cacheNodes = Converter.formatCache(cache.nodes, req.query);
+      RedisCache.get(cacheNodes, (errRedis, resRedis) => {
+        if (errRedis) {
+          handleError.sendCatchError(res, errRedis);
+          return;
+        }
 
-      if (resRedis) {
-        this.sendSuccessResponse(
-          res,
-          responseBuilder
-            .setData(resRedis)
-            .setMessage('Nodes fetched successfully')
-            .build()
-        );
-        return;
-      }
+        if (resRedis) {
+          this.sendSuccessResponse(
+            res,
+            responseBuilder
+              .setData(resRedis)
+              .setMessage('Nodes fetched successfully')
+              .build()
+          );
+          return;
+        }
 
       this.service.paginate({ page, limit, fields, order }, (err, result) => {
         if (err) {
@@ -61,16 +61,16 @@ module.exports = class NodeController extends BaseController {
           return;
         });
       });
-    });
-  } catch (error) {
-    handleError.sendCatchError(res, error);
-  }
-  }
+      });
+    } catch (error) {
+      handleError.sendCatchError(res, error);
+    }
+    }
 
   async getOne(req, res) {
-  const responseBuilder = new ResponseBuilder();
-  const handleError = new HandleError();
-  const nodeID = req.params.nodeID;
+    const responseBuilder = new ResponseBuilder();
+    const handleError = new HandleError();
+    const nodeID = req.params.nodeID;
 
   try {
     if (!nodeID) {
