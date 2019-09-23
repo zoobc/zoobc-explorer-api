@@ -1,4 +1,6 @@
-const BlockResolvers = require('./BlockResolvers');
-const TransactionResolvers = require('./TransactionResolvers');
+const blockResolvers = require('./block.resolvers');
+const transactionResolvers = require('./transaction.resolvers');
+const accountResolvers = require('./account.resolvers');
+const searchResolvers = require('./search.resolvers');
 
-module.exports = [BlockResolvers, TransactionResolvers];
+module.exports = [blockResolvers, transactionResolvers, accountResolvers, searchResolvers];
