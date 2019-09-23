@@ -44,7 +44,7 @@ module.exports = class AccountController extends BaseController {
             return;
           }
 
-          RedisCache.set(cacheAccounts, result.data, errRedis => {
+          RedisCache.set(cacheAccounts, result.data, err => {
             if (err) {
               handleError.sendCatchError(res, err);
               return;
@@ -119,9 +119,9 @@ module.exports = class AccountController extends BaseController {
             return;
           }
 
-          RedisCache.set(cacheAccount, result, errRedis => {
-            if (errRedis) {
-              handleError.sendCatchError(res, errRedis);
+          RedisCache.set(cacheAccount, result, err => {
+            if (err) {
+              handleError.sendCatchError(res, err);
               return;
             }
 
