@@ -1,292 +1,249 @@
 const moment = require('moment');
-const { msg } = require('../utils');
 const { Block, Transaction, AccountBalance, NodeRegistration } = require('./Protos');
-const { BlocksService, TransactionsService, AccountsService } = require('../api/services');
+const { BlocksService, TransactionsService, AccountsService, NodesService } = require('../api/services');
 
-const dateNow = moment().format('DD MMM YYYY hh:mm:ss');
+var state = { lastHeightTransaction: 0, lastHeightBlock: 0, accountAddresses: [] };
 
 module.exports = class Controllers {
   constructor() {
+    this.nodesService = new NodesService();
     this.blocksService = new BlocksService();
-    this.transactionsService = new TransactionsService();
     this.accountsService = new AccountsService();
+    this.transactionsService = new TransactionsService();
   }
 
-  async updateBlocks() {
-    this.blocksService.getLastHeight((err, resp) => {
-      if (err) {
-        msg.red('⛔️', `[Blocks] blocksService.getLastHeight: ${err}`);
-        return;
-      }
+  updateBlocks(callback) {
+    this.blocksService.getLastHeight((err, result) => {
+      if (err) return callback(`[Blocks] Blocks Service - Get Last Height ${err}`, null);
 
-      const Height = resp ? parseInt(resp.Height + 1) : 0;
-      const params = { Limit: 500, Height };
-      Block.GetBlocks(params, async (err, resp) => {
-        if (err) {
-          msg.red('⛔️', `[Blocks] Block.GetBlocks: ${err}`);
-          return;
-        }
+      const params = { Limit: 500, Height: result ? parseInt(result.Height + 1) : 0 };
+      Block.GetBlocks(params, (err, result) => {
+        if (err) return callback(`[Blocks] Block - Get Blocks ${err}`, null);
+        if (result && result.Blocks && result.Blocks.length < 1) return callback(null, null);
 
-        if (resp && resp.Blocks && resp.Blocks.length > 0) {
-          const matchs = ['Height'];
-          const items = resp.Blocks.map(item => {
-            item.Timestamp = moment.unix(item.Timestamp).valueOf();
-            return item;
-          });
-          this.blocksService.upsert(items, matchs, (err, result) => {
-            if (err) {
-              msg.red('⛔️', `[Blocks] blocksService.upsert: ${err}`);
-              return;
-            }
-
-            if (result && result.ok === 1) {
-              msg.green('✅', `[Blocks] Upsert ${items.length} data successfully at ${dateNow}`);
-              return;
-            }
-
-            msg.red('⛔️', `[Blocks] Upsert data failed at ${dateNow}`);
-            return;
-          });
-        } else {
-          msg.yellow('⚠️', `[Blocks] Nothing additional data at ${dateNow}`);
-          return;
-        }
+        const matchs = ['Height'];
+        const items = result.Blocks.map(item => {
+          return {
+            BlockID: item.ID,
+            Height: item.Height,
+            Timestamp: moment.unix(item.Timestamp).valueOf(),
+            PreviousBlockID: item.PreviousBlockHash,
+            BlockSeed: item.BlockSeed,
+            BlockSignature: item.BlockSignature,
+            CumulativeDifficulty: item.CumulativeDifficulty,
+            SmithScale: item.SmithScale,
+            BlocksmithAddress: item.BlocksmithAddress,
+            TotalAmount: item.TotalAmount,
+            TotalFee: item.TotalFee,
+            TotalRewards: parseFloat(item.TotalCoinBase) + parseFloat(item.TotalFee),
+            Version: item.Version,
+            TotalReceipts: null,
+            ReceiptValue: null,
+            BlocksmithID: item.BlocksmithID,
+            PoPChange: null,
+            PayloadLength: item.PayloadLength,
+            PayloadHash: item.PayloadHash,
+            TotalCoinBase: item.TotalCoinBase,
+          };
+        });
+        this.blocksService.upsert(items, matchs, (err, result) => {
+          if (err) return callback(`[Blocks] Upsert ${err}`, null);
+          if (result && result.ok !== 1) return callback(`[Blocks] Upsert data failed`, null);
+          return callback(null, `[Blocks] Upsert ${items.length} data successfully`);
+        });
       });
     });
   }
 
-  async updateTransactions() {
+  updateTransactions(callback) {
+    state = { lastHeightTransaction: 0, lastHeightBlock: 0, accountAddresses: [] };
+    this.transactionsService.getLastHeight((err, result) => {
+      if (err) return callback(`[Transactions] Transactions Service - Get Last Height ${err}`, null);
+      if (!result) {
+        const height = 0;
+        UpsertTransactions(this.transactionsService, height, height, (err, result) => {
+          if (err) return callback(err, null);
+          if (!result) return callback(null, null);
+          return callback(null, result);
+        });
+        return;
+      }
+
+      let lastHeightTransaction = result.Height;
+      state.lastHeightTransaction = lastHeightTransaction;
+      this.blocksService.getLastHeight((err, result) => {
+        if (err) return callback(err, null);
+        if (!result) return callback(null, null);
+
+        let lastHeightBlock = result.Height;
+        state.lastHeightBlock = lastHeightBlock;
+        UpsertTransactions(this.transactionsService, lastHeightTransaction + 1, lastHeightBlock, (err, result) => {
+          if (err) return callback(err, null);
+          if (!result) return callback(null, null);
+          return callback(null, result);
+        });
+      });
+    });
+
     function GetTransactionsByHeight(Height, callback) {
       const params = { Height, Pagination: { OrderField: 'block_height', OrderBy: 'ASC' } };
-      Transaction.GetTransactions(params, (err, resp) => {
-        if (err) {
-          callback(`[Transactions] Transaction.GetTransactions(Height=${Height}): ${err}`, null);
-          return;
-        }
-
-        if (resp && resp.Transactions && resp.Transactions.length > 0) {
-          const result = resp.Transactions.filter(item => item.Height === Height && item);
-          callback(null, result);
-          return;
-        } else {
-          callback(null, null);
-          return;
-        }
+      Transaction.GetTransactions(params, (err, result) => {
+        if (err) return callback(`[Transactions] Get Transactions ${err}`, null);
+        if (result && result.Transactions && result.Transactions.length < 1) return callback(null, null);
+        const results = result.Transactions.filter(item => item.Height === Height);
+        return callback(null, results);
       });
     }
 
-    function UpsertTransactions(service, datas, Height) {
-      const matchs = ['ID', 'BlockID', 'Height'];
-      const items = datas.map(item => {
-        item.Timestamp = moment.unix(item.Timestamp).valueOf();
-        return item;
-      });
+    function UpsertTransactions(service, heightStart, heightEnd, callback) {
+      function GetUpsertTransactions(height, callback) {
+        GetTransactionsByHeight(height, (err, results) => {
+          if (err) return callback(err, null);
+          if (!results) return callback(null, null);
 
-      service.upsert(items, matchs, (err, result) => {
-        if (err) {
-          msg.red('⛔️', `[Transactions - Height ${Height}] transactionsService.upsert: ${err}`);
-        }
+          let sender = [];
+          let recipient = [];
+          const matchs = ['TransactionID', 'BlockID', 'Height'];
+          const items = results.map(item => {
+            sender.push(item.SenderAccountAddress);
+            recipient.push(item.RecipientAccountAddress);
 
-        if (result && result.ok === 1) {
-          msg.green('✅', `[Transactions - Height ${Height}] Upsert ${items.length} data successfully at ${dateNow}`);
-          return;
-        }
+            return {
+              TransactionID: item.ID,
+              Timestamp: moment.unix(item.Timestamp).valueOf(),
+              TransactionType: item.TransactionType,
+              BlockID: item.BlockID,
+              Height: item.Height,
+              Sender: item.SenderAccountAddress,
+              Recipient: item.RecipientAccountAddress,
+              Confirmations: null,
+              Fee: item.Fee,
+              Version: item.Version,
+              TransactionHash: item.TransactionHash,
+              TransactionBodyLength: item.TransactionBodyLength,
+              TransactionBodyBytes: item.TransactionBodyBytes,
+              TransactionIndex: item.TransactionIndex,
+              Signature: item.Signature,
+            };
+          });
+          state.accountAddresses = sender.concat(recipient.filter(item => sender.indexOf(item) < 0));
 
-        msg.red('⛔️', `[Transactions - Height ${Height}] Upsert data failed at ${dateNow}`);
+          service.upsert(items, matchs, (err, result) => {
+            if (err) return reject(`[Transactions - Height ${height}] Upsert ${err}`);
+            if (result && result.ok !== 1) return reject(`[Transactions - Height ${height}] Upsert data failed`);
+            return callback(null, items.length);
+          });
+        });
+      }
+
+      if (heightStart > heightEnd) return callback(null, null);
+      if (heightStart === heightEnd) {
+        GetUpsertTransactions(heightStart, (err, result) => {
+          if (err) return callback(err, null);
+          if (result < 1) return callback(null, null);
+          return callback(null, `[Transactions] Upsert ${result} data successfully`);
+        });
         return;
+      }
+
+      let transactions = [];
+      for (let height = heightStart; height < heightEnd; height++) {
+        const transaction = new Promise((resolve, reject) => {
+          GetUpsertTransactions(height, (err, result) => {
+            if (err) return reject(err);
+            if (result < 1) return resolve(0);
+            return resolve(result);
+          });
+        });
+        transactions.push(transaction);
+      }
+
+      Promise.all(transactions).then(results => {
+        const count = results.reduce((prev, curr) => {
+          return parseInt(prev) + parseInt(curr);
+        }, 0);
+
+        if (count < 1) return callback(null, null);
+        return callback(null, `[Transactions] Upsert ${count} data successfully`);
       });
     }
+  }
 
-    this.transactionsService.getLastHeight((err, result) => {
-      if (err) {
-        msg.red('⛔️', `[Transactions] transactionsService.getLastHeight: ${err}`);
-        return;
-      }
+  updateNodes(callback) {
+    NodeRegistration.GetNodeRegistrations({}, (err, resp) => {
+      if (err) return callback(`[Nodes] Node Registration - Get Node Registrations ${err}`, null);
+      if (resp && resp.NodeRegistrations && resp.NodeRegistrations.length < 1) return callback(null, null);
 
-      if (!result) {
-        const Height = 0;
-        GetTransactionsByHeight(Height, (err, resp) => {
-          if (err) {
-            msg.red('⛔️', err);
-            return;
-          }
+      this.nodesService.checkIsNewNodes(resp.NodeRegistrations, (err, results) => {
+        if (err) return callback(`[Nodes] Nodes Service - Check Is New Nodes ${err}`, null);
+        if (!results) return callback(null, null);
 
-          if (resp && resp.length > 0) {
-            UpsertTransactions(this.transactionsService, resp, Height);
-          } else {
-            msg.yellow('⚠️', `[Transactions - Height ${Height}] Nothing additional data at ${dateNow}`);
-            return;
-          }
+        const matchs = ['NodeID', 'NodePublicKey'];
+        const items = results.map(item => {
+          return {
+            NodePublicKey: item.NodePublicKey,
+            OwnerAddress: item.AccountAddress,
+            NodeAddress: item.NodeAddress,
+            LockedFunds: item.LockedBalance,
+            RegisteredBlockHeight: item.RegistrationHeight,
+            ParticipationScore: null,
+            RegistryStatus: item.Queued,
+            BlocksFunds: null,
+            RewardsPaid: null,
+            Latest: item.Latest,
+            Height: item.Height,
+            NodeID: item.NodeID,
+          };
         });
-      } else {
-        const paramsTransactions = { fields: 'ID,Height,Timestamp', where: { Height: { $gte: 1 } }, order: 'Height' };
-        this.transactionsService.findAll(paramsTransactions, (err, result) => {
-          if (err) {
-            msg.red('⛔️', `[Transactions] transactionsService.findAll(Height>=1): ${err}`);
-            return;
-          }
-
-          if (result && result.length > 0) {
-            this.blocksService.getLastHeight((err, result) => {
-              if (err) {
-                msg.red('⛔️', `[Transactions] blocksService.getLastHeight: ${err}`);
-                return;
-              }
-
-              if (result) {
-                const paramsHeight = result.Height;
-                GetTransactionsByHeight(paramsHeight, (err, resp) => {
-                  if (err) {
-                    msg.red('⛔️', `[Transactions] GetTransactionsByHeight(Height=${paramsHeight}): ${err}`);
-                    return;
-                  }
-
-                  if (resp && resp.length > 0) {
-                    UpsertTransactions(this.transactionsService, resp, paramsHeight);
-                  } else {
-                    msg.yellow('⚠️', `[Transactions - Height ${paramsHeight}] Nothing additional data at ${dateNow}`);
-                    return;
-                  }
-                });
-              }
-            });
-          } else {
-            const paramsBlocks = { fields: 'ID,Height,Timestamp', order: 'Height' };
-            this.blocksService.findAll(paramsBlocks, (err, result) => {
-              if (err) {
-                msg.red('⛔️', `[Transactions] blocksService.findAll: ${err}`);
-                return;
-              }
-
-              if (result && result.length > 0) {
-                result.map(item => {
-                  GetTransactionsByHeight(item.Height, (err, resp) => {
-                    if (err) {
-                      msg.red('⛔️', err);
-                      return;
-                    }
-
-                    if (resp && resp.length > 0) {
-                      UpsertTransactions(this.transactionsService, resp, item.Height);
-                    } else {
-                      msg.yellow('⚠️', `[Transactions - Height ${item.Height}] Nothing additional data at ${dateNow}`);
-                      return;
-                    }
-                  });
-                });
-              }
-            });
-          }
+        this.nodesService.upsert(items, matchs, (err, result) => {
+          if (err) return callback(`[Nodes] Upsert ${err}`, null);
+          if (result && result.ok !== 1) return callback(`[Nodes] Upsert data failed`, null);
+          return callback(null, `[Nodes] Upsert ${items.length} data successfully`);
         });
-      }
+      });
     });
   }
 
-  async updateNodeRegistrations() {
-    console.log('====Node', NodeRegistration);
-    const params = { RegistrationHeight: 1 };
-    NodeRegistration.GetNodeRegistrations(params, async (err, resp) => {
-      if (err) {
-        msg.red('⛔️', `Get node registrations - ${err}`);
-        return;
-      }
+  async updateAccounts(callback) {
+    if (state.accountAddresses && state.accountAddresses.length < 1) return callback(null, null);
 
-      console.log('===resp', resp);
-    });
-  }
+    const accounts = state.accountAddresses.map(accountAddress => {
+      return new Promise((resolve, reject) => {
+        AccountBalance.GetAccountBalance({ AccountAddress: accountAddress }, (err, result) => {
+          if (err) return reject(`[Accounts] Account Balance - Get Account Balance ${err}`);
+          if (result && result.AccountBalance && result.AccountBalance.length < 1) return resolve(0);
+          const matchs = ['AccountAddress'];
+          const items = [
+            {
+              AccountAddress: result.AccountBalance.AccountAddress,
+              Balance: result.AccountBalance.Balance,
+              SpendableBalance: result.AccountBalance.SpendableBalance,
+              FirstActive: null,
+              LastActive: null,
+              TotalRewards: null,
+              TotalFeesPaid: null,
+              NodePublicKey: null,
+              BlockHeight: result.AccountBalance.BlockHeight,
+              PopRevenue: result.AccountBalance.PopRevenue,
+            },
+          ];
 
-  async updateAccount() {
-    function UpsertAccount(service, data) {
-      const matchs = ['AccountAddress'];
-      const items = [
-        {
-          AccountAddress: data.AccountAddress,
-          Balance: data.Balance,
-          SpendableBalance: data.SpendableBalance,
-          FirstActive: null,
-          LastActive: null,
-          TotalRewards: null,
-          TotalFeesPaid: null,
-          NodePublicKey: null,
-          BlockHeight: data.BlockHeight,
-          PopRevenue: data.PopRevenue,
-        },
-      ];
-
-      service.upsert(items, matchs, (err, result) => {
-        if (err) {
-          msg.red('⛔️', `[Account] accountsService.upsert: ${err}`);
-        }
-
-        if (result && result.ok === 1) {
-          msg.green('✅', `[Account] Upsert ${items.length} data successfully at ${dateNow}`);
-          return;
-        }
-
-        msg.red('⛔️', `[Account] Upsert data failed at ${dateNow}`);
-        return;
+          this.accountsService.upsert(items, matchs, (err, result) => {
+            if (err) return reject(`[Accounts] Upsert ${err}`);
+            if (result && result.ok !== 1) return reject(`[Accounts] Upsert data failed`);
+            return resolve(items.length);
+          });
+        });
       });
-    }
+    });
 
-    this.accountsService.findAll({}, (err, results) => {
-      if (err) {
-        msg.red('⛔️', `[Account] accountsService.findAll: ${err}`);
-        return;
-      }
+    Promise.all(accounts).then(results => {
+      const count = results.reduce((prev, curr) => {
+        return parseInt(prev) + parseInt(curr);
+      }, 0);
 
-      if (results && results.length > 0) {
-        const accounts = results.map(item => item.AccountAddress);
-        this.transactionsService.getAccountsByLastHeight((err, results) => {
-          if (err) {
-            msg.red('⛔️', `[Account] transactionsService.getAccountsByLastHeight: ${err}`);
-            return;
-          }
-
-          const newAccounts = results.filter(item => !accounts.includes(item));
-          if (results && newAccounts && newAccounts.length > 0) {
-            newAccounts.map(account => {
-              AccountBalance.GetAccountBalance({ AccountAddress: account }, (err, resp) => {
-                if (err) {
-                  msg.red('⛔️', `[Account] AccountBalance.GetAccountBalance(AccountAddress=${results}): ${err}`);
-                  return;
-                }
-
-                if (resp && resp.AccountBalance) {
-                  UpsertAccount(this.accountsService, resp.AccountBalance);
-                }
-              });
-            });
-          } else {
-            msg.yellow('⚠️', `[Account] Nothing additional data at ${dateNow}`);
-            return;
-          }
-        });
-      } else {
-        this.transactionsService.getAccountsFromTransactions((err, results) => {
-          if (err) {
-            msg.red('⛔️', `[Account] transactionsService.getAccountsFromTransactions: ${err}`);
-            return;
-          }
-
-          if (results && results.length > 0) {
-            results.map(account => {
-              AccountBalance.GetAccountBalance({ AccountAddress: account }, (err, resp) => {
-                if (err) {
-                  msg.red('⛔️', `[Account] AccountBalance.GetAccountBalance(AccountAddress=${account}): ${err}`);
-                  return;
-                }
-
-                if (resp && resp.AccountBalance) {
-                  UpsertAccount(this.accountsService, resp.AccountBalance);
-                }
-              });
-            });
-          } else {
-            msg.yellow('⚠️', `[Account] Nothing additional data at ${dateNow}`);
-            return;
-          }
-        });
-      }
+      if (count < 1) return callback(null, null);
+      return callback(null, `[Accounts] Upsert ${count} data successfully`);
     });
   }
 };

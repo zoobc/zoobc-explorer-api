@@ -3,10 +3,10 @@ const { upsertMany } = require('../utils');
 
 const schema = new mongoose.Schema({
   _id: { type: String },
-  ID: { type: String },
-  PreviousBlockHash: { type: Buffer },
+  BlockID: { type: String } /** ID */,
   Height: { type: Number },
   Timestamp: { type: Date },
+  PreviousBlockID: { type: Buffer } /** PreviousBlockHash */,
   BlockSeed: { type: Buffer },
   BlockSignature: { type: Buffer },
   CumulativeDifficulty: { type: String },
@@ -14,15 +14,15 @@ const schema = new mongoose.Schema({
   BlocksmithAddress: { type: String },
   TotalAmount: { type: Number },
   TotalFee: { type: Number },
-  TotalCoinBase: { type: Number },
+  TotalRewards: { type: Number },
   Version: { type: Number },
+  TotalReceipts: { type: Number } /** ..waiting core */,
+  ReceiptValue: { type: Number } /** ..waiting core */,
+  BlocksmithID: { type: Buffer },
+  PoPChange: { type: String } /** ..waiting core */,
   PayloadLength: { type: Number },
   PayloadHash: { type: Buffer },
-  Transactions: {
-    type: mongoose.Schema.Types.Object,
-    ref: 'Transactions.BlockID',
-    field: 'ID',
-  },
+  TotalCoinBase: { type: Number } /** additional */,
 });
 
 schema.plugin(upsertMany);
