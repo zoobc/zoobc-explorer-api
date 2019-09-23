@@ -14,7 +14,7 @@ const schema = new mongoose.Schema({
   BlocksmithAddress: { type: String },
   TotalAmount: { type: Number },
   TotalFee: { type: Number },
-  TotalRewards: { type: Number } /** ..waiting core */,
+  TotalRewards: { type: Number },
   Version: { type: Number },
   TotalReceipts: { type: Number } /** ..waiting core */,
   ReceiptValue: { type: Number } /** ..waiting core */,
