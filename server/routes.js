@@ -8,4 +8,5 @@ module.exports = function(app) {
   app.use(config.app.mainRoute + '/transactions-graph', apiLimiter, require('../api/routes/transactionsGraph'));
   app.use(config.app.mainRoute + '/search', apiLimiter, require('../api/routes/search'));
   app.use(config.app.mainRoute + '/accounts', apiLimiter, require('../api/routes/accounts'));
+  app.use(config.app.mainRoute + '/nodes', apiLimiter, require('../api/routes/nodes'));
 };

@@ -60,7 +60,7 @@ module.exports = {
       });
     },
     block: (parent, args, { models }) => {
-      const { ID } = args;
+      const { BlockID } = args;
 
       return new Promise((resolve, reject) => {
         const cacheBlock = Converter.formatCache(cache.block, args);
@@ -69,7 +69,7 @@ module.exports = {
           if (resRedis) return resolve(resRedis);
 
           models.Blocks.findOne()
-            .where({ ID: ID })
+            .where({ BlockID: BlockID })
             .lean()
             .exec((err, results) => {
               if (err) return reject(err);

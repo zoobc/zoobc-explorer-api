@@ -2,8 +2,8 @@ const { Converter, RedisCache } = require('../../utils');
 
 const pageLimit = require('../../config/config').app.pageLimit;
 const cache = {
-  transactions: 'transactions',
-  transaction: 'transaction',
+  nodes: 'nodes',
+  node: 'node',
 };
 
 function parseOrder(string) {
@@ -15,23 +15,24 @@ function parseOrder(string) {
 
 module.exports = {
   Query: {
-    transactions: (parent, args, { models }) => {
+    nodes: (parent, args, { models }) => {
       const { page, limit, order } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { _id: 'asc' };
 
       return new Promise((resolve, reject) => {
-        const cacheTransactions = Converter.formatCache(cache.transactions, args);
-        RedisCache.get(cacheTransactions, (err, resRedis) => {
+        const cacheNodes = Converter.formatCache(cache.nodes, args);
+        RedisCache.get(cacheNodes, (err, resRedis) => {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
-          models.Transactions.countDocuments((err, total) => {
+          models.Nodes.countDocuments((err, total) => {
             if (err) {
               return reject(err);
             }
-            models.Transactions.find()
+
+            models.Nodes.find()
               .select()
               .limit(lm)
               .skip((pg - 1) * lm)
@@ -41,7 +42,7 @@ module.exports = {
                 if (err) return reject(err);
 
                 const result = {
-                  Transactions: data,
+                  Nodes: data,
                   Paginate: {
                     Page: parseInt(pg),
                     Count: data.length,
@@ -49,7 +50,7 @@ module.exports = {
                   },
                 };
 
-                RedisCache.set(cacheTransactions, result, err => {
+                RedisCache.set(cacheNodes, result, err => {
                   if (err) return reject(err);
                   return resolve(result);
                 });
@@ -58,23 +59,23 @@ module.exports = {
         });
       });
     },
-    transaction: (parent, args, { models }) => {
-      const { TransactionID } = args;
+    node: (parent, args, { models }) => {
+      const { NodeID } = args;
 
       return new Promise((resolve, reject) => {
-        const cacheTransaction = Converter.formatCache(cache.transaction, args);
-        RedisCache.get(cacheTransaction, (err, resRedis) => {
+        const cacheNode = Converter.formatCache(cache.node, args);
+        RedisCache.get(cacheNode, (err, resRedis) => {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
-          models.Transactions.findOne()
-            .where({ TransactionID: TransactionID })
+          models.Nodes.findOne()
+            .where({ NodeID: NodeID })
             .lean()
             .exec((err, results) => {
               if (err) return reject(err);
 
               const result = Array.isArray(results) ? results[0] : results;
-              RedisCache.set(cacheTransaction, result, err => {
+              RedisCache.set(cacheNode, result, err => {
                 if (err) return reject(err);
                 return resolve(result);
               });
