@@ -1,16 +1,16 @@
 const BaseController = require('./BaseController');
 const HandleError = require('./HandleError');
-const { AccountsService } = require('../services');
+const { NodesService } = require('../services');
 const { ResponseBuilder, Converter, RedisCache } = require('../../utils');
 
 const cache = {
-  accounts: 'accounts',
-  account: 'account',
+  nodes: 'nodes',
+  node: 'node',
 };
 
-module.exports = class AccountController extends BaseController {
+module.exports = class NodeController extends BaseController {
   constructor() {
-    super(new AccountsService());
+    super(new NodesService());
   }
 
   async getAll(req, res) {
@@ -19,8 +19,8 @@ module.exports = class AccountController extends BaseController {
     const { page, limit, fields, order } = req.query;
 
     try {
-      const cacheAccounts = Converter.formatCache(cache.accounts, req.query);
-      RedisCache.get(cacheAccounts, (errRedis, resRedis) => {
+      const cacheNodes = Converter.formatCache(cache.nodes, req.query);
+      RedisCache.get(cacheNodes, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
           return;
@@ -31,7 +31,7 @@ module.exports = class AccountController extends BaseController {
             res,
             responseBuilder
               .setData(resRedis)
-              .setMessage('Accounts fetched successfully')
+              .setMessage('Nodes fetched successfully')
               .build()
           );
           return;
@@ -43,7 +43,7 @@ module.exports = class AccountController extends BaseController {
             return;
           }
 
-          RedisCache.set(cacheAccounts, result.data, err => {
+          RedisCache.set(cacheNodes, result.data, err => {
             if (err) {
               handleError.sendCatchError(res, err);
               return;
@@ -54,7 +54,7 @@ module.exports = class AccountController extends BaseController {
               responseBuilder
                 .setData(result.data)
                 .setPaginate(result.paginate)
-                .setMessage('Accounts fetched successfully')
+                .setMessage('Nodes fetched successfully')
                 .build()
             );
             return;
@@ -69,10 +69,10 @@ module.exports = class AccountController extends BaseController {
   async getOne(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const accountAddress = req.params.accountAddress;
+    const nodeID = req.params.nodeID;
 
     try {
-      if (!accountAddress) {
+      if (!nodeID) {
         this.sendInvalidPayloadResponse(
           res,
           responseBuilder
@@ -83,8 +83,8 @@ module.exports = class AccountController extends BaseController {
         return;
       }
 
-      const cacheAccount = Converter.formatCache(cache.account, accountAddress);
-      RedisCache.get(cacheAccount, (errRedis, resRedis) => {
+      const cacheNode = Converter.formatCache(cache.node, nodeID);
+      RedisCache.get(cacheNode, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
           return;
@@ -95,13 +95,13 @@ module.exports = class AccountController extends BaseController {
             res,
             responseBuilder
               .setData(resRedis)
-              .setMessage('Account fetched successfully')
+              .setMessage('Node fetched successfully')
               .build()
           );
           return;
         }
 
-        this.service.findOne({ AccountAddress: accountAddress }, (err, result) => {
+        this.service.findOne({ NodeID: nodeID }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;
@@ -112,13 +112,13 @@ module.exports = class AccountController extends BaseController {
               res,
               responseBuilder
                 .setData({})
-                .setMessage('Account not found')
+                .setMessage('Node not found')
                 .build()
             );
             return;
           }
 
-          RedisCache.set(cacheAccount, result, err => {
+          RedisCache.set(cacheNode, result, err => {
             if (err) {
               handleError.sendCatchError(res, err);
               return;
@@ -128,7 +128,7 @@ module.exports = class AccountController extends BaseController {
               res,
               responseBuilder
                 .setData(result)
-                .setMessage('Account fetched successfully')
+                .setMessage('Node fetched successfully')
                 .build()
             );
             return;
