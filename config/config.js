@@ -26,6 +26,6 @@ module.exports = {
   },
   proto: {
     host: `${process.env.PROTO_HOST}:${process.env.PROTO_PORT}`,
-    path: path.resolve(__dirname, '../zoobc-schema'),
+    path: path.resolve(__dirname, '../schema'),
   },
 };
