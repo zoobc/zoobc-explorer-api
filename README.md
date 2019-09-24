@@ -17,6 +17,7 @@ A web viewer for searching and displaying data published by the explorer server 
 - [IP Location](https://www.npmjs.com/package/iplocation)
 - [SSL Certificate](https://support.microfocus.com/kb/doc.php?id=7013103)
 - [Swagger](https://swagger.io/)
+- [MongoDB](https://www.mongodb.com/)
 
 ## Application Needed
 
@@ -49,13 +50,6 @@ $ yarn start or npm start
 # starting app using yarn or npm
 ```
 
-## How to Update Schema
-
-```bash
-$ ./schema.sh
-# delete and clone repository zoobc-schema
-```
-
 ## Usage with CLI
 
 ```bash
@@ -70,6 +64,9 @@ $ yarn zoobc stop
 
 $ yarn zoobc port
 # print port server api
+
+$ yarn start
+# start the service and wait for a minute. The scheduler always run evey minute to check for any updates
 ```
 
 ## Issue
@@ -88,19 +85,20 @@ $ kill xxxx     //listen number
 
     .
     ├── ...
-    ├── apidoc                # Static HTML for API documentation
-    ├── config                # Configuration application, graphql and doc api
-    ├── docs                  # The screnshoot, doc api and json format import insomnia
-    ├── grapqh                # Directory a query language for API
-    ├   ├── resovers          # Containing files for the resolver
-    ├   └── schema            # Schema models
-    ├── logs                  # Log files
-    ├── main                  # Modules files for app.js
-    ├── models                # Structure of tables and properties
-    ├── restapi               # Directory a rest language for API
+    ├── api                   # Directory for RestAPI Services
     ├   ├── controllers       # Containing class files for the controllers
     ├   ├── routes            # Containing routes API
     ├   └── services          # Containing class files for the service controllers
+    ├── config                # Configuration application, graphql and doc api
+    ├── docs                  # The screnshoot, doc api and json format import insomnia
+    ├── grapqhl               # Directory a query language for API
+    ├   ├── resovers          # Containing files for the resolver
+    ├   └── schema            # Schema models
+    ├── html                  # Base template to generate api documentation tools using swagger
+    ├── logs                  # Log files
+    ├── models                # Structure of tables and properties
+    ├── scheduler             # Contain files for scheduler
+    ├── server                # Configuration base files for RestAPI and GraphQL
     └── utils                 # Functions that are provided application
 
 ## License
