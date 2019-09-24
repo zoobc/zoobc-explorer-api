@@ -69,9 +69,6 @@ $ yarn zoobc start or npm zoobc start
 $ yarn zoobc stop or npm zoobc stop
 # stop server api
 
-$ yarn zoobc port or npm zoobc port
-# print port server api
-
 $ yarn start or npm start
 # start the service and wait for a minute. The scheduler always run evey minute to check for any updates
 ```
