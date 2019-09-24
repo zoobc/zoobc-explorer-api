@@ -29,7 +29,7 @@ module.exports = gql`
     TotalReceipts: Float
     ReceiptValue: Float
     BlocksmithID: String
-    PoPChange: String
+    PopChange: String
     PayloadLength: Int
     PayloadHash: String
     TotalCoinBase: Float
