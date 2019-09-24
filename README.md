@@ -50,6 +50,13 @@ $ yarn start or npm start
 # starting app using yarn or npm
 ```
 
+## How to Update Schema
+
+```bash
+$ ./schema.sh
+# delete and clone repository zoobc-schema
+```
+
 ## Usage with CLI
 
 ```bash
