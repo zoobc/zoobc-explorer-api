@@ -14,7 +14,7 @@ module.exports = gql`
   type Transaction {
     _id: ID!
     TransactionID: String
-    Timestamp: String
+    Timestamp: Date
     TransactionType: Int
     BlockID: String
     Height: Int
