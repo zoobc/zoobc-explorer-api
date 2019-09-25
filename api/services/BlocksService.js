@@ -12,4 +12,14 @@ module.exports = class BlocksService extends BaseService {
       .sort('-Height')
       .exec(callback);
   }
+
+  getFromHeight({ Limit, Height }, callback) {
+    Blocks.find()
+      .select('BlockID Height')
+      .where('Height')
+      .gte(Height)
+      .limit(Limit)
+      .sort('Height')
+      .exec(callback);
+  }
 };

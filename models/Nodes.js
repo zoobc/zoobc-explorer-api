@@ -3,7 +3,7 @@ const { upsertMany } = require('../utils');
 
 const schema = new mongoose.Schema({
   _id: { type: String },
-  NodePublicKey: { type: Buffer },
+  NodePublicKey: { type: String },
   OwnerAddress: { type: String } /** AccountAddress */,
   NodeAddress: { type: String },
   LockedFunds: { type: String } /** LockedBalance */,
