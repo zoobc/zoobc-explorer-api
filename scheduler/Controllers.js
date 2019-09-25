@@ -183,7 +183,7 @@ module.exports = class Controllers {
         const matchs = ['NodeID', 'NodePublicKey'];
         const items = results.map(item => {
           return {
-            NodePublicKey: item.NodePublicKey,
+            NodePublicKey: item.NodePublicKey ? Buffer.from(item.NodePublicKey).toString('base64') : null,
             OwnerAddress: item.AccountAddress,
             NodeAddress: item.NodeAddress,
             LockedFunds: item.LockedBalance,
