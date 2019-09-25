@@ -60,15 +60,6 @@ $ ./schema.sh
 ## Usage with CLI
 
 ```bash
-$ yarn zoobc -h or yarn zoobc --help
-# print zoobc command line options
-
-$ yarn zoobc start or npm zoobc start
-# start server api
-
-$ yarn zoobc stop or npm zoobc stop
-# stop server api
-
 $ yarn start or npm start
 # start the service and wait for a minute. The scheduler always run evey minute to check for any updates
 ```
