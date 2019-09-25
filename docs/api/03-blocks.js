@@ -27,6 +27,12 @@
  *            type: string
  *            example: "Height"
  *          description: Order blocks field by asc `Height` or desc `-Height`.
+ *        - in: query
+ *          name: fields
+ *          schema:
+ *            type: string
+ *            example: "BlockID Height Timestamp"
+ *          description: Select which blocks field to get.
  *      summary: List of blocks
  *      description: Get blocks response with query parameters _page_, _limit_, and _order_.
  *      responses:
@@ -51,18 +57,18 @@
  *          $ref: '#/definitions/Blocks'
  *  Blocks:
  *    properties:
- *      ID:
+ *      BlockID:
  *        type: string
- *        example: '4704416403202874266'
- *      PreviousBlockHash:
- *        type: string
- *        example: '3bfb90330d7e7fd439ec4afaa6ba6808e790276d83ab10196262a374dd7d6cd8'
+ *        example: '-6705850196976533509'
  *      Height:
  *        type: number
- *        example: 10
+ *        example: 0
  *      Timestamp:
  *        type: string
- *        example: '20-Sep-2019 03:31:19'
+ *        example: '2019-07-03T01:27:51.000Z'
+ *      PreviousBlockID:
+ *        type: string
+ *        example: ''
  *      BlockSeed:
  *        type: string
  *        example: '670cf4093aca3170801b6605ab236dbe3c96f62ec78086b2b9ab96b363e8335b'
@@ -79,21 +85,36 @@
  *        type: string
  *        example: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
  *      TotalAmount:
- *        type: string
- *        example: '0'
+ *        type: number
+ *        example: 200000000000
  *      TotalFee:
- *        type: string
- *        example: '0'
- *      TotalCoinBase:
- *        type: string
- *        example: '0'
+ *        type: number
+ *        example: 0
+ *      TotalRewards:
+ *        type: number
+ *        example: 0
  *      Version:
  *        type: number
- *        example: 0
+ *        example: 1
+ *      TotalReceipts:
+ *        type: number
+ *        example: 99
+ *      ReceiptValue:
+ *        type: number
+ *        example: 99
+ *      BlocksmithID:
+ *        type: string
+ *        example: 'BCZD_VxfO2S9aziIL3cn_cXW7uPDVPOrnXuP98GEAUC7'
+ *      PopChange:
+ *        type: string
+ *        example: '-20'
  *      PayloadLength:
  *        type: number
- *        example: 0
+ *        example: 1004
  *      PayloadHash:
  *        type: string
- *        example: '758fe235ef9986dd50394e88ac84e67e371b45cdc6f1b0c769d4c59add22be0e'
+ *        example: 'wV4hRTom9eFrB7dDCan6jGOPyIIRJdw1/2Oth+pOfGw='
+ *      TotalCoinBase:
+ *        type: number
+ *        example: 0
  */
