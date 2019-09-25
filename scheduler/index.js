@@ -8,25 +8,38 @@ const { msg } = require('../utils');
 const controllers = new Controllers();
 const events = config.app.scheduleEvent;
 
+// const cronjob = new cron.CronJob(`*/20 * * * * *`, () => {
 const cronjob = new cron.CronJob(`0 */${events} * * * *`, () => {
-  const dateNow = moment().format('DD MMM YYYY hh:mm:ss');
   try {
+    const dateNow = moment().format('DD MMM YYYY hh:mm:ss');
     controllers.updateBlocks((error, result) => {
-      if (error) msg.red('⛔️', error);
-      result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Blocks] Nothing additional data at ${dateNow}`);
+      if (error) {
+        msg.red('⛔️', error);
+      } else {
+        result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Blocks] Nothing additional data at ${dateNow}`);
+      }
 
       controllers.updateTransactions((error, result) => {
-        if (error) msg.red('⛔️', error);
-        result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Transactions] Nothing additional data at ${dateNow}`);
+        if (error) {
+          msg.red('⛔️', error);
+        } else {
+          result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Transactions] Nothing additional data at ${dateNow}`);
+        }
 
         controllers.updateNodes((error, result) => {
-          if (error) msg.red('⛔️', error);
-          result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Nodes] Nothing additional data at ${dateNow}`);
+          if (error) {
+            msg.red('⛔️', error);
+          } else {
+            result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Nodes] Nothing additional data at ${dateNow}`);
+          }
         });
 
         controllers.updateAccounts((error, result) => {
-          if (error) msg.red('⛔️', error);
-          result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Accounts] Nothing additional data at ${dateNow}`);
+          if (error) {
+            msg.red('⛔️', error);
+          } else {
+            result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Accounts] Nothing additional data at ${dateNow}`);
+          }
         });
       });
     });

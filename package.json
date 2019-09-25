@@ -15,7 +15,8 @@
     "blockchain"
   ],
   "scripts": {
-    "start": "./schema.sh && nodemon app.js"
+    "start": "nodemon app.js",
+    "schema": "./schema.sh"
   },
   "dependencies": {
     "apollo-server": "^2.9.3",
