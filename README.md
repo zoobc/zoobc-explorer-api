@@ -93,6 +93,11 @@ $ kill xxxx     //listen number
     ├── logs                  # Log files
     ├── models                # Structure of tables and properties
     ├── scheduler             # Contain files for scheduler
+    ├── schema                # Directory for proto
+    ├   ├── google            # Directory for api
+    ├       ├── api           # Containing class files for the api files
+    ├   ├── model             # Containing models for grpc
+    ├   └── service           # Containing class files for the grpc service
     ├── server                # Configuration base files for RestAPI and GraphQL
     └── utils                 # Functions that are provided application
 
