@@ -7,15 +7,20 @@ const searchSchema = require('./search.schema');
 const nodeSchema = require('./node.schema');
 
 const linkSchema = gql`
+  scalar Date
+
   type Query {
     _: Boolean
   }
+
   type Mutation {
     _: Boolean
   }
+
   type Subscription {
     _: Boolean
   }
+
   type Paginate {
     Page: Int
     Count: Int

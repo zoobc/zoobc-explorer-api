@@ -1,5 +1,4 @@
 const { Converter, RedisCache } = require('../../utils');
-
 const pageLimit = require('../../config/config').app.pageLimit;
 const cache = {
   accounts: 'accounts',
@@ -19,7 +18,7 @@ module.exports = {
       const { page, limit, order } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
-      const od = order !== undefined ? parseOrder(order) : { _id: 'asc' };
+      const od = order !== undefined ? parseOrder(order) : { BlockHeight: 'asc' };
 
       return new Promise((resolve, reject) => {
         const cacheAccounts = Converter.formatCache(cache.accounts, args);
@@ -59,6 +58,7 @@ module.exports = {
         });
       });
     },
+
     account: (parent, args, { models }) => {
       const { AccountAddress } = args;
 
@@ -71,10 +71,10 @@ module.exports = {
           models.Accounts.findOne()
             .where({ AccountAddress: AccountAddress })
             .lean()
-            .exec((err, results) => {
+            .exec((err, result) => {
               if (err) return reject(err);
+              if (!result) return resolve({});
 
-              const result = Array.isArray(results) ? results[0] : results;
               RedisCache.set(cacheAccount, result, err => {
                 if (err) return reject(err);
                 return resolve(result);
