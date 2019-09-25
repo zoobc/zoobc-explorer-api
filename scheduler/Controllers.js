@@ -253,20 +253,20 @@ module.exports = class Controllers {
 
   rollback(callback) {
     this.blocksService.getLastHeight(async (err, result) => {
-      if (err) return callback(`[Rollback] Blocks Service - Get Last Height ${err}`, null);
+      if (err) return callback(`[Rollback] Blocks Service - Get Last Height ${err}`, { success: false, info: null });
       if (!result || !result.Height) return callback(null, { success: false, info: null });
 
       const Limit = 800;
       const Height = parseInt(result.Height) - Limit < 0 ? 1 : parseInt(result.Height) - Limit;
       this.blocksService.getFromHeight({ Limit, Height }, (err, results) => {
-        if (err) return callback(`[Rollback] Blocks Service - Get From Height ${err}`, null);
+        if (err) return callback(`[Rollback] Blocks Service - Get From Height ${err}`, { success: false, info: null });
         if (results && results.length < 1) return callback(null, { success: false, info: null });
         const resultsExplorer = results
           .map(item => ({ BlockID: item.BlockID, Height: item.Height }))
           .sort((a, b) => (a.Height < b.Height ? 1 : -1));
 
         Block.GetBlocks({ Limit, Height }, (err, result) => {
-          if (err) return callback(`[Rollback] Block - Get Blocks ${err}`, null);
+          if (err) return callback(`[Rollback] Block - Get Blocks ${err}`, { success: false, info: null });
           if (result && result.Blocks && result.Blocks.length < 1) return callback(null, { success: false, info: null });
           const resultsCore = result.Blocks.map(item => ({
             BlockID: item.Block.ID,
@@ -281,25 +281,25 @@ module.exports = class Controllers {
           if (!rollHeight) return callback(null, { success: false, info: null });
 
           this.blocksService.destroyMany({ Height: { $gte: rollHeight } }, (err, result) => {
-            if (err) return callback(`[Rollback] Blocks Service - Destroy Many ${err}`, null);
+            if (err) return callback(`[Rollback] Blocks Service - Destroy Many ${err}`, { success: false, info: null });
             if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Blocks' });
             return callback(null, { success: true, info: `[Rollback - Blocks] Delete ${result.deletedCount} data successfully` });
           });
 
           this.transactionsService.destroyMany({ Height: { $gte: rollHeight } }, (err, result) => {
-            if (err) return callback(`[Rollback] Transactions Service - Destroy Many ${err}`, null);
+            if (err) return callback(`[Rollback] Transactions Service - Destroy Many ${err}`, { success: false, info: null });
             if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Transactions' });
             return callback(null, { success: true, info: `[Rollback - Transactions] Delete ${result.deletedCount} data successfully` });
           });
 
           this.nodesService.destroyMany({ Height: { $gte: rollHeight } }, (err, result) => {
-            if (err) return callback(`[Rollback] Nodes Service - Destroy Many ${err}`, null);
+            if (err) return callback(`[Rollback] Nodes Service - Destroy Many ${err}`, { success: false, info: null });
             if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Nodes' });
             return callback(null, { success: true, info: `[Rollback - Nodes] Delete ${result.deletedCount} data successfully` });
           });
 
           this.accountsService.destroyMany({ BlockHeight: { $gte: rollHeight } }, (err, result) => {
-            if (err) return callback(`[Rollback] Accounts Service - Destroy Many ${err}`, null);
+            if (err) return callback(`[Rollback] Accounts Service - Destroy Many ${err}`, { success: false, info: null });
             if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Accounts' });
             return callback(null, { success: true, info: `[Rollback - Accounts] Delete ${result.deletedCount} data successfully` });
           });
