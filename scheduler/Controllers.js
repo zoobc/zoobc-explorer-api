@@ -129,8 +129,8 @@ module.exports = class Controllers {
           state.accountAddresses = sender.concat(recipient.filter(item => sender.indexOf(item) < 0));
 
           service.upsert(items, matchs, (err, result) => {
-            if (err) return reject(`[Transactions - Height ${height}] Upsert ${err}`);
-            if (result && result.ok !== 1) return reject(`[Transactions - Height ${height}] Upsert data failed`);
+            if (err) return callback(`[Transactions - Height ${height}] Upsert ${err}`, null);
+            if (result && result.ok !== 1) return callback(`[Transactions - Height ${height}] Upsert data failed`, null);
             return callback(null, items.length);
           });
         });
@@ -158,14 +158,16 @@ module.exports = class Controllers {
         transactions.push(transaction);
       }
 
-      Promise.all(transactions).then(results => {
-        const count = results.reduce((prev, curr) => {
-          return parseInt(prev) + parseInt(curr);
-        }, 0);
+      Promise.all(transactions)
+        .then(results => {
+          const count = results.reduce((prev, curr) => {
+            return parseInt(prev) + parseInt(curr);
+          }, 0);
 
-        if (count < 1) return callback(null, null);
-        return callback(null, `[Transactions] Upsert ${count} data successfully`);
-      });
+          if (count < 1) return callback(null, null);
+          return callback(null, `[Transactions] Upsert ${count} data successfully`);
+        })
+        .catch(error => callback(error, null));
     }
   }
 
@@ -204,7 +206,7 @@ module.exports = class Controllers {
     });
   }
 
-  async updateAccounts(callback) {
+  updateAccounts(callback) {
     if (state.accountAddresses && state.accountAddresses.length < 1) return callback(null, null);
 
     const accounts = state.accountAddresses.map(accountAddress => {
@@ -237,13 +239,72 @@ module.exports = class Controllers {
       });
     });
 
-    Promise.all(accounts).then(results => {
-      const count = results.reduce((prev, curr) => {
-        return parseInt(prev) + parseInt(curr);
-      }, 0);
+    Promise.all(accounts)
+      .then(results => {
+        const count = results.reduce((prev, curr) => {
+          return parseInt(prev) + parseInt(curr);
+        }, 0);
 
-      if (count < 1) return callback(null, null);
-      return callback(null, `[Accounts] Upsert ${count} data successfully`);
+        if (count < 1) return callback(null, null);
+        return callback(null, `[Accounts] Upsert ${count} data successfully`);
+      })
+      .catch(error => callback(error, null));
+  }
+
+  rollback(callback) {
+    this.blocksService.getLastHeight(async (err, result) => {
+      if (err) return callback(`[Rollback] Blocks Service - Get Last Height ${err}`, null);
+      if (!result || !result.Height) return callback(null, { success: false, info: null });
+
+      const Limit = 800;
+      const Height = parseInt(result.Height) - Limit < 0 ? 1 : parseInt(result.Height) - Limit;
+      this.blocksService.getFromHeight({ Limit, Height }, (err, results) => {
+        if (err) return callback(`[Rollback] Blocks Service - Get From Height ${err}`, null);
+        if (results && results.length < 1) return callback(null, { success: false, info: null });
+        const resultsExplorer = results
+          .map(item => ({ BlockID: item.BlockID, Height: item.Height }))
+          .sort((a, b) => (a.Height < b.Height ? 1 : -1));
+
+        Block.GetBlocks({ Limit, Height }, (err, result) => {
+          if (err) return callback(`[Rollback] Block - Get Blocks ${err}`, null);
+          if (result && result.Blocks && result.Blocks.length < 1) return callback(null, { success: false, info: null });
+          const resultsCore = result.Blocks.map(item => ({
+            BlockID: item.Block.ID,
+            Height: item.Block.Height,
+          })).sort((a, b) => (a.Height < b.Height ? 1 : -1));
+
+          if (resultsCore.length < 1) return callback(null, { success: false, info: null });
+          const diffs = resultsExplorer
+            .filter(({ BlockID: val1 }) => !resultsCore.some(({ BlockID: val2 }) => val2 === val1))
+            .sort((a, b) => (a.Height > b.Height ? 1 : -1));
+          const rollHeight = diffs.length > 0 ? diffs[0].Height : null;
+          if (!rollHeight) return callback(null, { success: false, info: null });
+
+          this.blocksService.destroyMany({ Height: { $gte: rollHeight } }, (err, result) => {
+            if (err) return callback(`[Rollback] Blocks Service - Destroy Many ${err}`, null);
+            if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Blocks' });
+            return callback(null, { success: true, info: `[Rollback - Blocks] Delete ${result.deletedCount} data successfully` });
+          });
+
+          this.transactionsService.destroyMany({ Height: { $gte: rollHeight } }, (err, result) => {
+            if (err) return callback(`[Rollback] Transactions Service - Destroy Many ${err}`, null);
+            if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Transactions' });
+            return callback(null, { success: true, info: `[Rollback - Transactions] Delete ${result.deletedCount} data successfully` });
+          });
+
+          this.nodesService.destroyMany({ Height: { $gte: rollHeight } }, (err, result) => {
+            if (err) return callback(`[Rollback] Nodes Service - Destroy Many ${err}`, null);
+            if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Nodes' });
+            return callback(null, { success: true, info: `[Rollback - Nodes] Delete ${result.deletedCount} data successfully` });
+          });
+
+          this.accountsService.destroyMany({ BlockHeight: { $gte: rollHeight } }, (err, result) => {
+            if (err) return callback(`[Rollback] Accounts Service - Destroy Many ${err}`, null);
+            if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Accounts' });
+            return callback(null, { success: true, info: `[Rollback - Accounts] Delete ${result.deletedCount} data successfully` });
+          });
+        });
+      });
     });
   }
 };

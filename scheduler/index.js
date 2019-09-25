@@ -8,7 +8,6 @@ const { msg } = require('../utils');
 const controllers = new Controllers();
 const events = config.app.scheduleEvent;
 
-// const cronjob = new cron.CronJob(`*/20 * * * * *`, () => {
 const cronjob = new cron.CronJob(`0 */${events} * * * *`, () => {
   try {
     const dateNow = moment().format('DD MMM YYYY hh:mm:ss');
@@ -32,14 +31,24 @@ const cronjob = new cron.CronJob(`0 */${events} * * * *`, () => {
           } else {
             result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Nodes] Nothing additional data at ${dateNow}`);
           }
-        });
 
-        controllers.updateAccounts((error, result) => {
-          if (error) {
-            msg.red('⛔️', error);
-          } else {
-            result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Accounts] Nothing additional data at ${dateNow}`);
-          }
+          controllers.updateAccounts((error, result) => {
+            if (error) {
+              msg.red('⛔️', error);
+            } else {
+              result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Accounts] Nothing additional data at ${dateNow}`);
+            }
+
+            controllers.rollback((error, { success, info } = result) => {
+              if (error) {
+                msg.red('⛔️', error);
+              } else {
+                success
+                  ? msg.green('✅', `${info} at ${dateNow}`)
+                  : msg.yellow('⚠️', `${info ? `[Rollback - ${info}]` : `[Rollback]`} No data checking at ${dateNow}`);
+              }
+            });
+          });
         });
       });
     });
