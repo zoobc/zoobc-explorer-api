@@ -15,7 +15,7 @@ module.exports = gql`
     _id: ID!
     BlockID: String
     Height: Int
-    Timestamp: String
+    Timestamp: Date
     PreviousBlockID: String
     BlockSeed: String
     BlockSignature: String

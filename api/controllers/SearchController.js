@@ -60,7 +60,7 @@ module.exports = class SearchController extends BaseController {
           );
           return;
         }
-        this.blockService.findOne({ ID: id }, (errBlock, resultBlock) => {
+        this.blockService.findOne({ BlockID: id }, (errBlock, resultBlock) => {
           if (errBlock) {
             handleError.sendCatchError(res, errBlock);
             return;
@@ -104,7 +104,7 @@ module.exports = class SearchController extends BaseController {
                 );
                 return;
               }
-              this.transactionService.findOne({ ID: id }, (errTrans, resultTrans) => {
+              this.transactionService.findOne({ TransactionID: id }, (errTrans, resultTrans) => {
                 if (errTrans) {
                   handleError.sendCatchError(res, errTrans);
                   return;

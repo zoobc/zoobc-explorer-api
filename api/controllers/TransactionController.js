@@ -78,7 +78,7 @@ module.exports = class TransactionController extends BaseController {
         );
         return;
       }
-      const cacheTransaction = Converter.formatCache(cache.transaction, req.query);
+      const cacheTransaction = Converter.formatCache(cache.transaction, id);
       RedisCache.get(cacheTransaction, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
@@ -93,7 +93,7 @@ module.exports = class TransactionController extends BaseController {
               .build()
           );
         }
-        this.service.findOne({ ID: id }, (err, result) => {
+        this.service.findOne({ TransactionID: id }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;
@@ -127,6 +127,7 @@ module.exports = class TransactionController extends BaseController {
       handleError.sendCatchError(res, error);
     }
   }
+  
   // async graphAmount(req, res) {
   //   const responseBuilder = new ResponseBuilder();
   //   const handleError = new HandleError();

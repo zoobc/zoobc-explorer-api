@@ -104,7 +104,7 @@ module.exports = class BlockController extends BaseController {
           return;
         }
 
-        this.service.findOne({ ID: id }, (err, result) => {
+        this.service.findOne({ BlockID: id }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;

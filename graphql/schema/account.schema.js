@@ -16,8 +16,8 @@ module.exports = gql`
     AccountAddress: String
     Balance: Float
     SpendableBalance: Float
-    FirstActive: String
-    LastActive: String
+    FirstActive: Date
+    LastActive: Date
     TotalRewards: Float
     TotalFeesPaid: Float
     NodePublicKey: String
