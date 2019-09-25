@@ -1,5 +1,4 @@
 const { Converter, RedisCache } = require('../../utils');
-
 const pageLimit = require('../../config/config').app.pageLimit;
 const cache = {
   transactions: 'transactions',
@@ -19,7 +18,7 @@ module.exports = {
       const { page, limit, order } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
-      const od = order !== undefined ? parseOrder(order) : { _id: 'asc' };
+      const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
 
       return new Promise((resolve, reject) => {
         const cacheTransactions = Converter.formatCache(cache.transactions, args);
@@ -28,9 +27,8 @@ module.exports = {
           if (resRedis) return resolve(resRedis);
 
           models.Transactions.countDocuments((err, total) => {
-            if (err) {
-              return reject(err);
-            }
+            if (err) return reject(err);
+
             models.Transactions.find()
               .select()
               .limit(lm)
@@ -58,6 +56,7 @@ module.exports = {
         });
       });
     },
+
     transaction: (parent, args, { models }) => {
       const { TransactionID } = args;
 
@@ -70,10 +69,10 @@ module.exports = {
           models.Transactions.findOne()
             .where({ TransactionID: TransactionID })
             .lean()
-            .exec((err, results) => {
+            .exec((err, result) => {
               if (err) return reject(err);
+              if (!result) return resolve({});
 
-              const result = Array.isArray(results) ? results[0] : results;
               RedisCache.set(cacheTransaction, result, err => {
                 if (err) return reject(err);
                 return resolve(result);

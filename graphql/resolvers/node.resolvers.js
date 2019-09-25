@@ -1,5 +1,4 @@
 const { Converter, RedisCache } = require('../../utils');
-
 const pageLimit = require('../../config/config').app.pageLimit;
 const cache = {
   nodes: 'nodes',
@@ -19,7 +18,7 @@ module.exports = {
       const { page, limit, order } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
-      const od = order !== undefined ? parseOrder(order) : { _id: 'asc' };
+      const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
 
       return new Promise((resolve, reject) => {
         const cacheNodes = Converter.formatCache(cache.nodes, args);
@@ -59,8 +58,9 @@ module.exports = {
         });
       });
     },
+
     node: (parent, args, { models }) => {
-      const { NodeID } = args;
+      const { NodeID, NodePublicKey } = args;
 
       return new Promise((resolve, reject) => {
         const cacheNode = Converter.formatCache(cache.node, args);
@@ -68,13 +68,14 @@ module.exports = {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
+          const where = NodeID ? { NodeID } : { NodePublicKey };
           models.Nodes.findOne()
-            .where({ NodeID: NodeID })
+            .where(where)
             .lean()
-            .exec((err, results) => {
+            .exec((err, result) => {
               if (err) return reject(err);
+              if (!result) return resolve({});
 
-              const result = Array.isArray(results) ? results[0] : results;
               RedisCache.set(cacheNode, result, err => {
                 if (err) return reject(err);
                 return resolve(result);
