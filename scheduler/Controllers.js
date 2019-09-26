@@ -21,7 +21,7 @@ module.exports = class Controllers {
         if (err) return callback(`[Blocks] Block - Get Blocks ${err}`, null);
         if (result && result.Blocks && result.Blocks.length < 1) return callback(null, null);
 
-        const matchs = ['Height'];
+        const matchs = ['BlockID', 'Height'];
         const items = result.Blocks.map(item => {
           return {
             BlockID: item.Block.ID,
@@ -57,6 +57,7 @@ module.exports = class Controllers {
 
   updateTransactions(callback) {
     state = { lastHeightTransaction: 0, lastHeightBlock: 0, accountAddresses: [] };
+
     this.transactionsService.getLastHeight((err, result) => {
       if (err) return callback(`[Transactions] Transactions Service - Get Last Height ${err}`, null);
       if (!result) {
@@ -126,7 +127,10 @@ module.exports = class Controllers {
               Signature: item.Signature,
             };
           });
-          state.accountAddresses = sender.concat(recipient.filter(item => sender.indexOf(item) < 0));
+
+          const concatAccounts = sender.concat(recipient.filter(item => sender.indexOf(item) < 0));
+          const accounts = concatAccounts.filter((v, i) => concatAccounts.indexOf(v) === i);
+          state.accountAddresses = state.accountAddresses.concat(accounts.filter(item => state.accountAddresses.indexOf(item) < 0));
 
           service.upsert(items, matchs, (err, result) => {
             if (err) return callback(`[Transactions - Height ${height}] Upsert ${err}`, null);
@@ -249,6 +253,14 @@ module.exports = class Controllers {
         return callback(null, `[Accounts] Upsert ${count} data successfully`);
       })
       .catch(error => callback(error, null));
+  }
+
+  redudance(callback) {
+    this.blocksService.destoryRedudance((err, result) => {
+      if (err) return callback(`[Redudance] Blocks Service - Destroy Redudance ${err}`);
+      if (!result) return callback(null, null);
+      return callback(null, `[Redudance] Delete duplicate ${result} data successfully`);
+    });
   }
 
   rollback(callback) {

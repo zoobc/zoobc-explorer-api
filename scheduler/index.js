@@ -39,14 +39,22 @@ const cronjob = new cron.CronJob(`0 */${events} * * * *`, () => {
               result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Accounts] Nothing additional data at ${dateNow}`);
             }
 
-            controllers.rollback((error, { success, info } = result) => {
+            controllers.redudance((error, result) => {
               if (error) {
                 msg.red('⛔️', error);
               } else {
-                success
-                  ? msg.green('✅', `${info} at ${dateNow}`)
-                  : msg.yellow('⚠️', `${info ? `[Rollback - ${info}]` : `[Rollback]`} No data checking at ${dateNow}`);
+                result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Redudance] No data redundance at ${dateNow}`);
               }
+
+              controllers.rollback((error, { success, info } = result) => {
+                if (error) {
+                  msg.red('⛔️', error);
+                } else {
+                  success
+                    ? msg.green('✅', `${info} at ${dateNow}`)
+                    : msg.yellow('⚠️', `${info ? `[Rollback - ${info}]` : `[Rollback]`} No data rollback at ${dateNow}`);
+                }
+              });
             });
           });
         });
