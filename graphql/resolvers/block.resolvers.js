@@ -70,9 +70,20 @@ module.exports = {
           models.Blocks.findOne()
             .where({ BlockID: BlockID })
             .lean()
-            .exec((err, result) => {
-              if (err) return reject(err);
-              if (!result) return resolve({});
+            .exec(async (errBlock, block) => {
+              if (errBlock) return reject(errBlock);
+              if (!block) return resolve({});
+
+              const transactions = await models.Transactions.find()
+                .where({ BlockID: BlockID })
+                .lean();
+
+              console.log('transactions >>>>> ', transactions);
+
+              const result = {
+                Block: block,
+                Transactions: transactions,
+              };
 
               RedisCache.set(cacheBlock, result, err => {
                 if (err) return reject(err);
@@ -84,11 +95,12 @@ module.exports = {
     },
   },
 
-  Block: {
-    Transactions: async (block, args, { models }) => {
-      return await models.Transactions.find()
-        .where({ BlockID: block.BlockID })
-        .lean();
-    },
-  },
+  // BlockDetail: {
+  //   Transactions: async (blockDetail, args, { models }) => {
+  //     console.log('blockDetail >>>> ', blockDetail);
+  //     return await models.Transactions.find()
+  //       .where({ BlockID: blockDetail.Block.BlockID })
+  //       .lean();
+  //   },
+  // },
 };
