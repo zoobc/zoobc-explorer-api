@@ -20,7 +20,7 @@ module.exports = {
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
-      const where = BlockID !== undefined ? { BlockID: BlockID } : {};
+      const where = BlockID !== undefined ? { BlockID } : {};
 
       return new Promise((resolve, reject) => {
         const cacheTransactions = Converter.formatCache(cache.transactions, args);
