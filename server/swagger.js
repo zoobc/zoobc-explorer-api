@@ -13,7 +13,7 @@ const swaggerOptions = {
 module.exports = function(app) {
   /** static api doc with execute */
   app.use(config.app.mainRoute, apiLimiter);
-  app.use(config.app.mainRoute + '/demo', swaggerUi.serve, swaggerUi.setup(swaggerConfig, swaggerOptions));
+  app.use(config.app.mainRoute + '/doc', swaggerUi.serve, swaggerUi.setup(swaggerConfig, swaggerOptions));
 
   /** static api doc */
   app.get(
