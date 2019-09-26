@@ -8,7 +8,6 @@ const { msg } = require('../utils');
 const controllers = new Controllers();
 const events = config.app.scheduleEvent;
 
-// const cronjob = new cron.CronJob(`*/20 * * * * *`, () => {
 const cronjob = new cron.CronJob(`0 */${events} * * * *`, () => {
   try {
     const dateNow = moment().format('DD MMM YYYY hh:mm:ss');
@@ -60,8 +59,8 @@ const cronjob = new cron.CronJob(`0 */${events} * * * *`, () => {
 
 function start() {
   if (config.app.scheduler) {
-    msg.green('🚀', `Start Scheduler with Events Every ${events} Minutes`);
     cronjob.start();
+    msg.green('🚀', `Start Scheduler with Events Every ${events} Minutes`);
   }
 }
 
