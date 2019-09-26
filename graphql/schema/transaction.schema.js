@@ -28,5 +28,6 @@ module.exports = gql`
     TransactionBodyBytes: String
     TransactionIndex: Int
     Signature: String
+    Block: Block!
   }
 `;

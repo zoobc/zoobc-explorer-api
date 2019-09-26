@@ -33,5 +33,6 @@ module.exports = gql`
     PayloadLength: Int
     PayloadHash: String
     TotalCoinBase: Float
+    Transactions: [Transaction!]
   }
 `;

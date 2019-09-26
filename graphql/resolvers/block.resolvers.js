@@ -1,5 +1,6 @@
 const { Converter, RedisCache } = require('../../utils');
 const pageLimit = require('../../config/config').app.pageLimit;
+
 const cache = {
   blocks: 'blocks',
   block: 'block',
@@ -80,6 +81,14 @@ module.exports = {
             });
         });
       });
+    },
+  },
+
+  Block: {
+    Transactions: async (block, args, { models }) => {
+      return await models.Transactions.find()
+        .where({ BlockID: block.BlockID })
+        .lean();
     },
   },
 };
