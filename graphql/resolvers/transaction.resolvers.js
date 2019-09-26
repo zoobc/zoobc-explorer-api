@@ -1,5 +1,6 @@
 const { Converter, RedisCache } = require('../../utils');
 const pageLimit = require('../../config/config').app.pageLimit;
+
 const cache = {
   transactions: 'transactions',
   transaction: 'transaction',
@@ -15,10 +16,11 @@ function parseOrder(string) {
 module.exports = {
   Query: {
     transactions: (parent, args, { models }) => {
-      const { page, limit, order } = args;
+      const { page, limit, order, BlockID } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
+      const blockId = BlockID !== undefined ? { BlockID } : {};
 
       return new Promise((resolve, reject) => {
         const cacheTransactions = Converter.formatCache(cache.transactions, args);
@@ -30,6 +32,7 @@ module.exports = {
             if (err) return reject(err);
 
             models.Transactions.find()
+              .where(blockId)
               .select()
               .limit(lm)
               .skip((pg - 1) * lm)
@@ -80,6 +83,12 @@ module.exports = {
             });
         });
       });
+    },
+  },
+
+  Transaction: {
+    Block: async (transaction, args, { models }) => {
+      return await models.Blocks.findOne({ BlockID: transaction.BlockID }).lean();
     },
   },
 };
