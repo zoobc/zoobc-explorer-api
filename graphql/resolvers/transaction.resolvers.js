@@ -16,11 +16,12 @@ function parseOrder(string) {
 module.exports = {
   Query: {
     transactions: (parent, args, { models }) => {
-      const { page, limit, order, BlockID } = args;
+      const { page, limit, order, BlockID, AccountAddress } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
-      const blockId = BlockID !== undefined ? { BlockID } : {};
+      const blockId = BlockID !== undefined ? { BlockID } : null;
+      const accountAddress = AccountAddress !== undefined ? { $or: [{ Sender: AccountAddress }, { Recipient: AccountAddress }] } : null;
 
       return new Promise((resolve, reject) => {
         const cacheTransactions = Converter.formatCache(cache.transactions, args);
@@ -32,7 +33,7 @@ module.exports = {
             if (err) return reject(err);
 
             models.Transactions.find()
-              .where(blockId)
+              .where(blockId ? blockId : accountAddress ? accountAddress : {})
               .select()
               .limit(lm)
               .skip((pg - 1) * lm)
@@ -46,7 +47,7 @@ module.exports = {
                   Paginate: {
                     Page: parseInt(pg),
                     Count: data.length,
-                    Total: total,
+                    Total: blockId || accountAddress ? data.length : total,
                   },
                 };
 

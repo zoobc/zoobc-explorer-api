@@ -15,10 +15,11 @@ function parseOrder(string) {
 module.exports = {
   Query: {
     nodes: (parent, args, { models }) => {
-      const { page, limit, order } = args;
+      const { page, limit, order, AccountAddress } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
+      const accountAddress = AccountAddress !== undefined ? { OwnerAddress: AccountAddress } : null;
 
       return new Promise((resolve, reject) => {
         const cacheNodes = Converter.formatCache(cache.nodes, args);
@@ -27,11 +28,10 @@ module.exports = {
           if (resRedis) return resolve(resRedis);
 
           models.Nodes.countDocuments((err, total) => {
-            if (err) {
-              return reject(err);
-            }
+            if (err) return reject(err);
 
             models.Nodes.find()
+              .where(accountAddress ? accountAddress : {})
               .select()
               .limit(lm)
               .skip((pg - 1) * lm)
@@ -45,7 +45,7 @@ module.exports = {
                   Paginate: {
                     Page: parseInt(pg),
                     Count: data.length,
-                    Total: total,
+                    Total: accountAddress ? data.length : total,
                   },
                 };
 
