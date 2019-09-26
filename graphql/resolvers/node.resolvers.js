@@ -19,7 +19,7 @@ module.exports = {
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
-      const accountAddress = AccountAddress !== undefined ? { OwnerAddress: AccountAddress } : null;
+      const accountAddress = AccountAddress !== undefined ? { OwnerAddress: AccountAddress } : {};
 
       return new Promise((resolve, reject) => {
         const cacheNodes = Converter.formatCache(cache.nodes, args);
@@ -31,7 +31,7 @@ module.exports = {
             if (err) return reject(err);
 
             models.Nodes.find()
-              .where(accountAddress ? accountAddress : {})
+              .where(accountAddress)
               .select()
               .limit(lm)
               .skip((pg - 1) * lm)
