@@ -16,10 +16,11 @@ function parseOrder(string) {
 module.exports = {
   Query: {
     transactions: (parent, args, { models }) => {
-      const { page, limit, order } = args;
+      const { page, limit, order, BlockID } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
+      const where = BlockID !== undefined ? { BlockID: BlockID } : {};
 
       return new Promise((resolve, reject) => {
         const cacheTransactions = Converter.formatCache(cache.transactions, args);
@@ -31,6 +32,7 @@ module.exports = {
             if (err) return reject(err);
 
             models.Transactions.find()
+              .where(where)
               .select()
               .limit(lm)
               .skip((pg - 1) * lm)
