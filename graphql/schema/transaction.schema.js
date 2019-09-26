@@ -2,8 +2,8 @@ const { gql } = require('apollo-server-express');
 
 module.exports = gql`
   extend type Query {
-    transactions(page: Int, limit: Int, order: String): Transactions!
-    transaction(TransactionID: ID!): Transaction!
+    transactions(page: Int, limit: Int, order: String, BlockID: String): Transactions!
+    transaction(TransactionID: String!): Transaction!
   }
 
   type Transactions {
@@ -28,5 +28,6 @@ module.exports = gql`
     TransactionBodyBytes: String
     TransactionIndex: Int
     Signature: String
+    Block: Block!
   }
 `;
