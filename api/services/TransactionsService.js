@@ -1,9 +1,49 @@
 const BaseService = require('./BaseService');
 const { Transactions } = require('../../models');
+const pageLimit = require('../../config/config').app.pageLimit;
 
 module.exports = class TransactionsService extends BaseService {
   constructor() {
     super(Transactions);
+  }
+
+  paginateTransaction({ page, limit, blockID, fields, order }, callback) {
+    page = page !== undefined ? parseInt(page) : 1;
+    limit = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
+    fields = fields !== undefined ? fields.replace(/,/g, ' ') : {};
+    order = order !== undefined ? BaseService.parseOrder(order) : { _id: 'asc' };
+    blockID = blockID !== undefined ? blockID.replace(/,/g, ' ') : {};
+
+    this.model.countDocuments((err, total) => {
+      if (err) {
+        callback(err, null);
+        return;
+      }
+
+      this.model
+        .find({ BlockID: blockID })
+        .select(fields)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort(order)
+        .lean()
+        .exec((err, data) => {
+          if (err) {
+            callback(err, null);
+            return;
+          }
+
+          const result = {
+            data,
+            paginate: {
+              page: parseInt(page),
+              count: data.length,
+              total,
+            },
+          };
+          callback(null, result);
+        });
+    });
   }
 
   getLastHeight(callback) {

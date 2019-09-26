@@ -16,11 +16,24 @@ module.exports = class TransactionController extends BaseController {
   }
 
   async getAll(req, res) {
+    var i = 0;
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const { page, limit, fields, order } = req.query;
+    const { page, limit, fields, order, blockID } = req.query;
     try {
       const cacheTransactions = Converter.formatCache(cache.transactions, req.query);
+
+      if (!blockID) {
+        this.sendInvalidPayloadResponse(
+          res,
+          responseBuilder
+            .setData({})
+            .setMessage('Please input designated BlockID')
+            .build()
+        );
+        return;
+      }
+
       RedisCache.get(cacheTransactions, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
@@ -36,11 +49,12 @@ module.exports = class TransactionController extends BaseController {
           );
           return;
         }
-        this.service.paginate({ page, limit, fields, order }, (err, result) => {
+        this.service.paginateTransaction({ page, limit, blockID, fields, order }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;
           }
+
           RedisCache.set(cacheTransactions, result.data, errRedis => {
             if (errRedis) {
               handleError.sendCatchError(res, errRedis);
@@ -127,7 +141,7 @@ module.exports = class TransactionController extends BaseController {
       handleError.sendCatchError(res, error);
     }
   }
-  
+
   // async graphAmount(req, res) {
   //   const responseBuilder = new ResponseBuilder();
   //   const handleError = new HandleError();
