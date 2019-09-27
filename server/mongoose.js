@@ -4,21 +4,19 @@ const mongoose = require('mongoose');
 const config = require('../config/config');
 const { msg } = require('../utils');
 
-module.exports = () => {
+function connectMongoose() {
   const uris = `mongodb://${config.db.host}:${config.db.port}/${config.db.database}`;
-  mongoose.connect(uris, {
-    user: config.db.username,
-    pass: saslprep(config.db.password),
-    // autoIndex: false,
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
-  mongoose.connection
-    .once('open', () => {
+  const options = { user: config.db.username, pass: saslprep(config.db.password), useNewUrlParser: true, useUnifiedTopology: true };
+  return mongoose.connect(uris, options, error => {
+    if (error) {
+      msg.red('❌', `MongoDB connection error - retrying in 5 sec\n${error}`);
+      setTimeout(connectMongoose, 5000);
+    } else {
       msg.green('🚀', 'MongoDB connection success');
-    })
-    .on('error', error => {
-      msg.red('❌', `MongoDB connection error.\n${error}`);
-    });
+    }
+  });
+}
+
+module.exports = () => {
+  connectMongoose();
 };
