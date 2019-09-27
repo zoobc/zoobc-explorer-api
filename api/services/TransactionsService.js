@@ -21,7 +21,7 @@ module.exports = class TransactionsService extends BaseService {
         }
 
         this.model
-          .find()
+          .find({ BlockID: blockID })
           .select(fields)
           .skip((page - 1) * limit)
           .limit(limit)
