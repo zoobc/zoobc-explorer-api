@@ -12,7 +12,6 @@ module.exports = class TransactionsService extends BaseService {
     limit = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
     fields = fields !== undefined ? fields.replace(/,/g, ' ') : {};
     order = order !== undefined ? BaseService.parseOrder(order) : { _id: 'asc' };
-    // blockID = blockID !== undefined ? blockID.replace(/,/g, ' ') : {};
 
     this.model.countDocuments((err, total) => {
       if (err) {
