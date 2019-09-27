@@ -43,7 +43,7 @@ module.exports = class TransactionController extends BaseController {
             return;
           }
 
-          RedisCache.set(cacheTransactions, result.data, errRedis => {
+          RedisCache.set(cacheTransactions, result, errRedis => {
             if (errRedis) {
               handleError.sendCatchError(res, errRedis);
               return;
