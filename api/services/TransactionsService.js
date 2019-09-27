@@ -12,7 +12,7 @@ module.exports = class TransactionsService extends BaseService {
     limit = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
     fields = fields !== undefined ? fields.replace(/,/g, ' ') : {};
     order = order !== undefined ? BaseService.parseOrder(order) : { _id: 'asc' };
-    blockID = blockID !== undefined ? blockID.replace(/,/g, ' ') : {};
+    // blockID = blockID !== undefined ? blockID.replace(/,/g, ' ') : {};
 
     this.model.countDocuments((err, total) => {
       if (err) {
@@ -20,29 +20,55 @@ module.exports = class TransactionsService extends BaseService {
         return;
       }
 
-      this.model
-        .find({ BlockID: blockID })
-        .select(fields)
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .sort(order)
-        .lean()
-        .exec((err, data) => {
-          if (err) {
-            callback(err, null);
-            return;
-          }
+      if (blockID !== undefined) {
+        this.model
+          .find({ BlockID: blockID })
+          .select(fields)
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .sort(order)
+          .lean()
+          .exec((err, data) => {
+            if (err) {
+              callback(err, null);
+              return;
+            }
 
-          const result = {
-            data,
-            paginate: {
-              page: parseInt(page),
-              count: data.length,
-              total,
-            },
-          };
-          callback(null, result);
-        });
+            const result = {
+              data,
+              paginate: {
+                page: parseInt(page),
+                count: data.length,
+                total,
+              },
+            };
+            callback(null, result);
+          });
+      } else {
+        this.model
+          .find()
+          .select(fields)
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .sort(order)
+          .lean()
+          .exec((err, data) => {
+            if (err) {
+              callback(err, null);
+              return;
+            }
+
+            const result = {
+              data,
+              paginate: {
+                page: parseInt(page),
+                count: data.length,
+                total,
+              },
+            };
+            callback(null, result);
+          });
+      }
     });
   }
 
