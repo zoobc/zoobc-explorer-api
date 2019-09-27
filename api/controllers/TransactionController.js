@@ -31,7 +31,8 @@ module.exports = class TransactionController extends BaseController {
           this.sendSuccessResponse(
             res,
             responseBuilder
-              .setData(resRedis)
+              .setData(resRedis.data)
+              .setPaginate(resRedis.paginate)
               .setMessage('Transactions fetched successfully')
               .build()
           );

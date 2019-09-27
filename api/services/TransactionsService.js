@@ -13,37 +13,13 @@ module.exports = class TransactionsService extends BaseService {
     fields = fields !== undefined ? fields.replace(/,/g, ' ') : {};
     order = order !== undefined ? BaseService.parseOrder(order) : { _id: 'asc' };
 
-    this.model.countDocuments((err, total) => {
-      if (err) {
-        callback(err, null);
-        return;
-      }
+    if (blockID !== undefined) {
+      this.model.countDocuments({ BlockID: blockID }, (err, total) => {
+        if (err) {
+          callback(err, null);
+          return;
+        }
 
-      if (blockID !== undefined) {
-        this.model
-          .find({ BlockID: blockID })
-          .select(fields)
-          .skip((page - 1) * limit)
-          .limit(limit)
-          .sort(order)
-          .lean()
-          .exec((err, data) => {
-            if (err) {
-              callback(err, null);
-              return;
-            }
-
-            const result = {
-              data,
-              paginate: {
-                page: parseInt(page),
-                count: data.length,
-                total,
-              },
-            };
-            callback(null, result);
-          });
-      } else {
         this.model
           .find()
           .select(fields)
@@ -67,8 +43,39 @@ module.exports = class TransactionsService extends BaseService {
             };
             callback(null, result);
           });
-      }
-    });
+      });
+    } else {
+      this.model.countDocuments((err, total) => {
+        if (err) {
+          callback(err, null);
+          return;
+        }
+
+        this.model
+          .find()
+          .select(fields)
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .sort(order)
+          .lean()
+          .exec((err, data) => {
+            if (err) {
+              callback(err, null);
+              return;
+            }
+
+            const result = {
+              data,
+              paginate: {
+                page: parseInt(page),
+                count: data.length,
+                total,
+              },
+            };
+            callback(null, result);
+          });
+      });
+    }
   }
 
   getLastHeight(callback) {
