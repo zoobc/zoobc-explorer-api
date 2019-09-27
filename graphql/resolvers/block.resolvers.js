@@ -16,10 +16,12 @@ function parseOrder(string) {
 module.exports = {
   Query: {
     blocks: (parent, args, { models }) => {
-      const { page, limit, order } = args;
+      const { page, limit, order, NodePublicKey } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
+      const npkBuff = new Buffer(NodePublicKey, 'base64');
+      const nodePublicKey = NodePublicKey !== undefined ? { BlocksmithAddress: npkBuff } : {};
 
       return new Promise((resolve, reject) => {
         const cacheBlocks = Converter.formatCache(cache.blocks, args);
@@ -27,32 +29,37 @@ module.exports = {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
-          models.Blocks.countDocuments((err, total) => {
+          models.Blocks.countDocuments((err, totalWithoutFilter) => {
             if (err) return reject(err);
 
-            models.Blocks.find()
-              .select()
-              .limit(lm)
-              .skip((pg - 1) * lm)
-              .sort(od)
-              .lean()
-              .exec((err, data) => {
-                if (err) return reject(err);
+            models.Blocks.where(nodePublicKey).countDocuments((err, totalWithFilter) => {
+              if (err) return reject(err);
 
-                const result = {
-                  Blocks: data,
-                  Paginate: {
-                    Page: parseInt(pg),
-                    Count: data.length,
-                    Total: total,
-                  },
-                };
-
-                RedisCache.set(cacheBlocks, result, err => {
+              models.Blocks.find()
+                .where(nodePublicKey)
+                .select()
+                .limit(lm)
+                .skip((pg - 1) * lm)
+                .sort(od)
+                .lean()
+                .exec((err, data) => {
                   if (err) return reject(err);
-                  return resolve(result);
+
+                  const result = {
+                    Blocks: data,
+                    Paginate: {
+                      Page: parseInt(pg),
+                      Count: data.length,
+                      Total: nodePublicKey ? totalWithFilter : totalWithoutFilter,
+                    },
+                  };
+
+                  RedisCache.set(cacheBlocks, result, err => {
+                    if (err) return reject(err);
+                    return resolve(result);
+                  });
                 });
-              });
+            });
           });
         });
       });
