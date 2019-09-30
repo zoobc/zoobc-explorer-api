@@ -30,7 +30,8 @@ module.exports = class NodeController extends BaseController {
           this.sendSuccessResponse(
             res,
             responseBuilder
-              .setData(resRedis)
+              .setData(resRedis.data)
+              .setPaginate(resRedis.setPaginate)
               .setMessage('Nodes fetched successfully')
               .build()
           );
