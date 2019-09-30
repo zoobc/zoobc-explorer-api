@@ -2,7 +2,7 @@ const { gql } = require('apollo-server-express');
 
 module.exports = gql`
   extend type Query {
-    nodes(page: Int, limit: Int, order: String): Nodes!
+    nodes(page: Int, limit: Int, order: String, AccountAddress: String): Nodes!
     node(NodeID: String, NodePublicKey: String): Node!
   }
 
