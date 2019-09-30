@@ -7,7 +7,7 @@ module.exports = class TransactionsService extends BaseService {
     super(Transactions);
   }
 
-  paginateTransaction({ page, limit, blockID, fields, order }, callback) {
+  paginateTransaction({ page, limit, blockID, fields, order, accountAddress }, callback) {
     page = page !== undefined ? parseInt(page) : 1;
     limit = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
     fields = fields !== undefined ? fields.replace(/,/g, ' ') : {};
@@ -22,6 +22,37 @@ module.exports = class TransactionsService extends BaseService {
 
         this.model
           .find({ BlockID: blockID })
+          .select(fields)
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .sort(order)
+          .lean()
+          .exec((err, data) => {
+            if (err) {
+              callback(err, null);
+              return;
+            }
+
+            const result = {
+              data,
+              paginate: {
+                page: parseInt(page),
+                count: data.length,
+                total,
+              },
+            };
+            callback(null, result);
+          });
+      });
+    } else if (accountAddress !== undefined) {
+      this.model.countDocuments({ $or: [{ Sender: accountAddress }, { Recipient: accountAddress }] }, (err, total) => {
+        if (err) {
+          callback(err, null);
+          return;
+        }
+
+        this.model
+          .find({ $or: [{ Sender: accountAddress }, { Recipient: accountAddress }] })
           .select(fields)
           .skip((page - 1) * limit)
           .limit(limit)

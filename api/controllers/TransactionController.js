@@ -18,7 +18,7 @@ module.exports = class TransactionController extends BaseController {
   async getAll(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const { page, limit, fields, order, blockID } = req.query;
+    const { page, limit, fields, order, blockID, accountAddress } = req.query;
     try {
       const cacheTransactions = Converter.formatCache(cache.transactions, req.query);
 
@@ -38,7 +38,7 @@ module.exports = class TransactionController extends BaseController {
           );
           return;
         }
-        this.service.paginateTransaction({ page, limit, blockID, fields, order }, (err, result) => {
+        this.service.paginateTransaction({ page, limit, blockID, fields, order, accountAddress }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;
