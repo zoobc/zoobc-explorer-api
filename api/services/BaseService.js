@@ -12,20 +12,21 @@ module.exports = class BaseService {
     return { [string]: 'asc' };
   }
 
-  paginate({ page, limit, fields, order }, callback) {
+  paginate({ page, limit, fields, where, order }, callback) {
     page = page !== undefined ? parseInt(page) : 1;
     limit = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
     fields = fields !== undefined ? fields.replace(/,/g, ' ') : {};
     order = order !== undefined ? BaseService.parseOrder(order) : { _id: 'asc' };
+    where = where !== undefined ? { [where.split(':')[0]]: where.split(':')[1].toString() } : {};
 
-    this.model.countDocuments((err, total) => {
+    this.model.countDocuments(where, (err, total) => {
       if (err) {
         callback(err, null);
         return;
       }
 
       this.model
-        .find()
+        .find(where)
         .select(fields)
         .skip((page - 1) * limit)
         .limit(limit)
