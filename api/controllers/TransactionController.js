@@ -38,7 +38,7 @@ module.exports = class TransactionController extends BaseController {
           );
           return;
         }
-        this.service.paginateTransaction({ page, limit, blockID, fields, order, accountAddress }, (err, result) => {
+        this.service.paginate({ page, limit, fields, where, order }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;
