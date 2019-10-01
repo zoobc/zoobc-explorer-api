@@ -27,33 +27,37 @@ module.exports = {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
-          models.Nodes.countDocuments((err, total) => {
+          models.Nodes.countDocuments((err, totalWithoutFilter) => {
             if (err) return reject(err);
 
-            models.Nodes.find()
-              .where(accountAddress)
-              .select()
-              .limit(lm)
-              .skip((pg - 1) * lm)
-              .sort(od)
-              .lean()
-              .exec((err, data) => {
-                if (err) return reject(err);
+            models.Nodes.where(accountAddress).countDocuments((err, totalWithFilter) => {
+              if (err) return reject(err);
 
-                const result = {
-                  Nodes: data,
-                  Paginate: {
-                    Page: parseInt(pg),
-                    Count: data.length,
-                    Total: accountAddress ? data.length : total,
-                  },
-                };
-
-                RedisCache.set(cacheNodes, result, err => {
+              models.Nodes.find()
+                .where(accountAddress)
+                .select()
+                .limit(lm)
+                .skip((pg - 1) * lm)
+                .sort(od)
+                .lean()
+                .exec((err, data) => {
                   if (err) return reject(err);
-                  return resolve(result);
+
+                  const result = {
+                    Nodes: data,
+                    Paginate: {
+                      Page: parseInt(pg),
+                      Count: data.length,
+                      Total: accountAddress ? totalWithFilter : totalWithoutFilter,
+                    },
+                  };
+
+                  RedisCache.set(cacheNodes, result, err => {
+                    if (err) return reject(err);
+                    return resolve(result);
+                  });
                 });
-              });
+            });
           });
         });
       });

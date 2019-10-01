@@ -29,33 +29,37 @@ module.exports = {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
-          models.Transactions.countDocuments((err, total) => {
+          models.Transactions.countDocuments((err, totalWithoutFilter) => {
             if (err) return reject(err);
 
-            models.Transactions.find()
-              .where(blockId ? blockId : accountAddress ? accountAddress : {})
-              .select()
-              .limit(lm)
-              .skip((pg - 1) * lm)
-              .sort(od)
-              .lean()
-              .exec((err, data) => {
-                if (err) return reject(err);
+            models.Transactions.where(blockId ? blockId : accountAddress ? accountAddress : {}).countDocuments((err, totalWithFilter) => {
+              if (err) return reject(err);
 
-                const result = {
-                  Transactions: data,
-                  Paginate: {
-                    Page: parseInt(pg),
-                    Count: data.length,
-                    Total: blockId || accountAddress ? data.length : total,
-                  },
-                };
-
-                RedisCache.set(cacheTransactions, result, err => {
+              models.Transactions.find()
+                .where(blockId ? blockId : accountAddress ? accountAddress : {})
+                .select()
+                .limit(lm)
+                .skip((pg - 1) * lm)
+                .sort(od)
+                .lean()
+                .exec((err, data) => {
                   if (err) return reject(err);
-                  return resolve(result);
+
+                  const result = {
+                    Transactions: data,
+                    Paginate: {
+                      Page: parseInt(pg),
+                      Count: data.length,
+                      Total: blockId || accountAddress ? totalWithFilter : totalWithoutFilter,
+                    },
+                  };
+
+                  RedisCache.set(cacheTransactions, result, err => {
+                    if (err) return reject(err);
+                    return resolve(result);
+                  });
                 });
-              });
+            });
           });
         });
       });
