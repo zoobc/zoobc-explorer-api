@@ -14,14 +14,14 @@ module.exports = gql`
   type Block {
     _id: ID!
     BlockID: String
-    PreviousBlockHash: String
+    PreviousBlockID: String
     Height: Int
     Timestamp: Date
     BlockSeed: String
     BlockSignature: String
     CumulativeDifficulty: String
     SmithScale: Int
-    BlocksmithPublicKey: String
+    BlocksmithAddress: String
     TotalAmount: Float
     TotalFee: Float
     TotalCoinBase: Float
@@ -29,7 +29,7 @@ module.exports = gql`
     Version: Int
     PayloadLength: Int
     PayloadHash: String
-    BlocksmithAccountAddress: String
+    BlocksmithID: String
     TotalReceipts: Float
     ReceiptValue: Float
     PopChange: String

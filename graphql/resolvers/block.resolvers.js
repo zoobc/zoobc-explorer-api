@@ -20,7 +20,7 @@ module.exports = {
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
-      const nodePublicKey = NodePublicKey !== undefined ? { BlocksmithPublicKey: Buffer.from(NodePublicKey, 'base64') } : {};
+      const nodePublicKey = NodePublicKey !== undefined ? { BlocksmithAddress: Buffer.from(NodePublicKey, 'base64') } : {};
 
       return new Promise((resolve, reject) => {
         const cacheBlocks = Converter.formatCache(cache.blocks, args);

@@ -20,5 +20,6 @@ module.exports = gql`
     DataHash: String
     ReceiptMerkleRoot: String
     ReceiverSignature: String
+    ReferenceBlockHash: String
   }
 `;
