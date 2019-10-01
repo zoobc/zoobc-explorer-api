@@ -15,10 +15,11 @@ function parseOrder(string) {
 module.exports = {
   Query: {
     nodes: (parent, args, { models }) => {
-      const { page, limit, order } = args;
+      const { page, limit, order, AccountAddress } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
+      const accountAddress = AccountAddress !== undefined ? { OwnerAddress: AccountAddress } : {};
 
       return new Promise((resolve, reject) => {
         const cacheNodes = Converter.formatCache(cache.nodes, args);
@@ -26,34 +27,37 @@ module.exports = {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
-          models.Nodes.countDocuments((err, total) => {
-            if (err) {
-              return reject(err);
-            }
+          models.Nodes.countDocuments((err, totalWithoutFilter) => {
+            if (err) return reject(err);
 
-            models.Nodes.find()
-              .select()
-              .limit(lm)
-              .skip((pg - 1) * lm)
-              .sort(od)
-              .lean()
-              .exec((err, data) => {
-                if (err) return reject(err);
+            models.Nodes.where(accountAddress).countDocuments((err, totalWithFilter) => {
+              if (err) return reject(err);
 
-                const result = {
-                  Nodes: data,
-                  Paginate: {
-                    Page: parseInt(pg),
-                    Count: data.length,
-                    Total: total,
-                  },
-                };
-
-                RedisCache.set(cacheNodes, result, err => {
+              models.Nodes.find()
+                .where(accountAddress)
+                .select()
+                .limit(lm)
+                .skip((pg - 1) * lm)
+                .sort(od)
+                .lean()
+                .exec((err, data) => {
                   if (err) return reject(err);
-                  return resolve(result);
+
+                  const result = {
+                    Nodes: data,
+                    Paginate: {
+                      Page: parseInt(pg),
+                      Count: data.length,
+                      Total: accountAddress ? totalWithFilter : totalWithoutFilter,
+                    },
+                  };
+
+                  RedisCache.set(cacheNodes, result, err => {
+                    if (err) return reject(err);
+                    return resolve(result);
+                  });
                 });
-              });
+            });
           });
         });
       });
