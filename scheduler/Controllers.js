@@ -1,6 +1,6 @@
 const moment = require('moment');
 const { Block, Transaction, AccountBalance, NodeRegistration } = require('./Protos');
-const { BlocksService, TransactionsService, AccountsService, NodesService } = require('../api/services');
+const { BlocksService, BlockReceiptsService, TransactionsService, AccountsService, NodesService } = require('../api/services');
 
 var state = { accountAddresses: [], nodePublicKeys: [] };
 
@@ -10,6 +10,7 @@ module.exports = class Controllers {
     this.blocksService = new BlocksService();
     this.accountsService = new AccountsService();
     this.transactionsService = new TransactionsService();
+    this.blockReceiptsService = new BlockReceiptsService();
   }
 
   updateBlocks(callback) {
@@ -23,29 +24,52 @@ module.exports = class Controllers {
 
         const matchs = ['BlockID', 'Height'];
         const items = result.Blocks.map(item => {
+          if (item.BlockReceipts && item.BlockReceipts.length > 0) {
+            // const blockReceipts = item.BlockReceipts.map(receipt => {
+            //   return {
+            //     BlockID: receipt.BlockID,
+            //     Height: receipt.Height,
+            //     SenderPublicKey: receipt.SenderPublicKey,
+            //     ReceiverPublicKey: receipt.ReceiverPublicKey,
+            //     DataType: receipt.DataType,
+            //     DataHash: receipt.DataHash,
+            //     ReceiptMerkleRoot: receipt.ReceiptMerkleRoot,
+            //     ReceiverSignature: receipt.ReceiverSignature,
+            //   };
+            // });
+
+            const matchBlockReceipts = ['BlockID', 'Height'];
+            this.blockReceiptsService.upsert(item.BlockReceipts, matchBlockReceipts, (err, result) => {
+              if (err) return callback(`[Block Receipts] Upsert ${err}`, null);
+              if (result && result.ok !== 1) return callback(`[Block Receipts] Upsert data failed`, null);
+              return callback(null, `[Block Receipts] Upsert ${item.BlockReceipts.length} data successfully`);
+            });
+          }
+
           return {
             BlockID: item.Block.ID,
+            PreviousBlockHash: item.Block.PreviousBlockHash,
             Height: item.Block.Height,
             Timestamp: moment.unix(item.Block.Timestamp).valueOf(),
-            PreviousBlockID: item.Block.PreviousBlockHash,
             BlockSeed: item.Block.BlockSeed,
             BlockSignature: item.Block.BlockSignature,
             CumulativeDifficulty: item.Block.CumulativeDifficulty,
             SmithScale: item.Block.SmithScale,
-            BlocksmithAddress: item.Block.BlocksmithPublicKey ? item.Block.BlocksmithPublicKey : null,
+            BlocksmithPublicKey: item.Block.BlocksmithPublicKey,
             TotalAmount: item.Block.TotalAmount,
             TotalFee: item.Block.TotalFee,
+            TotalCoinBase: item.Block.TotalCoinBase,
             TotalRewards: parseFloat(item.Block.TotalCoinBase) + parseFloat(item.Block.TotalFee),
             Version: item.Block.Version,
-            TotalReceipts: item.TotalReceipts,
-            ReceiptValue: item.ReceiptValue,
-            BlocksmithID: item.BlocksmithAccountAddress,
-            PopChange: item.PopChange,
             PayloadLength: item.Block.PayloadLength,
             PayloadHash: item.Block.PayloadHash,
-            TotalCoinBase: item.Block.TotalCoinBase,
+            BlocksmithAccountAddress: item.BlocksmithAccountAddress,
+            TotalReceipts: item.TotalReceipts,
+            ReceiptValue: item.ReceiptValue,
+            PopChange: item.PopChange,
           };
         });
+
         this.blocksService.upsert(items, matchs, (err, result) => {
           if (err) return callback(`[Blocks] Upsert ${err}`, null);
           if (result && result.ok !== 1) return callback(`[Blocks] Upsert data failed`, null);

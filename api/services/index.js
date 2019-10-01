@@ -1,13 +1,15 @@
 const BaseService = require('./BaseService');
-const BlocksService = require('./BlocksService');
-const TransactionsService = require('./TransactionsService');
-const AccountsService = require('./AccountsService');
 const NodesService = require('./NodesService');
+const BlocksService = require('./BlocksService');
+const AccountsService = require('./AccountsService');
+const TransactionsService = require('./TransactionsService');
+const BlockReceiptsService = require('./BlockReceiptsService');
 
 module.exports = {
   BaseService,
-  BlocksService,
-  TransactionsService,
-  AccountsService,
   NodesService,
+  BlocksService,
+  AccountsService,
+  TransactionsService,
+  BlockReceiptsService,
 };
