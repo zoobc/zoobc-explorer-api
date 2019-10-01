@@ -1,8 +1,8 @@
 const moment = require('moment');
 const { Block, Transaction, AccountBalance, NodeRegistration } = require('./Protos');
-const { BlocksService, TransactionsService, AccountsService, NodesService } = require('../api/services');
+const { BlocksService, BlockReceiptsService, TransactionsService, AccountsService, NodesService } = require('../api/services');
 
-var state = { lastHeightTransaction: 0, lastHeightBlock: 0, accountAddresses: [] };
+var state = { accountAddresses: [], nodePublicKeys: [] };
 
 module.exports = class Controllers {
   constructor() {
@@ -10,6 +10,7 @@ module.exports = class Controllers {
     this.blocksService = new BlocksService();
     this.accountsService = new AccountsService();
     this.transactionsService = new TransactionsService();
+    this.blockReceiptsService = new BlockReceiptsService();
   }
 
   updateBlocks(callback) {
@@ -23,29 +24,52 @@ module.exports = class Controllers {
 
         const matchs = ['BlockID', 'Height'];
         const items = result.Blocks.map(item => {
+          if (item.BlockReceipts && item.BlockReceipts.length > 0) {
+            // const blockReceipts = item.BlockReceipts.map(receipt => {
+            //   return {
+            //     BlockID: receipt.BlockID,
+            //     Height: receipt.Height,
+            //     SenderPublicKey: receipt.SenderPublicKey,
+            //     ReceiverPublicKey: receipt.ReceiverPublicKey,
+            //     DataType: receipt.DataType,
+            //     DataHash: receipt.DataHash,
+            //     ReceiptMerkleRoot: receipt.ReceiptMerkleRoot,
+            //     ReceiverSignature: receipt.ReceiverSignature,
+            //   };
+            // });
+
+            const matchBlockReceipts = ['BlockID', 'Height'];
+            this.blockReceiptsService.upsert(item.BlockReceipts, matchBlockReceipts, (err, result) => {
+              if (err) return callback(`[Block Receipts] Upsert ${err}`, null);
+              if (result && result.ok !== 1) return callback(`[Block Receipts] Upsert data failed`, null);
+              return callback(null, `[Block Receipts] Upsert ${item.BlockReceipts.length} data successfully`);
+            });
+          }
+
           return {
             BlockID: item.Block.ID,
+            PreviousBlockHash: item.Block.PreviousBlockHash,
             Height: item.Block.Height,
             Timestamp: moment.unix(item.Block.Timestamp).valueOf(),
-            PreviousBlockID: item.Block.PreviousBlockHash,
             BlockSeed: item.Block.BlockSeed,
             BlockSignature: item.Block.BlockSignature,
             CumulativeDifficulty: item.Block.CumulativeDifficulty,
             SmithScale: item.Block.SmithScale,
-            BlocksmithAddress: item.Block.BlocksmithPublicKey ? item.Block.BlocksmithPublicKey : null,
+            BlocksmithPublicKey: item.Block.BlocksmithPublicKey,
             TotalAmount: item.Block.TotalAmount,
             TotalFee: item.Block.TotalFee,
+            TotalCoinBase: item.Block.TotalCoinBase,
             TotalRewards: parseFloat(item.Block.TotalCoinBase) + parseFloat(item.Block.TotalFee),
             Version: item.Block.Version,
-            TotalReceipts: item.TotalReceipts,
-            ReceiptValue: item.ReceiptValue,
-            BlocksmithID: item.BlocksmithAccountAddress,
-            PopChange: item.PopChange,
             PayloadLength: item.Block.PayloadLength,
             PayloadHash: item.Block.PayloadHash,
-            TotalCoinBase: item.Block.TotalCoinBase,
+            BlocksmithAccountAddress: item.BlocksmithAccountAddress,
+            TotalReceipts: item.TotalReceipts,
+            ReceiptValue: item.ReceiptValue,
+            PopChange: item.PopChange,
           };
         });
+
         this.blocksService.upsert(items, matchs, (err, result) => {
           if (err) return callback(`[Blocks] Upsert ${err}`, null);
           if (result && result.ok !== 1) return callback(`[Blocks] Upsert data failed`, null);
@@ -56,7 +80,7 @@ module.exports = class Controllers {
   }
 
   updateTransactions(callback) {
-    state = { lastHeightTransaction: 0, lastHeightBlock: 0, accountAddresses: [] };
+    state = { accountAddresses: [], nodePublicKeys: [] };
 
     this.transactionsService.getLastHeight((err, result) => {
       if (err) return callback(`[Transactions] Transactions Service - Get Last Height ${err}`, null);
@@ -70,14 +94,12 @@ module.exports = class Controllers {
         return;
       }
 
-      let lastHeightTransaction = result.Height;
-      state.lastHeightTransaction = lastHeightTransaction;
+      const lastHeightTransaction = result.Height;
       this.blocksService.getLastHeight((err, result) => {
         if (err) return callback(err, null);
         if (!result) return callback(null, null);
 
-        let lastHeightBlock = result.Height;
-        state.lastHeightBlock = lastHeightBlock;
+        const lastHeightBlock = result.Height;
         UpsertTransactions(this.transactionsService, lastHeightTransaction + 1, lastHeightBlock, (err, result) => {
           if (err) return callback(err, null);
           if (!result) return callback(null, null);
@@ -86,28 +108,22 @@ module.exports = class Controllers {
       });
     });
 
-    function GetTransactionsByHeight(Height, callback) {
-      const params = { Height, Pagination: { OrderField: 'block_height', OrderBy: 'ASC' } };
-      Transaction.GetTransactions(params, (err, result) => {
-        if (err) return callback(`[Transactions] Get Transactions ${err}`, null);
-        if (result && result.Transactions && result.Transactions.length < 1) return callback(null, null);
-        const results = result.Transactions.filter(item => item.Height === Height);
-        return callback(null, results);
-      });
-    }
-
     function UpsertTransactions(service, heightStart, heightEnd, callback) {
       function GetUpsertTransactions(height, callback) {
-        GetTransactionsByHeight(height, (err, results) => {
-          if (err) return callback(err, null);
-          if (!results) return callback(null, null);
+        const params = { Height: height, Pagination: { OrderField: 'block_height', OrderBy: 'ASC' } };
+        Transaction.GetTransactions(params, (err, result) => {
+          if (err) return callback(`[Transactions] Get Transactions ${err}`, null);
+          if (result && result.Transactions && result.Transactions.length < 1) return callback(null, null);
+
+          const results = result.Transactions.filter(item => item.Height === height);
 
           let sender = [];
           let recipient = [];
-          const matchs = ['TransactionID', 'BlockID', 'Height'];
+          const matchs = ['TransactionID', 'Height'];
           const items = results.map(item => {
             sender.push(item.SenderAccountAddress);
             recipient.push(item.RecipientAccountAddress);
+            state.nodePublicKeys.push(item.ID);
 
             return {
               TransactionID: item.ID,
@@ -176,6 +192,17 @@ module.exports = class Controllers {
   }
 
   updateNodes(callback) {
+    // // console.log('==state.transactionIDs', state.transactionIDs);
+    // const transactionIDs = ['-7153423959411140033', '4066855019449265628', '7429271499130620937'];
+    // if (transactionIDs.length < 1) return callback(null, null);
+
+    // transactionIDs.forEach(ID => {
+    //   Transaction.GetTransaction({ ID }, (err, resp) => {
+    //     if (err) return callback(`[Nodes] Transaction - Get Transaction ${err}`, null);
+    //     console.log('==resp', resp);
+    //   });
+    // });
+
     NodeRegistration.GetNodeRegistrations({}, (err, resp) => {
       if (err) return callback(`[Nodes] Node Registration - Get Node Registrations ${err}`, null);
       if (resp && resp.NodeRegistrations && resp.NodeRegistrations.length < 1) return callback(null, null);
