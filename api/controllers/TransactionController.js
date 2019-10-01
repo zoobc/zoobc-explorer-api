@@ -27,17 +27,17 @@ module.exports = class TransactionController extends BaseController {
           handleError.sendCatchError(res, errRedis);
           return;
         }
-        // if (resRedis) {
-        //   this.sendSuccessResponse(
-        //     res,
-        //     responseBuilder
-        //       .setData(resRedis.data)
-        //       .setPaginate(resRedis.paginate)
-        //       .setMessage('Transactions fetched successfully')
-        //       .build()
-        //   );
-        //   return;
-        // }
+        if (resRedis) {
+          this.sendSuccessResponse(
+            res,
+            responseBuilder
+              .setData(resRedis.data)
+              .setPaginate(resRedis.paginate)
+              .setMessage('Transactions fetched successfully')
+              .build()
+          );
+          return;
+        }
 
         this.service.paginateTransaction({ page, limit, fields, where, order }, (err, result) => {
           if (err) {
