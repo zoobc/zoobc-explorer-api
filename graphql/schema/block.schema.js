@@ -14,24 +14,24 @@ module.exports = gql`
   type Block {
     _id: ID!
     BlockID: String
+    PreviousBlockHash: String
     Height: Int
     Timestamp: Date
-    PreviousBlockID: String
     BlockSeed: String
     BlockSignature: String
     CumulativeDifficulty: String
     SmithScale: Int
-    BlocksmithAddress: String
+    BlocksmithPublicKey: String
     TotalAmount: Float
     TotalFee: Float
+    TotalCoinBase: Float
     TotalRewards: Float
     Version: Int
-    TotalReceipts: Float
-    ReceiptValue: Float
-    BlocksmithID: String
-    PopChange: String
     PayloadLength: Int
     PayloadHash: String
-    TotalCoinBase: Float
+    BlocksmithAccountAddress: String
+    TotalReceipts: Float
+    ReceiptValue: Float
+    PopChange: String
   }
 `;
