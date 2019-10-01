@@ -7,52 +7,27 @@ module.exports = class TransactionsService extends BaseService {
     super(Transactions);
   }
 
-  paginateTransaction({ page, limit, blockID, fields, order, accountAddress }, callback) {
+  paginateTransaction({ page, limit, fields, where, order }, callback) {
     page = page !== undefined ? parseInt(page) : 1;
     limit = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
     fields = fields !== undefined ? fields.replace(/,/g, ' ') : {};
     order = order !== undefined ? BaseService.parseOrder(order) : { _id: 'asc' };
 
-    if (blockID !== undefined) {
-      this.model.countDocuments({ BlockID: blockID }, (err, total) => {
-        if (err) {
-          callback(err, null);
-          return;
-        }
-
-        this.model
-          .find({ BlockID: blockID })
-          .select(fields)
-          .skip((page - 1) * limit)
-          .limit(limit)
-          .sort(order)
-          .lean()
-          .exec((err, data) => {
-            if (err) {
-              callback(err, null);
-              return;
-            }
-
-            const result = {
-              data,
-              paginate: {
-                page: parseInt(page),
-                count: data.length,
-                total,
-              },
-            };
-            callback(null, result);
-          });
+    if (where !== undefined) {
+      var splitWhere = where.split(',');
+      var NewWhere = [];
+      splitWhere.forEach(function(elemet) {
+        NewWhere.push({ [elemet.split(':')[0]]: elemet.split(':')[1].toString() });
       });
-    } else if (accountAddress !== undefined) {
-      this.model.countDocuments({ $or: [{ Sender: accountAddress }, { Recipient: accountAddress }] }, (err, total) => {
+
+      this.model.countDocuments({ $or: NewWhere }, (err, total) => {
         if (err) {
           callback(err, null);
           return;
         }
 
         this.model
-          .find({ $or: [{ Sender: accountAddress }, { Recipient: accountAddress }] })
+          .find({ $or: NewWhere })
           .select(fields)
           .skip((page - 1) * limit)
           .limit(limit)
@@ -76,14 +51,16 @@ module.exports = class TransactionsService extends BaseService {
           });
       });
     } else {
-      this.model.countDocuments((err, total) => {
+      where = where !== undefined ? { [where.split(':')[0]]: where.split(':')[1].toString() } : {};
+
+      this.model.countDocuments(where, (err, total) => {
         if (err) {
           callback(err, null);
           return;
         }
 
         this.model
-          .find()
+          .find(where)
           .select(fields)
           .skip((page - 1) * limit)
           .limit(limit)
