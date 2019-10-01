@@ -18,6 +18,41 @@ const schema = new mongoose.Schema({
   TransactionBodyBytes: { type: Buffer } /** additional */,
   TransactionIndex: { type: Number } /** additional */,
   Signature: { type: Buffer } /** additional */,
+  /** convertion by transaction body */
+  TransactionTypeName: { type: String },
+  SendMoney: {
+    Amount: { type: Number },
+  },
+  ClaimNodeRegistration: {
+    NodePublicKey: { type: String },
+    AccountAddress: { type: String },
+    ProofOfOwnership: {
+      MessageBytes: { type: Buffer },
+      Signature: { type: Buffer },
+    },
+  },
+  NodeRegistration: {
+    NodePublicKey: { type: String },
+    AccountAddress: { type: String },
+    NodeAddress: { type: String },
+    LockedBalance: { type: Number },
+    ProofOfOwnership: {
+      MessageBytes: { type: Buffer },
+      Signature: { type: Buffer },
+    },
+  },
+  RemoveNodeRegistration: {
+    NodePublicKey: { type: String },
+  },
+  UpdateNodeRegistration: {
+    NodePublicKey: { type: String },
+    NodeAddress: { type: String },
+    LockedBalance: { type: Number },
+    ProofOfOwnership: {
+      MessageBytes: { type: Buffer },
+      Signature: { type: Buffer },
+    },
+  },
 });
 
 schema.plugin(upsertMany);
