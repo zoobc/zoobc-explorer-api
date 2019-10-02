@@ -1,5 +1,5 @@
-const { combineResolvers } = require('graphql-resolvers');
 const { Converter, RedisCache } = require('../../utils');
+
 const cache = {
   transaction: 'transaction',
   block: 'block',
@@ -7,51 +7,62 @@ const cache = {
 
 module.exports = {
   Query: {
-    search: combineResolvers((parent, args, { models }) => {
-      const cacheBlocks = Converter.formatCache(cache.block, args);
+    search: (parent, args, { models }) => {
       const { Id } = args;
 
       return new Promise((resolve, reject) => {
-        RedisCache.get(cacheBlocks, (err, resRedis) => {
+        const cacheBlock = Converter.formatCache(cache.block, args);
+        RedisCache.get(cacheBlock, (err, resRedis) => {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
           models.Blocks.findOne()
             .where({ BlockID: Id })
             .lean()
-            .exec((err, result) => {
+            .exec((err, block) => {
               if (err) return reject(err);
-              if (result)
-                return resolve({
-                  ID: result.BlockID,
-                  Height: result.Height,
-                  Timestamp: result.Timestamp,
+              if (block) {
+                const resBlock = {
+                  ID: block.BlockID,
+                  Height: block.Height,
+                  Timestamp: block.Timestamp,
                   FoundIn: 'Block',
+                };
+
+                RedisCache.set(cacheBlock, resBlock, err => {
+                  if (err) return reject(err);
+                  return resolve(resBlock);
                 });
+              } else {
+                const cacheTransaction = Converter.formatCache(cache.transaction, args);
+                RedisCache.get(cacheTransaction, (err, resRedis) => {
+                  if (err) return reject(err);
+                  if (resRedis) return resolve(resRedis);
 
-              const cacheTransaction = Converter.formatCache(cache.transaction, args);
-              RedisCache.get(cacheTransaction, (err, resRedis) => {
-                if (err) return reject(err);
-                if (resRedis) return resolve(resRedis);
+                  models.Transactions.findOne()
+                    .where({ TransactionID: Id })
+                    .lean()
+                    .exec((err, transaction) => {
+                      if (err) return reject(err);
+                      if (!transaction) return resolve({});
 
-                models.Transactions.findOne()
-                  .where({ TransactionID: Id })
-                  .lean()
-                  .exec((err, result) => {
-                    if (err) return reject(err);
-                    if (!result) return resolve({});
+                      const resTrx = {
+                        ID: transaction.TransactionID,
+                        Height: transaction.Height,
+                        Timestamp: transaction.Timestamp,
+                        FoundIn: 'Transaction',
+                      };
 
-                    return resolve({
-                      ID: result.TransactionID,
-                      Height: result.Height,
-                      Timestamp: result.Timestamp,
-                      FoundIn: 'Transaction',
+                      RedisCache.set(cacheTransaction, resTrx, err => {
+                        if (err) return reject(err);
+                        return resolve(resTrx);
+                      });
                     });
-                  });
-              });
+                });
+              }
             });
         });
       });
-    }),
+    },
   },
 };
