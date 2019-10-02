@@ -22,6 +22,7 @@ module.exports = gql`
     Recipient: String
     Confirmations: Boolean
     Fee: Float
+    FeeConversion: Float
     Version: Int
     TransactionHash: String
     TransactionBodyLength: Int
