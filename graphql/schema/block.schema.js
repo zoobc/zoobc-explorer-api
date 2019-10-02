@@ -23,9 +23,13 @@ module.exports = gql`
     SmithScale: Int
     BlocksmithAddress: String
     TotalAmount: Float
+    TotalAmountConversion: Float
     TotalFee: Float
+    TotalFeeConversion: Float
     TotalCoinBase: Float
+    TotalCoinBaseConversion: Float
     TotalRewards: Float
+    TotalRewardsConversion: Float
     Version: Int
     PayloadLength: Int
     PayloadHash: String
