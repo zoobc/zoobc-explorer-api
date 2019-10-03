@@ -3,6 +3,7 @@ const { Converter, RedisCache } = require('../../utils');
 const cache = {
   searchTransaction: 'searchTransaction',
   searchBlock: 'searchBlock',
+  searchAccount: 'searchAccount',
 };
 
 module.exports = {
@@ -44,19 +45,45 @@ module.exports = {
                     .lean()
                     .exec((err, transaction) => {
                       if (err) return reject(err);
-                      if (!transaction) return resolve({});
+                      if (transaction) {
+                        const resTrx = {
+                          ID: transaction.TransactionID,
+                          Height: transaction.Height,
+                          Timestamp: transaction.Timestamp,
+                          FoundIn: 'Transaction',
+                        };
 
-                      const resTrx = {
-                        ID: transaction.TransactionID,
-                        Height: transaction.Height,
-                        Timestamp: transaction.Timestamp,
-                        FoundIn: 'Transaction',
-                      };
+                        RedisCache.set(cacheTransaction, resTrx, err => {
+                          if (err) return reject(err);
+                          return resolve(resTrx);
+                        });
+                      } else {
+                        const cacheAccount = Converter.formatCache(cache.searchAccount, args);
+                        RedisCache.get(cacheAccount, (err, resRedis) => {
+                          if (err) return reject(err);
+                          if (resRedis) return resolve(resRedis);
 
-                      RedisCache.set(cacheTransaction, resTrx, err => {
-                        if (err) return reject(err);
-                        return resolve(resTrx);
-                      });
+                          models.Accounts.findOne()
+                            .where({ AccountAddress: Id })
+                            .lean()
+                            .exec((err, account) => {
+                              if (err) return reject(err);
+                              if (!account) return resolve({});
+
+                              const resAccount = {
+                                ID: account.AccountAddress,
+                                Height: null,
+                                Timestamp: null,
+                                FoundIn: 'Account',
+                              };
+
+                              RedisCache.set(cacheAccount, resAccount, err => {
+                                if (err) return reject(err);
+                                return resolve(resAccount);
+                              });
+                            });
+                        });
+                      }
                     });
                 });
               }
