@@ -1,8 +1,8 @@
 const { Converter, RedisCache } = require('../../utils');
 
 const cache = {
-  transaction: 'transaction',
-  block: 'block',
+  searchTransaction: 'searchTransaction',
+  searchBlock: 'searchBlock',
 };
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
       const { Id } = args;
 
       return new Promise((resolve, reject) => {
-        const cacheBlock = Converter.formatCache(cache.block, args);
+        const cacheBlock = Converter.formatCache(cache.searchBlock, args);
         RedisCache.get(cacheBlock, (err, resRedis) => {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
@@ -34,7 +34,7 @@ module.exports = {
                   return resolve(resBlock);
                 });
               } else {
-                const cacheTransaction = Converter.formatCache(cache.transaction, args);
+                const cacheTransaction = Converter.formatCache(cache.searchTransaction, args);
                 RedisCache.get(cacheTransaction, (err, resRedis) => {
                   if (err) return reject(err);
                   if (resRedis) return resolve(resRedis);
