@@ -4,6 +4,11 @@ const { BlocksService, BlockReceiptsService, TransactionsService, AccountsServic
 
 var state = { accountAddresses: [], nodePublicKeys: [] };
 
+function currConversion(curr) {
+  if (!curr) return 0;
+  return curr / Math.pow(10, 8);
+}
+
 module.exports = class Controllers {
   constructor() {
     this.nodesService = new NodesService();
@@ -46,6 +51,7 @@ module.exports = class Controllers {
             });
           }
 
+          const totalRewards = parseFloat(item.Block.TotalCoinBase) + parseFloat(item.Block.TotalFee);
           return {
             BlockID: item.Block.ID,
             PreviousBlockID: item.Block.PreviousBlockHash,
@@ -57,9 +63,13 @@ module.exports = class Controllers {
             SmithScale: item.Block.SmithScale,
             BlocksmithAddress: item.Block.BlocksmithPublicKey,
             TotalAmount: item.Block.TotalAmount,
+            TotalAmountConversion: currConversion(item.Block.TotalAmount),
             TotalFee: item.Block.TotalFee,
+            TotalFeeConversion: currConversion(item.Block.TotalFee),
             TotalCoinBase: item.Block.TotalCoinBase,
-            TotalRewards: parseFloat(item.Block.TotalCoinBase) + parseFloat(item.Block.TotalFee),
+            TotalCoinBaseConversion: currConversion(item.Block.TotalCoinBase),
+            TotalRewards: totalRewards,
+            TotalRewardsConversion: currConversion(totalRewards),
             Version: item.Block.Version,
             PayloadLength: item.Block.PayloadLength,
             PayloadHash: item.Block.PayloadHash,
@@ -115,11 +125,11 @@ module.exports = class Controllers {
           if (err) return callback(`[Transactions] Get Transactions ${err}`, null);
           if (result && result.Transactions && result.Transactions.length < 1) return callback(null, null);
 
-          const results = result.Transactions.filter(item => item.Height === height);
-
           let sender = [];
           let recipient = [];
           const matchs = ['TransactionID', 'Height'];
+
+          const results = result.Transactions.filter(item => item.Height === height);
           const items = results.map(item => {
             sender.push(item.SenderAccountAddress);
             recipient.push(item.RecipientAccountAddress);
@@ -135,6 +145,7 @@ module.exports = class Controllers {
               Recipient: item.RecipientAccountAddress,
               Confirmations: null,
               Fee: item.Fee,
+              FeeConversion: currConversion(item.Fee),
               Version: item.Version,
               TransactionHash: item.TransactionHash,
               TransactionBodyLength: item.TransactionBodyLength,
@@ -250,11 +261,15 @@ module.exports = class Controllers {
             {
               AccountAddress: result.AccountBalance.AccountAddress,
               Balance: result.AccountBalance.Balance,
+              BalanceConversion: currConversion(result.AccountBalance.Balance),
               SpendableBalance: result.AccountBalance.SpendableBalance,
+              SpendableBalanceConversion: currConversion(result.AccountBalance.SpendableBalance),
               FirstActive: null,
               LastActive: null,
               TotalRewards: null,
+              TotalRewardsConversion: null,
               TotalFeesPaid: null,
+              TotalFeesPaidConversion: null,
               NodePublicKey: null,
               BlockHeight: result.AccountBalance.BlockHeight,
               PopRevenue: result.AccountBalance.PopRevenue,
