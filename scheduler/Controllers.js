@@ -3,7 +3,7 @@ const { Converter } = require('../utils');
 const { Block, Transaction, AccountBalance, NodeRegistration } = require('./Protos');
 const { BlocksService, BlockReceiptsService, TransactionsService, AccountsService, NodesService } = require('../api/services');
 
-let state = { accountAddresses: [], addNodePublicKeys: [], delNodePublicKeys: [] };
+let state = { blocksAddition: false, accountAddresses: [], addNodePublicKeys: [], delNodePublicKeys: [] };
 
 module.exports = class Controllers {
   constructor() {
@@ -15,6 +15,8 @@ module.exports = class Controllers {
   }
 
   updateBlocks(callback) {
+    state.blocksAddition = false;
+
     this.blocksService.getLastHeight((err, result) => {
       if (err) return callback(`[Blocks] Blocks Service - Get Last Height ${err}`, null);
 
@@ -79,6 +81,7 @@ module.exports = class Controllers {
         this.blocksService.upsert(items, matchs, (err, result) => {
           if (err) return callback(`[Blocks] Upsert ${err}`, null);
           if (result && result.ok !== 1) return callback(`[Blocks] Upsert data failed`, null);
+          state.blocksAddition = true;
           return callback(null, `[Blocks] Upsert ${items.length} data successfully`);
         });
       });
@@ -86,6 +89,7 @@ module.exports = class Controllers {
   }
 
   updateTransactions(callback) {
+    if (!state.blocksAddition) return callback(null, null);
     state = { accountAddresses: [], addNodePublicKeys: [], delNodePublicKeys: [] };
 
     this.transactionsService.getLastHeight((err, result) => {
