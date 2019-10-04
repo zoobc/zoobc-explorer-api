@@ -51,6 +51,7 @@ module.exports = gql`
     AccountAddress: String
     NodeAddress: String
     LockedBalance: Float
+    LockedBalanceConversion: Float
     ProofOfOwnership: ProofOfOwnership
   }
 
@@ -66,6 +67,7 @@ module.exports = gql`
     NodePublicKey: String
     NodeAddress: String
     LockedBalance: Float
+    LockedBalanceConversion: Float
     ProofOfOwnership: ProofOfOwnership
   }
 
