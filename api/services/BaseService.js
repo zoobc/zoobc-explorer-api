@@ -28,7 +28,6 @@ module.exports = class BaseService {
       findWhere = NewWhere && NewWhere.length > 0 ? { $or: NewWhere } : { [NewWhere[0]]: NewWhere[1].toString() };
     }
 
-    console.log('THIS IS finWHere', findWhere);
     this.model.countDocuments(findWhere, (err, total) => {
       if (err) {
         callback(err, null);
