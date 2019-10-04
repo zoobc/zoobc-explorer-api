@@ -20,6 +20,7 @@ const schema = new mongoose.Schema(
     TransactionBodyBytes: { type: Buffer } /** additional */,
     TransactionIndex: { type: Number } /** additional */,
     Signature: { type: Buffer } /** additional */,
+    TransactionBody: { type: String },
     /** convertion by transaction body */
     TransactionTypeName: { type: String },
     SendMoney: {
@@ -55,6 +56,19 @@ const schema = new mongoose.Schema(
         MessageBytes: { type: Buffer },
         Signature: { type: Buffer },
       },
+    },
+    SetupAccount: {
+      SetterAccountAddress: { type: String },
+      RecipientAccountAddress: { type: String },
+      Property: { type: String },
+      Value: { type: String },
+      MuchTime: { type: Number },
+    },
+    RemoveAccount: {
+      SetterAccountAddress: { type: String },
+      RecipientAccountAddress: { type: String },
+      Property: { type: String },
+      Value: { type: String },
     },
   },
   {

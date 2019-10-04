@@ -9,7 +9,7 @@ module.exports = {
     modeCluster: true,
     redisExpired: 60 /** seconds */,
     scheduler: true,
-    scheduleEvent: 1 /** minutes */,
+    scheduleEvent: 30 /** seconds */,
     openSslKeyPath: process.env.SSL_KEYPATH,
     openSslCertPath: process.env.SSL_CERTPATH,
     loggerFilePath: './logs/access.log',
