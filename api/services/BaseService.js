@@ -87,11 +87,15 @@ module.exports = class BaseService {
       });
   }
 
-  destroyMany(payload, callback) {
-    this.model.deleteMany(payload, callback);
+  created(payload, callback) {
+    this.model.create(payload, callback);
   }
 
   upsert(items, matchs, callback) {
     this.model.upsertMany(items, matchs, callback);
+  }
+
+  destroyMany(payload, callback) {
+    this.model.deleteMany(payload, callback);
   }
 };

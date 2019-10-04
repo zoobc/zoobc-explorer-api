@@ -65,8 +65,19 @@ const formatCache = (name, payload) => {
   return `${name}:${valPayload}`;
 };
 
+const concats = (sender, recipient) => {
+  return sender.concat(recipient.filter(item => sender.indexOf(item) < 0));
+};
+
+const zoobitConversion = curr => {
+  if (!curr) return 0;
+  return curr / Math.pow(10, 8);
+};
+
 module.exports = {
   formatDataGRPC,
   formatDataGRPC2,
   formatCache,
+  concats,
+  zoobitConversion,
 };

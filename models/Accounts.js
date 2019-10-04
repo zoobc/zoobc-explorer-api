@@ -18,6 +18,7 @@ const schema = new mongoose.Schema(
     NodePublicKey: { type: String },
     BlockHeight: { type: Number } /** additional */,
     PopRevenue: { type: Buffer } /** additional */,
+    Latest: { type: Boolean },
   },
   {
     toJSON: { virtuals: true },
