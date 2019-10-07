@@ -152,8 +152,15 @@ module.exports = class Controllers {
                 break;
               case 2:
                 transactionTypeName = 'Node Registration';
-                nodeRegistration = item.nodeRegistrationTransactionBody;
                 addNodePublicKeys.push(item.nodeRegistrationTransactionBody.NodePublicKey);
+                nodeRegistration = {
+                  NodePublicKey: Buffer.from(item.nodeRegistrationTransactionBody.NodePublicKey).toString('base64'),
+                  AccountAddress: item.nodeRegistrationTransactionBody.AccountAddress,
+                  NodeAddress: item.nodeRegistrationTransactionBody.NodeAddress,
+                  LockedBalance: item.nodeRegistrationTransactionBody.LockedBalance,
+                  LockedBalanceConversion: Converter.zoobitConversion(item.nodeRegistrationTransactionBody.LockedBalance),
+                  ProofOfOwnership: item.nodeRegistrationTransactionBody.ProofOfOwnership,
+                };
                 break;
               case 3:
                 transactionTypeName = 'Setup Account';
@@ -161,8 +168,14 @@ module.exports = class Controllers {
                 break;
               case 258:
                 transactionTypeName = 'Update Node Registration';
-                updateNodeRegistration = item.updateNodeRegistrationTransactionBody;
                 addNodePublicKeys.push(item.updateNodeRegistrationTransactionBody.NodePublicKey);
+                updateNodeRegistration = {
+                  NodePublicKey: Buffer.from(item.updateNodeRegistrationTransactionBody.NodePublicKey).toString('base64'),
+                  NodeAddress: item.updateNodeRegistrationTransactionBody.NodeAddress,
+                  LockedBalance: item.updateNodeRegistrationTransactionBody.LockedBalance,
+                  LockedBalanceConversion: Converter.zoobitConversion(item.updateNodeRegistrationTransactionBody.LockedBalance),
+                  ProofOfOwnership: item.updateNodeRegistrationTransactionBody.ProofOfOwnership,
+                };
                 break;
               case 259:
                 transactionTypeName = 'Remove Account';
@@ -170,13 +183,19 @@ module.exports = class Controllers {
                 break;
               case 514:
                 transactionTypeName = 'Remove Node Registration';
-                removeNodeRegistration = item.removeNodeRegistrationTransactionBody;
                 delNodePublicKeys.push(item.removeNodeRegistrationTransactionBody.NodePublicKey);
+                removeNodeRegistration = {
+                  NodePublicKey: Buffer.from(item.removeNodeRegistrationTransactionBody.NodePublicKey).toString('base64'),
+                };
                 break;
               case 770:
                 transactionTypeName = 'Claim Node Registration';
-                claimNodeRegistration = item.claimNodeRegistrationTransactionBody;
                 addNodePublicKeys.push(item.claimNodeRegistrationTransactionBody.NodePublicKey);
+                claimNodeRegistration = {
+                  NodePublicKey: Buffer.from(item.claimNodeRegistrationTransactionBody.NodePublicKey).toString('base64'),
+                  AccountAddress: item.claimNodeRegistrationTransactionBody.AccountAddress,
+                  ProofOfOwnership: item.claimNodeRegistrationTransactionBody.ProofOfOwnership,
+                };
                 break;
               default:
                 transactionTypeName = 'Empty';
