@@ -30,7 +30,8 @@ module.exports = class AccountController extends BaseController {
           this.sendSuccessResponse(
             res,
             responseBuilder
-              .setData(resRedis)
+              .setData(resRedis.data)
+              .setPaginate(resRedis.setPaginate)
               .setMessage('Accounts fetched successfully')
               .build()
           );

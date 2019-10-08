@@ -33,7 +33,8 @@ module.exports = class BlockController extends BaseController {
           this.sendSuccessResponse(
             res,
             responseBuilder
-              .setData(resRedis)
+              .setData(resRedis.data)
+              .setPaginate(resRedis.setPaginate)
               .setMessage('Blocks fetched successfully')
               .build()
           );
