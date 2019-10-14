@@ -19,7 +19,7 @@ jobs:
           command: npm install
       - run:
           name: Deploy
-          command: ssh root@139.162.15.80 'cd zoobc-explorer-api/ && ./deploy.sh'
+          command: ssh root@139.162.15.80 "cd zoobc-explorer-api/ && ls -ltr"
 
 workflows:
   version: 2
