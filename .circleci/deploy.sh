@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 rm -rf .git
 rm -rf .gitignore
 git config --global user.email "igedetirtanata@gmail.com"
