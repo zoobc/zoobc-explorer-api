@@ -20,49 +20,6 @@ jobs:
       - run:
           name: Deploy
           command: ./.circleci/deploy.sh
-      # - run:
-      #     name: Fix SSH could not resolve hostname
-      #     command: ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
-      # - run:
-      #     name: Deploy Over SSH
-      #     command: |
-      #       ssh root@139.162.15.80 "ls -ltr"
-      # - add_ssh_keys
-          # fingerprints:
-          #   - "95:c3:f9:41:99:ba:43:26:75:1d:dc:23:bb:58:c4:6d"
-      # - run:
-      #     name: Add SSH key to known hosts
-      #     command: |
-            # ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
-            # ssh root@139.162.15.80 pwd
-      # - run:
-      #     name: Deploy Over SSH
-      #     command: |
-      #       ssh root@139.162.15.80 "ls -ltr"
-      # - checkout
-      # - run:
-      #     name: Open SSL RSA
-      #     command: |
-      #       ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
-      #       ssh root@139.162.15.80 pwd
-      # - run:
-      #     name: Install Node Modules
-      #     command: |
-      #       npm install
-      #       # npm start
-      # - run:
-      #     name: Update Schema Sub-module
-      #     command: |
-      #       git submodule init
-      #       git submodule update --remote
-      # - restore_cache:
-      #     keys:
-      #       - v1-dependencies-{{ checksum "package.json" }}
-      #       - v1-dependencies-
-      # - save_cache:
-      #     paths:
-      #       - node_modules
-      #     key: v1-dependencies-{{ checksum "package.json" }}
 
 workflows:
   version: 2
