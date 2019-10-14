@@ -9,7 +9,7 @@ module.exports = {
     modeCluster: true,
     redisExpired: 60 /** seconds */,
     scheduler: true,
-    scheduleEvent: 1 /** minutes */,
+    scheduleEvent: 30 /** seconds */,
     openSslKeyPath: process.env.SSL_KEYPATH,
     openSslCertPath: process.env.SSL_CERTPATH,
     loggerFilePath: './logs/access.log',
@@ -26,6 +26,6 @@ module.exports = {
   },
   proto: {
     host: `${process.env.PROTO_HOST}:${process.env.PROTO_PORT}`,
-    path: path.resolve(__dirname, '../zoobc-schema'),
+    path: path.resolve(__dirname, '../schema'),
   },
 };

@@ -1,16 +1,14 @@
 const { gql } = require('apollo-server-express');
 
 module.exports = gql`
-
   extend type Query {
-    search(Id: ID!): SearchResult
+    search(Id: String!): SearchResult
   }
 
-  type SearchResult{
+  type SearchResult {
     ID: String
     Height: Int
-    Timestamp: String
+    Timestamp: Date
     FoundIn: String
   }
-
 `;

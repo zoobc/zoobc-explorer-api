@@ -3,7 +3,7 @@ const { gql } = require('apollo-server-express');
 module.exports = gql`
   extend type Query {
     accounts(page: Int, limit: Int, order: String): Accounts!
-    account(AccountAddress: ID!): Account!
+    account(AccountAddress: String!): Account!
   }
 
   type Accounts {
@@ -15,11 +15,18 @@ module.exports = gql`
     _id: ID!
     AccountAddress: String
     Balance: Float
+    BalanceConversion: Float
     SpendableBalance: Float
-    FirstActive: String
-    LastActive: String
+    SpendableBalanceConversion: Float
+    FirstActive: Date
+    LastActive: Date
     TotalRewards: Float
+    TotalRewardsConversion: Float
     TotalFeesPaid: Float
+    TotalFeesPaidConversion: Float
     NodePublicKey: String
+    BlockHeight: Int
+    PopRevenue: String
+    Latest: Boolean
   }
 `;

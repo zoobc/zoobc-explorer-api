@@ -27,6 +27,12 @@
  *            type: string
  *            example: "Height"
  *          description: Order blocks field by asc `Height` or desc `-Height`.
+ *        - in: query
+ *          name: fields
+ *          schema:
+ *            type: string
+ *            example: "ID TransactionID BlockID Version Height"
+ *          description: Select which transactions field to get.
  *      summary: List of transactions
  *      description: Get transactions response with query parameters _page_, _limit_, and _order_.
  *      responses:
@@ -51,45 +57,48 @@
  *          $ref: '#/definitions/Transactions'
  *  Transactions:
  *    properties:
- *      ID:
+ *      TransactionID:
  *        type: string
- *        example: '4704416403202874266'
- *      BlockID:
+ *        example: '-6885775591523989049'
+ *      Timestamp:
  *        type: string
- *        example: '4545420970999433273'
- *      Version:
- *        type: number
- *        example: '1'
- *      Height:
- *        type: number
- *        example: 10
- *      SenderAccountAddress:
- *        type: string
- *        example: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
- *      RecipientAccountAddress:
- *        type: string
- *        example: 'f3831afb0cfbaca8e9fca6523d0b23d14aa2e6f9ac1726f12c30acd4d622bb0a'
+ *        example: '2019-07-11T00:53:09.000Z'
  *      TransactionType:
  *        type: number
- *        example: '1'
+ *        example: 2
+ *      BlockID:
+ *        type: string
+ *        example: '-6705850196976533509'
+ *      Height:
+ *        type: number
+ *        example: 0
+ *      Sender:
+ *        type: string
+ *        example: 'BCZD_VxfO2S9aziIL3cn_cXW7uPDVPOrnXuP98GEAUC7'
+ *      Recipient:
+ *        type: string
+ *        example: 'BCZEGOb3WNx3fDOVf9ZS4EjvOIv_UeW4TVBQJ_6tHKlE'
+ *      Confirmations:
+ *        type: boolean
+ *        example: true
  *      Fee:
  *        type: number
- *        example: '0'
- *      Timestamp:
- *        type: number
- *        example: '20-Sep-2019 03:31:19'
- *      TransactionHash:
- *        type: string
- *        example: '670cf4093aca3170801b6605ab236dbe3c96f62ec78086b2b9ab96b363e8335b'
- *      TransactionBodyLength:
+ *        example: 0
+ *      Version:
  *        type: number
  *        example: 1
+ *      TransactionHash:
+ *        type: string
+ *        example: 'x0ko+JTPcKAFukBQYg+DLeeZmdhpYCUWCeZ2Y8YNQAc='
+ *      TransactionBodyLength:
+ *        type: number
+ *        example: 243
  *      TransactionBodyBytes:
  *        type: string
- *        example: '3bfb90330d7e7fd439ec4afaa6ba6808e790276d83ab10196262a374dd7d6cd8'
+ *        example: 'mToyyAc9bOXMMMeRFWN9SzEtdmHbUPL0ZIaQ9iWQ1YcsAAAAQkNaRUdPYjNXTngzZkRPVmY5WlM0RWp2T0l2X1VlVzRUVkJRSl82dEhLbEUHAAAAMC4wLjAuMAAAAAAAAAAAQkNaRUdPYjNXTngzZkRPVmY5WlM0RWp2T0l2X1VlVzRUVkJRSl82dEhLbEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=='
  *      TransactionIndex:
  *        type: number
- *        example: '1'
+ *        example: 2
  *      Signature:
  *        type: string
  *        example: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'

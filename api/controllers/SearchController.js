@@ -54,13 +54,14 @@ module.exports = class SearchController extends BaseController {
           this.sendSuccessResponse(
             res,
             responseBuilder
-              .setData(resRedis)
+              .setData(resRedis.data)
+              .setPaginate(resRedis.setPaginate)
               .setMessage('Block fetched successfully')
               .build()
           );
           return;
         }
-        this.blockService.findOne({ ID: id }, (errBlock, resultBlock) => {
+        this.blockService.findOne({ BlockID: id }, (errBlock, resultBlock) => {
           if (errBlock) {
             handleError.sendCatchError(res, errBlock);
             return;
@@ -98,13 +99,14 @@ module.exports = class SearchController extends BaseController {
                 this.sendSuccessResponse(
                   res,
                   responseBuilder
-                    .setData(resRedis)
+                    .setData(resRedis.data)
+                    .setPaginate(resRedis.setPaginate)
                     .setMessage('Transaction fetched successfully')
                     .build()
                 );
                 return;
               }
-              this.transactionService.findOne({ ID: id }, (errTrans, resultTrans) => {
+              this.transactionService.findOne({ TransactionID: id }, (errTrans, resultTrans) => {
                 if (errTrans) {
                   handleError.sendCatchError(res, errTrans);
                   return;

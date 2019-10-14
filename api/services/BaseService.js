@@ -12,20 +12,30 @@ module.exports = class BaseService {
     return { [string]: 'asc' };
   }
 
-  paginate({ page, limit, fields, order }, callback) {
+  paginate({ page, limit, fields, where, order }, callback) {
     page = page !== undefined ? parseInt(page) : 1;
     limit = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
     fields = fields !== undefined ? fields.replace(/,/g, ' ') : {};
     order = order !== undefined ? BaseService.parseOrder(order) : { _id: 'asc' };
+    var findWhere = {};
+    if (where) {
+      const splitWhere = where.split(',');
+      var NewWhere = [];
+      splitWhere.forEach(function(element) {
+        NewWhere.push({ [element.split(':')[0]]: element.split(':')[1].toString() });
+      });
 
-    this.model.countDocuments((err, total) => {
+      findWhere = NewWhere && NewWhere.length > 0 ? { $or: NewWhere } : { [NewWhere[0]]: NewWhere[1].toString() };
+    }
+
+    this.model.countDocuments(findWhere, (err, total) => {
       if (err) {
         callback(err, null);
         return;
       }
 
       this.model
-        .find()
+        .find(findWhere)
         .select(fields)
         .skip((page - 1) * limit)
         .limit(limit)
@@ -86,7 +96,15 @@ module.exports = class BaseService {
       });
   }
 
+  created(payload, callback) {
+    this.model.create(payload, callback);
+  }
+
   upsert(items, matchs, callback) {
     this.model.upsertMany(items, matchs, callback);
+  }
+
+  destroyMany(payload, callback) {
+    this.model.deleteMany(payload, callback);
   }
 };

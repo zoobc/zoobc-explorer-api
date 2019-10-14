@@ -4,17 +4,24 @@ const blockSchema = require('./block.schema');
 const transactionSchema = require('./transaction.schema');
 const accountSchema = require('./account.schema');
 const searchSchema = require('./search.schema');
+const nodeSchema = require('./node.schema');
+const blockReceiptSchema = require('./block.receipt.schema');
 
 const linkSchema = gql`
+  scalar Date
+
   type Query {
     _: Boolean
   }
+
   type Mutation {
     _: Boolean
   }
+
   type Subscription {
     _: Boolean
   }
+
   type Paginate {
     Page: Int
     Count: Int
@@ -22,4 +29,4 @@ const linkSchema = gql`
   }
 `;
 
-module.exports = [linkSchema, blockSchema, transactionSchema, accountSchema, searchSchema];
+module.exports = [linkSchema, blockSchema, transactionSchema, accountSchema, searchSchema, nodeSchema, blockReceiptSchema];

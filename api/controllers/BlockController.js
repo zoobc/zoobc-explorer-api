@@ -33,7 +33,8 @@ module.exports = class BlockController extends BaseController {
           this.sendSuccessResponse(
             res,
             responseBuilder
-              .setData(resRedis)
+              .setData(resRedis.data)
+              .setPaginate(resRedis.setPaginate)
               .setMessage('Blocks fetched successfully')
               .build()
           );
@@ -104,7 +105,7 @@ module.exports = class BlockController extends BaseController {
           return;
         }
 
-        this.service.findOne({ ID: id }, (err, result) => {
+        this.service.findOne({ BlockID: id }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;

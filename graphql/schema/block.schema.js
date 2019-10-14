@@ -2,8 +2,8 @@ const { gql } = require('apollo-server-express');
 
 module.exports = gql`
   extend type Query {
-    blocks(page: Int, limit: Int, order: String): Blocks!
-    block(ID: ID!): Block!
+    blocks(page: Int, limit: Int, order: String, NodePublicKey: String): Blocks!
+    block(BlockID: String!): Block!
   }
 
   type Blocks {
@@ -13,20 +13,29 @@ module.exports = gql`
 
   type Block {
     _id: ID!
-    ID: String
-    PreviousBlockHash: String
+    BlockID: String
+    PreviousBlockID: String
     Height: Int
-    Timestamp: String
+    Timestamp: Date
     BlockSeed: String
     BlockSignature: String
     CumulativeDifficulty: String
     SmithScale: Int
+    BlocksmithAddress: String
     TotalAmount: Float
+    TotalAmountConversion: Float
     TotalFee: Float
+    TotalFeeConversion: Float
     TotalCoinBase: Float
+    TotalCoinBaseConversion: Float
+    TotalRewards: Float
+    TotalRewardsConversion: Float
     Version: Int
     PayloadLength: Int
     PayloadHash: String
-    Transactions: [Transaction!]!
+    BlocksmithID: String
+    TotalReceipts: Float
+    ReceiptValue: Float
+    PopChange: String
   }
 `;
