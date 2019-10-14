@@ -16,7 +16,7 @@ jobs:
             ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
       - run:
           name: Install Dependencies
-          command: npm ci
+          command: npm install
       - run:
           name: Deploy
           command: ./.circleci/deploy.sh
