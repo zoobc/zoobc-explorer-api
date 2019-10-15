@@ -28,11 +28,8 @@ module.exports = class BaseService {
       findWhere = NewWhere && NewWhere.length > 0 ? { $or: NewWhere } : { [NewWhere[0]]: NewWhere[1].toString() };
     }
 
-    this.model.countDocuments(findWhere, (err, total) => {
-      if (err) {
-        callback(err, null);
-        return;
-      }
+    this.model.countDocuments(where, (err, total) => {
+      if (err) return callback(err, null);
 
       this.model
         .find(findWhere)
@@ -42,10 +39,7 @@ module.exports = class BaseService {
         .sort(order)
         .lean()
         .exec((err, data) => {
-          if (err) {
-            callback(err, null);
-            return;
-          }
+          if (err) return callback(err, null);
 
           const result = {
             data,
@@ -55,7 +49,7 @@ module.exports = class BaseService {
               total,
             },
           };
-          callback(null, result);
+          return callback(null, result);
         });
     });
   }
@@ -66,13 +60,10 @@ module.exports = class BaseService {
       .where(where)
       .lean()
       .exec((err, results) => {
-        if (err) {
-          callback(err, null);
-          return;
-        }
+        if (err) return callback(err, null);
 
         const result = Array.isArray(results) ? results[0] : results;
-        callback(null, result);
+        return callback(null, result);
       });
   }
 
@@ -87,12 +78,8 @@ module.exports = class BaseService {
       .sort(order)
       .lean()
       .exec((err, result) => {
-        if (err) {
-          callback(err, null);
-          return;
-        }
-
-        callback(null, result);
+        if (err) return callback(err, null);
+        return callback(null, result);
       });
   }
 

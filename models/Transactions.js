@@ -3,7 +3,6 @@ const { upsertMany } = require('../utils');
 
 const schema = new mongoose.Schema(
   {
-    _id: { type: String },
     TransactionID: { type: String } /** ID */,
     Timestamp: { type: Date },
     TransactionType: { type: Number },
