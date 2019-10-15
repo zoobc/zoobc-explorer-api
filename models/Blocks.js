@@ -3,7 +3,6 @@ const { upsertMany } = require('../utils');
 
 const schema = new mongoose.Schema(
   {
-    _id: { type: String },
     BlockID: { type: String } /** ID */,
     PreviousBlockID: { type: Buffer } /** PreviousBlockHash */,
     Height: { type: Number },

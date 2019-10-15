@@ -74,10 +74,17 @@ const zoobitConversion = curr => {
   return curr / Math.pow(10, 8);
 };
 
+const bufferStr = (buff, converted = false) => {
+  const result = Buffer.from(buff).toString('base64');
+  if (result === 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=') return null;
+  return converted ? result : buff;
+};
+
 module.exports = {
   formatDataGRPC,
   formatDataGRPC2,
   formatCache,
   concats,
   zoobitConversion,
+  bufferStr,
 };

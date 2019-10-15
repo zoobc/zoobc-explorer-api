@@ -14,7 +14,7 @@ module.exports = class Controllers {
     this.blockReceiptsService = new BlockReceiptsService();
   }
 
-  updateBlocks(callback) {
+  udateBlocks(callback) {
     state.blocksAddition = false;
 
     this.blocksService.getLastHeight((err, result) => {
@@ -128,12 +128,10 @@ module.exports = class Controllers {
           let accountAddresses = [];
           let addNodePublicKeys = [];
           let delNodePublicKeys = [];
+          // let TotalFeesPaidSender = 0;
 
           const results = result.Transactions.filter(item => item.Height === height);
           const items = results.map(item => {
-            accountAddresses.push(item.SenderAccountAddress);
-            accountAddresses.push(item.RecipientAccountAddress);
-
             let sendMoney = null;
             let claimNodeRegistration = null;
             let nodeRegistration = null;
@@ -202,6 +200,42 @@ module.exports = class Controllers {
                 break;
             }
 
+            accountAddresses.push({
+              IsSender: true,
+              AccountAddress: item.SenderAccountAddress,
+              Fee: parseInt(item.Fee),
+              FeeConversion: Converter.zoobitConversion(parseInt(item.Fee)),
+              // Balance: 0,
+              // BalanceConversion: 0,
+              // FirstActive: null,
+              // LastActive: null,
+              // TotalRewards: 0,
+              // TotalRewardsConversion: 0,
+              // TotalFeesPaid: 0,
+              // TotalFeesPaidConversion: 0,
+              // TotalFeesPaid: parseInt(TotalFeesPaidSender) + parseInt(item.Fee),
+              // TotalFeesPaidConversion: Converter.zoobitConversion(TotalFeesPaidSender + parseInt(item.Fee)),
+              BlockHeight: item.Height,
+              Timestamp: moment.unix(item.Timestamp).valueOf(),
+            });
+
+            accountAddresses.push({
+              IsSender: false,
+              AccountAddress: item.RecipientAccountAddress,
+              Fee: 0,
+              FeeConversion: 0,
+              // Balance: 0,
+              // BalanceConversion: 0,
+              // FirstActive: null,
+              // LastActive: null,
+              // TotalRewards: 0,
+              // TotalRewardsConversion: 0,
+              // TotalFeesPaid: 0,
+              // TotalFeesPaidConversion: 0,
+              BlockHeight: item.Height,
+              Timestamp: moment.unix(item.Timestamp).valueOf(),
+            });
+
             return {
               TransactionID: item.ID,
               Timestamp: moment.unix(item.Timestamp).valueOf(),
@@ -231,7 +265,8 @@ module.exports = class Controllers {
             };
           });
 
-          state.accountAddresses = accountAddresses.filter((v, i) => accountAddresses.indexOf(v) === i);
+          // state.accountAddresses = accountAddresses.filter((v, i) => accountAddresses.indexOf(v) === i);
+          state.accountAddresses = accountAddresses;
           state.addNodePublicKeys = addNodePublicKeys.filter((v, i) => addNodePublicKeys.indexOf(v) === i);
           state.delNodePublicKeys = delNodePublicKeys.filter((v, i) => delNodePublicKeys.indexOf(v) === i);
 
@@ -342,56 +377,175 @@ module.exports = class Controllers {
     });
   }
 
-  updateAccounts(callback) {
-    if (state.accountAddresses.length < 1) return callback(null, null);
+  updateAccountTransactions(callback) {
     // console.log('==state.accountAddresses', state.accountAddresses);
+    state.accountAddresses = [
+      {
+        IsSender: true,
+        AccountAddress: 'BCZD_VxfO2S9aziIL3cn_cXW7uPDVPOrnXuP98GEAUC7',
+        Fee: 0,
+        FeeConversion: 0,
+        Balance: 0,
+        BalanceConversion: 0,
+        FirstActive: null,
+        LastActive: null,
+        TotalRewards: 0,
+        TotalRewardsConversion: 0,
+        TotalFeesPaid: 0,
+        TotalFeesPaidConversion: 0,
+        BlockHeight: 0,
+        Timestamp: 1562806389000,
+      },
+      {
+        IsSender: true,
+        AccountAddress: 'RIwnKZz2UwV3q5cf2gFY7llMT3jUFXTjcO7LWdbWcy19',
+        Fee: 5000,
+        FeeConversion: 0.00005,
+        Balance: 0,
+        BalanceConversion: 0,
+        FirstActive: null,
+        LastActive: null,
+        TotalRewards: 0,
+        TotalRewardsConversion: 0,
+        TotalFeesPaid: 5000,
+        TotalFeesPaidConversion: 0.00005,
+        BlockHeight: 20,
+        Timestamp: 1569914656000,
+      },
+      {
+        IsSender: false,
+        AccountAddress: 'GOyhJUaHmc473WupBhmDsLE949ytd-yRL0k8-Miqufqb',
+        Fee: 0,
+        FeeConversion: 0,
+        Balance: 0,
+        BalanceConversion: 0,
+        FirstActive: null,
+        LastActive: null,
+        TotalRewards: 0,
+        TotalRewardsConversion: 0,
+        TotalFeesPaid: 0,
+        TotalFeesPaidConversion: 0,
+        BlockHeight: 20,
+        Timestamp: 1569914656000,
+      },
+    ];
 
-    const accounts = state.accountAddresses.map(accountAddress => {
-      return new Promise((resolve, reject) => {
-        AccountBalance.GetAccountBalance({ AccountAddress: accountAddress }, (err, result) => {
-          if (err) return reject(`[Accounts] Account Balance - Get Account Balance ${err}`);
-          if (result && result.AccountBalance && result.AccountBalance === {}) return resolve(0);
+    if (state.accountAddresses.length < 1) return callback(null, null);
+  }
 
-          const items = [
-            {
-              AccountAddress: result.AccountBalance.AccountAddress,
-              Balance: result.AccountBalance.Balance,
-              BalanceConversion: Converter.zoobitConversion(result.AccountBalance.Balance),
-              SpendableBalance: result.AccountBalance.SpendableBalance,
-              SpendableBalanceConversion: Converter.zoobitConversion(result.AccountBalance.SpendableBalance),
-              FirstActive: null,
-              LastActive: null,
-              TotalRewards: null,
-              TotalRewardsConversion: null,
-              TotalFeesPaid: null,
-              TotalFeesPaidConversion: null,
-              NodePublicKey: null,
-              BlockHeight: result.AccountBalance.BlockHeight,
-              PopRevenue: result.AccountBalance.PopRevenue,
-              Latest: result.AccountBalance.Latest,
-            },
-          ];
+  updateAccounts(callback) {
+    // // console.log('==state.accountAddresses', state.accountAddresses);
+    // state.accountAddresses = [
+    //   {
+    //     IsSender: true,
+    //     AccountAddress: 'BCZD_VxfO2S9aziIL3cn_cXW7uPDVPOrnXuP98GEAUC7',
+    //     Fee: 0,
+    //     FeeConversion: 0,
+    //     Balance: 0,
+    //     BalanceConversion: 0,
+    //     FirstActive: null,
+    //     LastActive: null,
+    //     TotalRewards: 0,
+    //     TotalRewardsConversion: 0,
+    //     TotalFeesPaid: 0,
+    //     TotalFeesPaidConversion: 0,
+    //     BlockHeight: 0,
+    //     Timestamp: 1562806389000,
+    //   },
+    //   {
+    //     IsSender: true,
+    //     AccountAddress: 'RIwnKZz2UwV3q5cf2gFY7llMT3jUFXTjcO7LWdbWcy19',
+    //     Fee: 5000,
+    //     FeeConversion: 0.00005,
+    //     Balance: 0,
+    //     BalanceConversion: 0,
+    //     FirstActive: null,
+    //     LastActive: null,
+    //     TotalRewards: 0,
+    //     TotalRewardsConversion: 0,
+    //     TotalFeesPaid: 5000,
+    //     TotalFeesPaidConversion: 0.00005,
+    //     BlockHeight: 20,
+    //     Timestamp: 1569914656000,
+    //   },
+    //   {
+    //     IsSender: false,
+    //     AccountAddress: 'GOyhJUaHmc473WupBhmDsLE949ytd-yRL0k8-Miqufqb',
+    //     Fee: 0,
+    //     FeeConversion: 0,
+    //     Balance: 0,
+    //     BalanceConversion: 0,
+    //     FirstActive: null,
+    //     LastActive: null,
+    //     TotalRewards: 0,
+    //     TotalRewardsConversion: 0,
+    //     TotalFeesPaid: 0,
+    //     TotalFeesPaidConversion: 0,
+    //     BlockHeight: 20,
+    //     Timestamp: 1569914656000,
+    //   },
+    // ];
 
-          const matchs = ['AccountAddress', 'BlockHeight'];
-          this.accountsService.upsert(items, matchs, (err, result) => {
-            if (err) return reject(`[Accounts] Upsert ${err}`);
-            if (result && result.ok !== 1) return reject(`[Accounts] Upsert data failed`);
-            return resolve(items.length);
-          });
-        });
-      });
-    });
+    if (state.accountAddresses.length < 1) return callback(null, null);
 
-    Promise.all(accounts)
-      .then(results => {
-        const count = results.reduce((prev, curr) => {
-          return parseInt(prev) + parseInt(curr);
-        }, 0);
 
-        if (count < 1) return callback(null, null);
-        return callback(null, `[Accounts] Upsert ${count} data successfully`);
-      })
-      .catch(error => callback(error, null));
+    // const AccountAddress = state.accountAddresses.map(i => i.AccountAddress);
+    // const params = { where: { AccountAddress: { $in: AccountAddress } }, order: 'Height' };
+    // console.log('==AccountAddress', AccountAddress);
+    // this.accountsService.findAll(params, (err, results) => {
+    //   if (err) return callback(`[Accounts] Account Service - Find All ${err}`, null);
+    //   // console.log('==results', results);
+    //   if (results && results.length < 1) {
+
+    //   }
+    // });
+
+    // const accounts = state.accountAddresses.map(accountAddress => {
+    //   return new Promise((resolve, reject) => {
+    //     AccountBalance.GetAccountBalance({ AccountAddress: accountAddress }, (err, result) => {
+    //       if (err) return reject(`[Accounts] Account Balance - Get Account Balance ${err}`);
+    //       if (result && result.AccountBalance && result.AccountBalance === {}) return resolve(0);
+
+    //       const items = [
+    //         {
+    //           AccountAddress: result.AccountBalance.AccountAddress,
+    //           Balance: result.AccountBalance.Balance,
+    //           BalanceConversion: Converter.zoobitConversion(result.AccountBalance.Balance),
+    //           SpendableBalance: result.AccountBalance.SpendableBalance,
+    //           SpendableBalanceConversion: Converter.zoobitConversion(result.AccountBalance.SpendableBalance),
+    //           FirstActive: null,
+    //           LastActive: null,
+    //           TotalRewards: null,
+    //           TotalRewardsConversion: null,
+    //           TotalFeesPaid: null,
+    //           TotalFeesPaidConversion: null,
+    //           NodePublicKey: null,
+    //           BlockHeight: result.AccountBalance.BlockHeight,
+    //           PopRevenue: result.AccountBalance.PopRevenue,
+    //           Latest: result.AccountBalance.Latest,
+    //         },
+    //       ];
+
+    //       const matchs = ['AccountAddress', 'BlockHeight'];
+    //       this.accountsService.upsert(items, matchs, (err, result) => {
+    //         if (err) return reject(`[Accounts] Upsert ${err}`);
+    //         if (result && result.ok !== 1) return reject(`[Accounts] Upsert data failed`);
+    //         return resolve(items.length);
+    //       });
+    //     });
+    //   });
+    // });
+
+    // Promise.all(accounts)
+    //   .then(results => {
+    //     const count = results.reduce((prev, curr) => {
+    //       return parseInt(prev) + parseInt(curr);
+    //     }, 0);
+
+    //     if (count < 1) return callback(null, null);
+    //     return callback(null, `[Accounts] Upsert ${count} data successfully`);
+    //   })
+    //   .catch(error => callback(error, null));
   }
 
   redudance(callback) {

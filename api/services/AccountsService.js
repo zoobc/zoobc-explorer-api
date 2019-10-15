@@ -6,6 +6,14 @@ module.exports = class AccountsService extends BaseService {
     super(Accounts);
   }
 
+  createdOnlyNew(params, payload, callback) {
+    Accounts.findOne(params, (err, res) => {
+      if (err) return callback(err, null);
+      if (res) return callback(null, null);
+      Accounts.create(payload, callback);
+    });
+  }
+
   checkIsNewAccounts(accounts, callback) {
     Accounts.find()
       .lean()

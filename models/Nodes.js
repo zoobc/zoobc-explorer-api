@@ -3,7 +3,7 @@ const { upsertMany } = require('../utils');
 
 const schema = new mongoose.Schema(
   {
-    _id: { type: String },
+    NodeID: { type: String },
     NodePublicKey: { type: String },
     OwnerAddress: { type: String } /** AccountAddress */,
     NodeAddress: { type: String },
@@ -13,9 +13,10 @@ const schema = new mongoose.Schema(
     RegistryStatus: { type: Boolean } /** Queued */,
     BlocksFunds: { type: Number } /** ..waiting core */,
     RewardsPaid: { type: Number } /** ..waiting core */,
+    RewardsPaidConversion: { type: Number },
     Latest: { type: Boolean } /** additional */,
     Height: { type: Number } /** additional */,
-    NodeID: { type: String } /** additional */,
+    Accounts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Accounts' }],
   },
   {
     toJSON: { virtuals: true },

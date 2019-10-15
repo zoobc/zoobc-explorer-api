@@ -6,6 +6,7 @@ option go_package = "github.com/zoobc/zoobc-core/common/model";
 import "model/proofOfOwnership.proto";
 import "model/pagination.proto";
 import "model/batchReceipt.proto";
+import "model/nodeRegistration.proto";
 
 
 // Transaction represent the transaction data structure stored in the database
@@ -65,8 +66,8 @@ message SendMoneyTransactionBody {
 message NodeRegistrationTransactionBody {
     bytes   NodePublicKey = 1;
     string AccountAddress = 2;
-    string  NodeAddress = 3;
     // Funds to be locked to register the node
+    NodeAddress NodeAddress = 3;
     int64   LockedBalance = 4 [jstype = JS_STRING];
     // Proof of ownership (message + signature)
     ProofOfOwnership Poown = 5;
@@ -74,8 +75,8 @@ message NodeRegistrationTransactionBody {
 
 message UpdateNodeRegistrationTransactionBody {
     bytes   NodePublicKey = 1;
-    string  NodeAddress = 2;
     // Funds to be locked to register the node
+    NodeAddress NodeAddress = 2;
     int64   LockedBalance = 3 [jstype = JS_STRING];
     // Proof of ownership (message + signature)
     ProofOfOwnership Poown = 4;

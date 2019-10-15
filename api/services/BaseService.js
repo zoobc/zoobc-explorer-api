@@ -20,10 +20,7 @@ module.exports = class BaseService {
     where = where !== undefined ? { [where.split(':')[0]]: where.split(':')[1].toString() } : {};
 
     this.model.countDocuments(where, (err, total) => {
-      if (err) {
-        callback(err, null);
-        return;
-      }
+      if (err) return callback(err, null);
 
       this.model
         .find(where)
@@ -33,10 +30,7 @@ module.exports = class BaseService {
         .sort(order)
         .lean()
         .exec((err, data) => {
-          if (err) {
-            callback(err, null);
-            return;
-          }
+          if (err) return callback(err, null);
 
           const result = {
             data,
@@ -46,7 +40,7 @@ module.exports = class BaseService {
               total,
             },
           };
-          callback(null, result);
+          return callback(null, result);
         });
     });
   }
@@ -57,13 +51,10 @@ module.exports = class BaseService {
       .where(where)
       .lean()
       .exec((err, results) => {
-        if (err) {
-          callback(err, null);
-          return;
-        }
+        if (err) return callback(err, null);
 
         const result = Array.isArray(results) ? results[0] : results;
-        callback(null, result);
+        return callback(null, result);
       });
   }
 
@@ -78,12 +69,8 @@ module.exports = class BaseService {
       .sort(order)
       .lean()
       .exec((err, result) => {
-        if (err) {
-          callback(err, null);
-          return;
-        }
-
-        callback(null, result);
+        if (err) return callback(err, null);
+        return callback(null, result);
       });
   }
 
