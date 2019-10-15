@@ -19,7 +19,7 @@ module.exports = function(app) {
   app.get(
     config.app.mainRoute,
     (req, res) => {
-      res.sendFile(path.join(__dirname, '../html/index.html'));
+      res.sendFile(path.join(__dirname, '../html/apidoc.html'));
     },
     swaggerUi.setup(swaggerConfig, swaggerOptions)
   );
