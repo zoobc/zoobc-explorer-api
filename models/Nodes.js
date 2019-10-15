@@ -16,7 +16,7 @@ const schema = new mongoose.Schema(
     RewardsPaidConversion: { type: Number },
     Latest: { type: Boolean } /** additional */,
     Height: { type: Number } /** additional */,
-    Accounts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Accounts' }],
+    Blocks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Blocks' }],
   },
   {
     toJSON: { virtuals: true },
