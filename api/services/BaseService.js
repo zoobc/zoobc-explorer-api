@@ -17,13 +17,22 @@ module.exports = class BaseService {
     limit = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
     fields = fields !== undefined ? fields.replace(/,/g, ' ') : {};
     order = order !== undefined ? BaseService.parseOrder(order) : { _id: 'asc' };
-    where = where !== undefined ? { [where.split(':')[0]]: where.split(':')[1].toString() } : {};
+    var findWhere = {};
+    if (where) {
+      const splitWhere = where.split(',');
+      var NewWhere = [];
+      splitWhere.forEach(function(element) {
+        NewWhere.push({ [element.split(':')[0]]: element.split(':')[1].toString() });
+      });
+
+      findWhere = NewWhere && NewWhere.length > 0 ? { $or: NewWhere } : { [NewWhere[0]]: NewWhere[1].toString() };
+    }
 
     this.model.countDocuments(where, (err, total) => {
       if (err) return callback(err, null);
 
       this.model
-        .find(where)
+        .find(findWhere)
         .select(fields)
         .skip((page - 1) * limit)
         .limit(limit)

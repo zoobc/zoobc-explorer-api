@@ -54,7 +54,8 @@ module.exports = class SearchController extends BaseController {
           this.sendSuccessResponse(
             res,
             responseBuilder
-              .setData(resRedis)
+              .setData(resRedis.data)
+              .setPaginate(resRedis.setPaginate)
               .setMessage('Block fetched successfully')
               .build()
           );
@@ -98,7 +99,8 @@ module.exports = class SearchController extends BaseController {
                 this.sendSuccessResponse(
                   res,
                   responseBuilder
-                    .setData(resRedis)
+                    .setData(resRedis.data)
+                    .setPaginate(resRedis.setPaginate)
                     .setMessage('Transaction fetched successfully')
                     .build()
                 );

@@ -18,9 +18,10 @@ module.exports = class TransactionController extends BaseController {
   async getAll(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const { page, limit, fields, order } = req.query;
+    const { page, limit, fields, order, where } = req.query;
     try {
       const cacheTransactions = Converter.formatCache(cache.transactions, req.query);
+
       RedisCache.get(cacheTransactions, (errRedis, resRedis) => {
         if (errRedis) {
           handleError.sendCatchError(res, errRedis);
@@ -30,18 +31,21 @@ module.exports = class TransactionController extends BaseController {
           this.sendSuccessResponse(
             res,
             responseBuilder
-              .setData(resRedis)
+              .setData(resRedis.data)
+              .setPaginate(resRedis.paginate)
               .setMessage('Transactions fetched successfully')
               .build()
           );
           return;
         }
-        this.service.paginate({ page, limit, fields, order }, (err, result) => {
+
+        this.service.paginate({ page, limit, fields, where, order }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;
           }
-          RedisCache.set(cacheTransactions, result.data, errRedis => {
+
+          RedisCache.set(cacheTransactions, result, errRedis => {
             if (errRedis) {
               handleError.sendCatchError(res, errRedis);
               return;
@@ -127,7 +131,7 @@ module.exports = class TransactionController extends BaseController {
       handleError.sendCatchError(res, error);
     }
   }
-  
+
   // async graphAmount(req, res) {
   //   const responseBuilder = new ResponseBuilder();
   //   const handleError = new HandleError();

@@ -16,7 +16,7 @@ module.exports = class AccountController extends BaseController {
   async getAll(req, res) {
     const responseBuilder = new ResponseBuilder();
     const handleError = new HandleError();
-    const { page, limit, fields, order } = req.query;
+    const { page, limit, fields, where, order } = req.query;
 
     try {
       const cacheAccounts = Converter.formatCache(cache.accounts, req.query);
@@ -30,14 +30,15 @@ module.exports = class AccountController extends BaseController {
           this.sendSuccessResponse(
             res,
             responseBuilder
-              .setData(resRedis)
+              .setData(resRedis.data)
+              .setPaginate(resRedis.setPaginate)
               .setMessage('Accounts fetched successfully')
               .build()
           );
           return;
         }
 
-        this.service.paginate({ page, limit, fields, order }, (err, result) => {
+        this.service.paginate({ page, limit, fields, where, order }, (err, result) => {
           if (err) {
             handleError.sendCatchError(res, err);
             return;
