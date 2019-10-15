@@ -6,7 +6,13 @@ const { msg } = require('../utils');
 
 function connectMongoose() {
   const uris = `mongodb://${config.db.host}:${config.db.port}/${config.db.database}`;
-  const options = { user: config.db.username, pass: saslprep(config.db.password), useNewUrlParser: true, useUnifiedTopology: true };
+  const options = {
+    user: config.db.username,
+    pass: saslprep(config.db.password),
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: true,
+  };
   return mongoose.connect(uris, options, error => {
     if (error) {
       msg.red('❌', `MongoDB connection error - retrying in 5 sec\n${error}`);

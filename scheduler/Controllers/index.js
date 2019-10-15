@@ -1,15 +1,9 @@
 const Nodes = require('./Nodes');
+const Resets = require('./Resets');
 const Blocks = require('./Blocks');
 const Accounts = require('./Accounts');
+const Rollback = require('./Rollback');
 const Transactions = require('./Transactions');
-const BlockReceipts = require('./BlockReceipts');
 const AccountTransactions = require('./AccountTransactions');
 
-module.exports = {
-  Nodes,
-  Blocks,
-  Accounts,
-  Transactions,
-  BlockReceipts,
-  AccountTransactions,
-};
+module.exports = { Nodes, Blocks, Accounts, Transactions, AccountTransactions, Rollback, Resets };
