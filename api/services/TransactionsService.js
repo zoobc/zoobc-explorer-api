@@ -1,5 +1,6 @@
 const BaseService = require('./BaseService');
 const { Transactions } = require('../../models');
+const pageLimit = require('../../config/config').app.pageLimit;
 
 module.exports = class TransactionsService extends BaseService {
   constructor() {

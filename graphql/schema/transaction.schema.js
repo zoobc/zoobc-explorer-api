@@ -29,6 +29,67 @@ module.exports = gql`
     TransactionBodyBytes: String
     TransactionIndex: Int
     Signature: String
+    TransactionBody: String
+    TransactionTypeName: String
+    SendMoney: SendMoney
+    NodeRegistration: NodeRegistration
+    SetupAccount: SetupAccount
+    UpdateNodeRegistration: UpdateNodeRegistration
+    RemoveAccount: RemoveAccount
+    RemoveNodeRegistration: RemoveNodeRegistration
+    ClaimNodeRegistration: ClaimNodeRegistration
     Block: Block!
+  }
+
+  type SendMoney {
+    Amount: Float
+    AmountConversion: Float
+  }
+
+  type NodeRegistration {
+    NodePublicKey: String
+    AccountAddress: String
+    NodeAddress: String
+    LockedBalance: Float
+    LockedBalanceConversion: Float
+    ProofOfOwnership: ProofOfOwnership
+  }
+
+  type SetupAccount {
+    SetterAccountAddress: String
+    RecipientAccountAddress: String
+    Property: String
+    Value: String
+    MuchTime: Int
+  }
+
+  type UpdateNodeRegistration {
+    NodePublicKey: String
+    NodeAddress: String
+    LockedBalance: Float
+    LockedBalanceConversion: Float
+    ProofOfOwnership: ProofOfOwnership
+  }
+
+  type RemoveAccount {
+    SetterAccountAddress: String
+    RecipientAccountAddress: String
+    Property: String
+    Value: String
+  }
+
+  type RemoveNodeRegistration {
+    NodePublicKey: String
+  }
+
+  type ClaimNodeRegistration {
+    NodePublicKey: String
+    AccountAddress: String
+    ProofOfOwnership: ProofOfOwnership
+  }
+
+  type ProofOfOwnership {
+    MessageBytes: String
+    Signature: String
   }
 `;

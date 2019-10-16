@@ -43,7 +43,9 @@ module.exports = function upsertMany(schema) {
         .map(item => modelToObject(item, this))
         .forEach(item => {
           const match = matchCriteria(item, matchFields);
-          delete item._id;
+          if (item && item._id) {
+            delete item._id;
+          }
 
           bulk
             .find(match)

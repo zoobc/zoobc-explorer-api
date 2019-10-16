@@ -27,5 +27,6 @@ module.exports = gql`
     NodePublicKey: String
     BlockHeight: Int
     PopRevenue: String
+    Latest: Boolean
   }
 `;

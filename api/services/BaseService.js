@@ -17,26 +17,29 @@ module.exports = class BaseService {
     limit = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
     fields = fields !== undefined ? fields.replace(/,/g, ' ') : {};
     order = order !== undefined ? BaseService.parseOrder(order) : { _id: 'asc' };
-    where = where !== undefined ? { [where.split(':')[0]]: where.split(':')[1].toString() } : {};
+    var findWhere = {};
+    if (where) {
+      const splitWhere = where.split(',');
+      var NewWhere = [];
+      splitWhere.forEach(function(element) {
+        NewWhere.push({ [element.split(':')[0]]: element.split(':')[1].toString() });
+      });
+
+      findWhere = NewWhere && NewWhere.length > 0 ? { $or: NewWhere } : { [NewWhere[0]]: NewWhere[1].toString() };
+    }
 
     this.model.countDocuments(where, (err, total) => {
-      if (err) {
-        callback(err, null);
-        return;
-      }
+      if (err) return callback(err, null);
 
       this.model
-        .find(where)
+        .find(findWhere)
         .select(fields)
         .skip((page - 1) * limit)
         .limit(limit)
         .sort(order)
         .lean()
         .exec((err, data) => {
-          if (err) {
-            callback(err, null);
-            return;
-          }
+          if (err) return callback(err, null);
 
           const result = {
             data,
@@ -46,7 +49,7 @@ module.exports = class BaseService {
               total,
             },
           };
-          callback(null, result);
+          return callback(null, result);
         });
     });
   }
@@ -57,13 +60,10 @@ module.exports = class BaseService {
       .where(where)
       .lean()
       .exec((err, results) => {
-        if (err) {
-          callback(err, null);
-          return;
-        }
+        if (err) return callback(err, null);
 
         const result = Array.isArray(results) ? results[0] : results;
-        callback(null, result);
+        return callback(null, result);
       });
   }
 
@@ -78,12 +78,8 @@ module.exports = class BaseService {
       .sort(order)
       .lean()
       .exec((err, result) => {
-        if (err) {
-          callback(err, null);
-          return;
-        }
-
-        callback(null, result);
+        if (err) return callback(err, null);
+        return callback(null, result);
       });
   }
 
