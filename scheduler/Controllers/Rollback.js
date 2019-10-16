@@ -5,7 +5,7 @@ const { BlocksService, TransactionsService, NodesService, AccountsService, Accou
 module.exports = class Rollback extends BaseController {
   constructor() {
     super();
-    
+
     this.nodesService = new NodesService();
     this.blocksService = new BlocksService();
     this.accountsService = new AccountsService();
@@ -20,7 +20,7 @@ module.exports = class Rollback extends BaseController {
 
       const Limit = 800;
       const Height = parseInt(result.Height) - Limit < 1 ? 1 : parseInt(result.Height) - Limit;
-      recursiveBlockHeight(this.blocksService, Limit, Height, (err, result) => {
+      this.recursiveBlockHeight(Limit, Height, (err, result) => {
         if (err) return callback(err, { success: false, info: null });
         if (!result) return callback(null, { success: false, info: null });
 
@@ -67,14 +67,14 @@ module.exports = class Rollback extends BaseController {
       if (err) return callback(`[Rollback] Block - Get Blocks ${err}`);
       if (result && result.Blocks && result.Blocks.length < 1) {
         const prevHeight = height - limit;
-        return recursiveBlockHeight(limit, prevHeight, callback);
+        return this.recursiveBlockHeight(limit, prevHeight, callback);
       }
 
       this.blocksService.getFromHeight({ Limit: limit, Height: height }, (err, results) => {
         if (err) return callback(`[Rollback] Blocks Service - Get From Height ${err}`, null);
         if (results && results.length < 1) {
           const prevHeight = height - limit;
-          return recursiveBlockHeight(limit, prevHeight, callback);
+          return this.recursiveBlockHeight(limit, prevHeight, callback);
         }
 
         const resultsCore = result.Blocks.map(item => ({
@@ -89,7 +89,7 @@ module.exports = class Rollback extends BaseController {
         const diffs = resultsCore.filter(({ BlockID: val1 }) => !resultsExplorer.some(({ BlockID: val2 }) => val2 === val1));
         if (diffs && diffs.length < 1) {
           const prevHeight = height - limit;
-          return recursiveBlockHeight(limit, prevHeight, callback);
+          return this.recursiveBlockHeight(limit, prevHeight, callback);
         }
 
         const diff = Array.isArray(diffs) ? diffs[0] : diffs;
