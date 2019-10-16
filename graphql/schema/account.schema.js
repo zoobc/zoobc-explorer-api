@@ -26,7 +26,5 @@ module.exports = gql`
     TotalFeesPaidConversion: Float
     NodePublicKey: String
     BlockHeight: Int
-    PopRevenue: String
-    Latest: Boolean
   }
 `;
