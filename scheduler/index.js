@@ -57,11 +57,13 @@ const cronjob = new cron.CronJob(`*/${events} * * * * *`, () => {
                   : msg.yellow('⚠️', `[Account Transactions] Nothing additional data at ${dateNow}`);
               }
 
-              rollback.checking((error, result) => {
+              rollback.checking((error, { success, info } = result) => {
                 if (error) {
                   msg.red('⛔️', error);
                 } else {
-                  result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Rollback] No data rollback at ${dateNow}`);
+                  success
+                    ? msg.green('✅', `${info} at ${dateNow}`)
+                    : msg.yellow('⚠️', `${info ? `[Rollback - ${info}]` : `[Rollback]`} No data rollback at ${dateNow}`);
                 }
 
                 /** reset all documents - [WARNING] don't using it for production */
