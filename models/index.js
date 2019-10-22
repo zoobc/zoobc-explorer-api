@@ -2,7 +2,8 @@ const Nodes = require('./Nodes');
 const Blocks = require('./Blocks');
 const Accounts = require('./Accounts');
 const Transactions = require('./Transactions');
-const BlockReceipts = require('./BlockReceipts');
+const BatchReceipt = require('./BatchReceipt');
+const PublishedReceipts = require('./PublishedReceipts');
 const AccountTransactions = require('./AccountTransactions');
 
 module.exports = {
@@ -10,6 +11,7 @@ module.exports = {
   Blocks,
   Accounts,
   Transactions,
-  BlockReceipts,
+  BatchReceipt,
+  PublishedReceipts,
   AccountTransactions,
 };
