@@ -3,7 +3,6 @@ const { upsertMany } = require('../utils');
 
 const schema = new mongoose.Schema(
   {
-    BlockID: { type: String },
     SenderPublicKey: { type: String },
     ReceiverPublicKey: { type: String } /** RecipientPublicKey */,
     DataType: { type: String } /** DatumType */,
@@ -20,4 +19,4 @@ const schema = new mongoose.Schema(
 
 schema.plugin(upsertMany);
 
-module.exports = mongoose.model('BlockReceipts', schema);
+module.exports = mongoose.model('BatchReceipt', schema);

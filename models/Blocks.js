@@ -28,7 +28,7 @@ const schema = new mongoose.Schema(
     ReceiptValue: { type: Number },
     PopChange: { type: String },
     Transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Transactions' }],
-    BlockReceipts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BlockReceipts' }],
+    PublishedReceipts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'PublishedReceipts' }],
   },
   {
     toJSON: { virtuals: true },
