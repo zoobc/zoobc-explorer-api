@@ -16,4 +16,4 @@ const schema = new mongoose.Schema(
 
 schema.plugin(upsertMany);
 
-module.exports = mongoose.model('PublishedReceipt', schema);
+module.exports = mongoose.model('PublishedReceipts', schema);
