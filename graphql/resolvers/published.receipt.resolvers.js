@@ -34,6 +34,7 @@ module.exports = {
               if (err) return reject(err);
 
               models.PublishedReceipts.find()
+                .populate('BatchReceipt')
                 .where(blockHeight)
                 .select()
                 .limit(lm)
