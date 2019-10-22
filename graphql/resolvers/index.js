@@ -3,15 +3,6 @@ const transactionResolvers = require('./transaction.resolvers');
 const accountResolvers = require('./account.resolvers');
 const searchResolvers = require('./search.resolvers');
 const nodeResolvers = require('./node.resolvers');
-const blockReceiptResolvers = require('./block.receipt.resolvers');
 const publishedReceiptResolvers = require('./published.receipt.resolvers');
 
-module.exports = [
-  blockResolvers,
-  transactionResolvers,
-  accountResolvers,
-  searchResolvers,
-  nodeResolvers,
-  blockReceiptResolvers,
-  publishedReceiptResolvers,
-];
+module.exports = [blockResolvers, transactionResolvers, accountResolvers, searchResolvers, nodeResolvers, publishedReceiptResolvers];
