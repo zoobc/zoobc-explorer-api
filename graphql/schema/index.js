@@ -6,6 +6,7 @@ const accountSchema = require('./account.schema');
 const searchSchema = require('./search.schema');
 const nodeSchema = require('./node.schema');
 const blockReceiptSchema = require('./block.receipt.schema');
+const publishedReceiptSchema = require('./published.receipt.schema');
 
 const linkSchema = gql`
   scalar Date
@@ -29,4 +30,13 @@ const linkSchema = gql`
   }
 `;
 
-module.exports = [linkSchema, blockSchema, transactionSchema, accountSchema, searchSchema, nodeSchema, blockReceiptSchema];
+module.exports = [
+  linkSchema,
+  blockSchema,
+  transactionSchema,
+  accountSchema,
+  searchSchema,
+  nodeSchema,
+  blockReceiptSchema,
+  publishedReceiptSchema,
+];
