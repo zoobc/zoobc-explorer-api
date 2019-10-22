@@ -2,7 +2,7 @@ const { Converter, RedisCache } = require('../../utils');
 const pageLimit = require('../../config/config').app.pageLimit;
 
 const cache = {
-  blockReceipts: 'blockReceipts',
+  publishedReceipts: 'publishedReceipts',
 };
 
 function parseOrder(string) {
@@ -14,27 +14,28 @@ function parseOrder(string) {
 
 module.exports = {
   Query: {
-    blockReceipts: (parent, args, { models }) => {
-      const { page, limit, order, BlockID } = args;
+    publishedReceipts: (parent, args, { models }) => {
+      const { page, limit, order, BlockHeight } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
-      const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
-      const blockID = BlockID !== undefined ? { BlockID } : {};
+      const od = order !== undefined ? parseOrder(order) : { BlockHeight: 'asc' };
+      const blockHeight = BlockHeight !== undefined ? { BlockHeight } : {};
 
       return new Promise((resolve, reject) => {
-        const cacheBlockReceipts = Converter.formatCache(cache.blockReceipts, args);
-        RedisCache.get(cacheBlockReceipts, (err, resRedis) => {
+        const cachePublishedReceipts = Converter.formatCache(cache.publishedReceipts, args);
+        RedisCache.get(cachePublishedReceipts, (err, resRedis) => {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
-          models.BlockReceipts.countDocuments((err, totalWithoutFilter) => {
+          models.PublishedReceipts.countDocuments((err, totalWithoutFilter) => {
             if (err) return reject(err);
 
-            models.BlockReceipts.where(blockID).countDocuments((err, totalWithFilter) => {
+            models.PublishedReceipts.where(blockHeight).countDocuments((err, totalWithFilter) => {
               if (err) return reject(err);
 
-              models.Blocks.find()
-                .where(blockID)
+              models.PublishedReceipts.find()
+                .populate('BatchReceipt')
+                .where(blockHeight)
                 .select()
                 .limit(lm)
                 .skip((pg - 1) * lm)
@@ -44,15 +45,15 @@ module.exports = {
                   if (err) return reject(err);
 
                   const result = {
-                    BlockReceipts: data,
+                    PublishedReceipts: data,
                     Paginate: {
                       Page: parseInt(pg),
                       Count: data.length,
-                      Total: blockID ? totalWithFilter : totalWithoutFilter,
+                      Total: blockHeight ? totalWithFilter : totalWithoutFilter,
                     },
                   };
 
-                  RedisCache.set(cacheBlockReceipts, result, err => {
+                  RedisCache.set(cachePublishedReceipts, result, err => {
                     if (err) return reject(err);
                     return resolve(result);
                   });
