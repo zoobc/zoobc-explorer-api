@@ -18,11 +18,16 @@ module.exports = {
     pageLimit: 10,
   },
   db: {
-    port: 27017,
+    port: process.env.DB_PORT || 27017,
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
+  },
+  redis: {
+    port: process.env.RD_PORT || 6379,
+    host: process.env.RD_HOST,
+    password: process.env.RD_PASSWORD,
   },
   proto: {
     host: `${process.env.PROTO_HOST}:${process.env.PROTO_PORT}`,

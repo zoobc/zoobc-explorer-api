@@ -1,8 +1,13 @@
 const redis = require('redis');
 const chalk = require('chalk');
+const configRedis = require('../config/config').redis;
 const { msg } = require('../utils');
 
-const redisClient = redis.createClient();
+let options = { port: configRedis.port, host: configRedis.host };
+if (configRedis.password !== '') {
+  options.password = configRedis.password;
+}
+const redisClient = redis.createClient(options);
 redisClient
   .once('ready', () => {
     // msg.green('🚀', 'Redis client connection success');
