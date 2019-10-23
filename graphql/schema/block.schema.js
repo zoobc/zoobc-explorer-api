@@ -5,12 +5,10 @@ module.exports = gql`
     blocks(page: Int, limit: Int, order: String, NodePublicKey: String): Blocks!
     block(BlockID: String!): Block!
   }
-
   type Blocks {
     Blocks: [Block!]!
     Paginate: Paginate!
   }
-
   type Block {
     _id: ID!
     BlockID: String
