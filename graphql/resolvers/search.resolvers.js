@@ -18,7 +18,7 @@ module.exports = {
           if (resRedis) return resolve(resRedis);
 
           models.Blocks.findOne()
-            .where({ BlockID: Id })
+            .where({ $or: [{ BlockID: Id }, { Height: Id }] })
             .lean()
             .exec((err, block) => {
               if (err) return reject(err);
