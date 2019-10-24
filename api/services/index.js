@@ -4,7 +4,8 @@ const ResetsService = require('./ResetsService');
 const BlocksService = require('./BlocksService');
 const AccountsService = require('./AccountsService');
 const TransactionsService = require('./TransactionsService');
-const BlockReceiptsService = require('./BlockReceiptsService');
+const PublishedReceiptsService = require('./PublishedReceiptsService');
+const BatchReceiptService = require('./BatchReceiptService');
 const AccountTransactionsService = require('./AccountTransactionsService');
 
 module.exports = {
@@ -14,6 +15,7 @@ module.exports = {
   BlocksService,
   AccountsService,
   TransactionsService,
-  BlockReceiptsService,
+  BatchReceiptService,
+  PublishedReceiptsService,
   AccountTransactionsService,
 };
