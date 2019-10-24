@@ -22,7 +22,7 @@ module.exports = gql`
     Recipient: String
     Confirmations: Boolean
     Fee: Float
-    FeeConversion: Float
+    FeeConversion: String
     Version: Int
     TransactionHash: String
     TransactionBodyLength: Int
@@ -43,7 +43,7 @@ module.exports = gql`
 
   type SendMoney {
     Amount: Float
-    AmountConversion: Float
+    AmountConversion: String
   }
 
   type NodeRegistration {
@@ -51,7 +51,7 @@ module.exports = gql`
     AccountAddress: String
     NodeAddress: String
     LockedBalance: Float
-    LockedBalanceConversion: Float
+    LockedBalanceConversion: String
     ProofOfOwnership: ProofOfOwnership
   }
 
@@ -67,7 +67,7 @@ module.exports = gql`
     NodePublicKey: String
     NodeAddress: String
     LockedBalance: Float
-    LockedBalanceConversion: Float
+    LockedBalanceConversion: String
     ProofOfOwnership: ProofOfOwnership
   }
 
