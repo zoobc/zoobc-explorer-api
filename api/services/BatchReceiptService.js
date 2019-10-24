@@ -1,20 +1,20 @@
 const BaseService = require('./BaseService');
-const { BlockReceipts } = require('../../models');
+const { BatchReceipt } = require('../../models');
 
-module.exports = class BlockReceiptsService extends BaseService {
+module.exports = class BatchReceiptService extends BaseService {
   constructor() {
-    super(BlockReceipts);
+    super(BatchReceipt);
   }
 
   getLastHeight(callback) {
-    BlockReceipts.findOne()
+    BatchReceipt.findOne()
       .select('Height')
       .sort('-Height')
       .exec(callback);
   }
 
   getFromHeight({ Limit, Height }, callback) {
-    BlockReceipts.find()
+    BatchReceipt.find()
       .select('BlockID Height')
       .where('Height')
       .gte(Height)

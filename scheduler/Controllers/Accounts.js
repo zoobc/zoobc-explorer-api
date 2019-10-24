@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 const store = require('./Store');
 const BaseController = require('./BaseController');
 const { AccountsService } = require('../../api/services');

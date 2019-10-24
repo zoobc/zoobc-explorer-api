@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const { Converter, RedisCache } = require('../../utils');
 
 const cache = {
@@ -17,8 +18,17 @@ module.exports = {
           if (err) return reject(err);
           if (resRedis) return resolve(resRedis);
 
+          let criteria;
+          const checkId = Number(Id);
+
+          if (typeof checkId === 'number' && isNaN(checkId)) {
+            criteria = Id !== undefined ? { BlockID: Id } : {};
+          } else {
+            criteria = Id !== undefined ? { $or: [{ BlockID: Id }, { Height: Id }] } : {};
+          }
+
           models.Blocks.findOne()
-            .where({ $or: [{ BlockID: Id }, { Height: Id }] })
+            .where(criteria)
             .lean()
             .exec((err, block) => {
               if (err) return reject(err);

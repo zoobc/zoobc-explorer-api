@@ -12,6 +12,7 @@ module.exports = class Blocks extends BaseController {
 
   update(callback) {
     store.blocksAddition = false;
+    store.publishedReceipts = [];
 
     this.service.getLastHeight((err, result) => {
       if (err) return callback(`[Blocks] Blocks Service - Get Last Height ${err}`, null);
@@ -24,7 +25,9 @@ module.exports = class Blocks extends BaseController {
 
         const matchs = ['BlockID', 'Height'];
         const items = result.Blocks.map(item => {
-          if (item.BlockReceipts && item.BlockReceipts.length > 0) {
+          if (item.Block.PublishedReceipts && item.Block.PublishedReceipts.length > 0) {
+            console.log('==item.Block.PublishedReceipts', item.Block.PublishedReceipts);
+
             /** WAITING FROM CORE */
             // const blockReceipts = item.BlockReceipts.map(receipt => {
             //   return {
@@ -38,12 +41,11 @@ module.exports = class Blocks extends BaseController {
             //     ReceiverSignature: receipt.ReceiverSignature,
             //   };
             // });
-
-            this.service.upsert(item.BlockReceipts, matchs, (err, result) => {
-              if (err) return callback(`[Block Receipts] Upsert ${err}`, null);
-              if (result && result.ok !== 1) return callback(`[Block Receipts] Upsert data failed`, null);
-              return callback(null, `[Block Receipts] Upsert ${item.BlockReceipts.length} data successfully`);
-            });
+            // this.service.upsert(item.BlockReceipts, matchs, (err, result) => {
+            //   if (err) return callback(`[Block Receipts] Upsert ${err}`, null);
+            //   if (result && result.ok !== 1) return callback('[Block Receipts] Upsert data failed', null);
+            //   return callback(null, `[Block Receipts] Upsert ${item.BlockReceipts.length} data successfully`);
+            // });
           }
 
           const totalRewards = parseFloat(item.Block.TotalCoinBase) + parseFloat(item.Block.TotalFee);
@@ -77,7 +79,7 @@ module.exports = class Blocks extends BaseController {
 
         this.service.upsert(items, matchs, (err, result) => {
           if (err) return callback(`[Blocks] Upsert ${err}`, null);
-          if (result && result.ok !== 1) return callback(`[Blocks] Upsert data failed`, null);
+          if (result && result.ok !== 1) return callback('[Blocks] Upsert data failed', null);
           store.blocksAddition = true;
           return callback(null, `[Blocks] Upsert ${items.length} data successfully`);
         });

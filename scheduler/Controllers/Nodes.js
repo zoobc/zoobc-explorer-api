@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 const store = require('./Store');
 const BaseController = require('./BaseController');
 const { NodeRegistration } = require('../Protos');
@@ -39,7 +40,6 @@ module.exports = class Nodes extends BaseController {
                     Height: resp.NodeRegistration.Height,
                   },
                 ];
-
                 const matchs = ['NodeID', 'NodePublicKey'];
                 this.service.upsert(items, matchs, (err, result) => {
                   if (err) return reject(`[Nodes] Nodes Service - Upsert ${err}`);
