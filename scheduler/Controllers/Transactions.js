@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 const moment = require('moment');
 const store = require('./Store');
 const BaseController = require('./BaseController');
@@ -98,7 +99,6 @@ module.exports = class Transactions extends BaseController {
           AmountConversion: item.TransactionType === 1 ? Converter.zoobitConversion(parseInt(item.sendMoneyTransactionBody.Amount)) : 0,
           BlockHeight: item.Height,
           Timestamp: moment.unix(item.Timestamp).valueOf(),
-          BlockHeight: item.Height,
           // Transaction: item,
         });
 

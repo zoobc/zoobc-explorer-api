@@ -13,11 +13,11 @@ module.exports = class PublishedReceiptsService extends BaseService {
       .exec(callback);
   }
 
-  getFromHeight({ Limit, Height }, callback) {
+  getFromHeight({ Limit, BlockHeight }, callback) {
     PublishedReceipts.find()
-      .select('BlockID Height')
+      .select('BlockHeight')
       .where('BlockHeight')
-      .gte(Height)
+      .gte(BlockHeight)
       .limit(Limit)
       .sort('BlockHeight')
       .exec(callback);
