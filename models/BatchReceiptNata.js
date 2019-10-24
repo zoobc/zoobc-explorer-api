@@ -19,4 +19,4 @@ const schema = new mongoose.Schema(
 
 schema.plugin(upsertMany);
 
-module.exports = mongoose.model('BatchReceipt', schema);
+module.exports = mongoose.model('Batch_Receipt', schema);

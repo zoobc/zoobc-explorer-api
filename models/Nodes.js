@@ -13,7 +13,7 @@ const schema = new mongoose.Schema(
     RegistryStatus: { type: Boolean } /** Queued */,
     BlocksFunds: { type: Number } /** ..waiting core */,
     RewardsPaid: { type: Number } /** ..waiting core */,
-    RewardsPaidConversion: { type: Number },
+    RewardsPaidConversion: { type: String },
     Latest: { type: Boolean } /** additional */,
     Height: { type: Number } /** additional */,
     Blocks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Blocks' }],
