@@ -23,7 +23,7 @@ module.exports = gql`
     RegistryStatus: Boolean
     BlocksFunds: Int
     RewardsPaid: Float
-    RewardsPaidConversion: Float
+    RewardsPaidConversion: String
     Latest: Boolean
     Height: Int
   }

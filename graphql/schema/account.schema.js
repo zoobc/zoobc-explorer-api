@@ -15,15 +15,15 @@ module.exports = gql`
     _id: ID!
     AccountAddress: String
     Balance: Float
-    BalanceConversion: Float
+    BalanceConversion: String
     SpendableBalance: Float
-    SpendableBalanceConversion: Float
+    SpendableBalanceConversion: String
     FirstActive: Date
     LastActive: Date
     TotalRewards: Float
-    TotalRewardsConversion: Float
+    TotalRewardsConversion: String
     TotalFeesPaid: Float
-    TotalFeesPaidConversion: Float
+    TotalFeesPaidConversion: String
     NodePublicKey: String
     BlockHeight: Int
   }

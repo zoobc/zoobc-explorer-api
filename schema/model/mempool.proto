@@ -8,7 +8,7 @@ import "model/pagination.proto";
 // Mempool represent the mempool data structure stored in the database
 message MempoolTransaction {
     int64 ID = 1 [jstype = JS_STRING];
-    int32 FeePerByte = 2;
+    int64 FeePerByte = 2 [jstype = JS_STRING];
     int64 ArrivalTimestamp = 3 [jstype = JS_STRING];
     bytes TransactionBytes = 4;
     string SenderAccountAddress = 5;
