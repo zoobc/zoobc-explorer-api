@@ -20,9 +20,15 @@ module.exports = {
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
 
-      const where = {};
-      AccountAddress !== undefined ? (where.OwnerAddress = AccountAddress) : null;
-      RegistryStatus !== undefined ? (where.RegistryStatus = RegistryStatus) : null;
+      let where = {};
+      if (AccountAddress !== undefined) {
+        where.OwnerAddress = AccountAddress;
+      }
+      if (RegistryStatus !== undefined) {
+        if (RegistryStatus < 3) {
+          where.RegistryStatus = RegistryStatus;
+        }
+      }
 
       return new Promise((resolve, reject) => {
         const cacheNodes = Converter.formatCache(cache.nodes, args);
