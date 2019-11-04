@@ -1,6 +1,7 @@
 /* eslint-disable indent */
 const store = require('./Store');
 const BaseController = require('./BaseController');
+const { Converter } = require('../../utils');
 const { AccountsService } = require('../../api/services');
 
 module.exports = class Accounts extends BaseController {
@@ -13,30 +14,37 @@ module.exports = class Accounts extends BaseController {
     const senders = getUniqueAccounts(store.accountTransactions, 'SenderAccountAddress');
     const recipients = getUniqueAccounts(store.accountTransactions, 'RecipientAccountAddress');
 
-    const insertSenders = senders.map(i => {
-      return new Promise((resolve, reject) => {
-        const params = { AccountAddress: i.AccountAddress };
-        this.service.createdOnlyNew(params, i, (err, result) => {
-          if (err) return reject(`[Accounts] Accounts Service - Created Only New ${err}`);
-          if (!result) return resolve(0);
-          return resolve(1);
-        });
+    const insertSenders =
+      senders.length > 0 &&
+      senders.map(i => {
+        const aa = Converter.bufferStr(i.AccountAddress);
+        if (typeof aa == 'string' && aa !== 'null') {
+          return new Promise((resolve, reject) => {
+            const params = { AccountAddress: i.AccountAddress };
+            this.service.createdOnlyNew(params, i, (err, result) => {
+              if (err) return reject(`[Accounts] Accounts Service - Created Only New ${err}`);
+              if (!result) return resolve(0);
+              return resolve(1);
+            });
+          });
+        }
       });
-    });
 
     const insertRecipients =
-      recipients.length > 0
-        ? recipients.map(i => {
-            return new Promise((resolve, reject) => {
-              const params = { AccountAddress: i.AccountAddress };
-              this.service.createdOnlyNew(params, i, (err, result) => {
-                if (err) return reject(`[Accounts] Accounts Service - Created Only New ${err}`);
-                if (!result) return resolve(0);
-                return resolve(1);
-              });
+      recipients.length > 0 &&
+      recipients.map(i => {
+        const aa = Converter.bufferStr(i.AccountAddress);
+        if (typeof aa == 'string' && aa !== 'null') {
+          return new Promise((resolve, reject) => {
+            const params = { AccountAddress: i.AccountAddress };
+            this.service.createdOnlyNew(params, i, (err, result) => {
+              if (err) return reject(`[Accounts] Accounts Service - Created Only New ${err}`);
+              if (!result) return resolve(0);
+              return resolve(1);
             });
-          })
-        : [];
+          });
+        }
+      });
 
     let accounts = insertSenders || [];
     if (insertRecipients && insertRecipients.length > 0) {
@@ -46,7 +54,6 @@ module.exports = class Accounts extends BaseController {
     Promise.all(accounts)
       .then(results => {
         const count = results.reduce((prev, curr) => parseInt(prev) + parseInt(curr), 0);
-
         if (count < 1) return callback(null, null);
         return callback(null, `[Accounts] Insert ${count} data successfully`);
       })

@@ -16,7 +16,7 @@ message NodeRegistration {
     uint32  RegistrationHeight = 4;
     NodeAddress  NodeAddress = 5;
     int64   LockedBalance = 6 [jstype = JS_STRING];
-    bool  Queued = 7;
+    uint32  RegistrationStatus = 7;
     bool Latest = 8;
     uint32 Height = 9;
 }
@@ -24,9 +24,10 @@ message NodeRegistration {
 // GetNodeRegisterRequest create request to get a list of node registry
 message GetNodeRegistrationsRequest {
     /* Fetch Node Registries based on queue status 
-        true : will retrieve node registries that still pending
-        false: will retrieve node registries that already registered*/
-    bool Queued = 1;
+        2 : will retrieve node registries that have been deleted
+        1 : will retrieve node registries that still pending
+        0: will retrieve node registries that already registered*/
+    uint32 RegistrationStatus = 1;
     // Fetch Node Registries when registration height is greater than or equal to
     uint32 MinRegistrationHeight = 2;
     // Fetch Node Registries when registration height is less than or equal to
@@ -52,4 +53,13 @@ message GetNodeRegistrationRequest {
 
 message GetNodeRegistrationResponse {
     NodeRegistration NodeRegistration = 1;
+}
+
+enum NodeRegistrationState {
+    // NodeRegistered 'registred' node status (= 0): a node in node registry with this status is registered
+    NodeRegistered = 0;
+    // NodeQueued 'queued' node status (= 1): a node in node registry with this status is queued, or 'pending registered'
+    NodeQueued = 1;
+    // NodeDeleted 'deleted' node status (= 2): a node in node registry with this status is marked as deleted
+    NodeDeleted = 2;
 }
