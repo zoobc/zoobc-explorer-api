@@ -70,14 +70,21 @@ const concats = (sender, recipient) => {
 };
 
 const zoobitConversion = curr => {
-  if (!curr) return 0;
-  return curr / Math.pow(10, 8);
+  if (!curr || curr === 0) return 0;
+  const result = curr / Math.pow(10, 8);
+
+  if (result.toString().indexOf('e') > 0) {
+    const e = parseInt(result.toString().slice(-1));
+    return parseFloat(result).toFixed(e);
+  }
+
+  return parseFloat(result);
 };
 
-const bufferStr = (buff, converted = false) => {
+const bufferStr = buff => {
   const result = Buffer.from(buff).toString('base64');
   if (result === 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=') return null;
-  return converted ? result : buff;
+  return result;
 };
 
 module.exports = {

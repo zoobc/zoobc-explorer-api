@@ -12,7 +12,7 @@ const schema = new mongoose.Schema(
     Recipient: { type: String } /** RecipientAccountAddress */,
     Confirmations: { type: Boolean } /** ..waiting core */,
     Fee: { type: Number },
-    FeeConversion: { type: Number },
+    FeeConversion: { type: String },
     Version: { type: Number } /** additional */,
     TransactionHash: { type: Buffer } /** additional */,
     TransactionBodyLength: { type: Number } /** additional */,
@@ -24,7 +24,7 @@ const schema = new mongoose.Schema(
     TransactionTypeName: { type: String },
     SendMoney: {
       Amount: { type: Number },
-      AmountConversion: { type: Number },
+      AmountConversion: { type: String },
     },
     ClaimNodeRegistration: {
       NodePublicKey: { type: String },
@@ -39,7 +39,7 @@ const schema = new mongoose.Schema(
       AccountAddress: { type: String },
       NodeAddress: { type: String },
       LockedBalance: { type: Number },
-      LockedBalanceConversion: { type: Number },
+      LockedBalanceConversion: { type: String },
       ProofOfOwnership: {
         MessageBytes: { type: Buffer },
         Signature: { type: Buffer },
@@ -52,7 +52,7 @@ const schema = new mongoose.Schema(
       NodePublicKey: { type: String },
       NodeAddress: { type: String },
       LockedBalance: { type: Number },
-      LockedBalanceConversion: { type: Number },
+      LockedBalanceConversion: { type: String },
       ProofOfOwnership: {
         MessageBytes: { type: Buffer },
         Signature: { type: Buffer },

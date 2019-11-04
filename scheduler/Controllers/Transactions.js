@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 const moment = require('moment');
 const store = require('./Store');
 const BaseController = require('./BaseController');
@@ -90,15 +91,14 @@ module.exports = class Transactions extends BaseController {
       const results = result.Transactions.filter(item => item.Height === height);
       const items = results.map(item => {
         store.accountTransactions.push({
-          SenderAccountAddress: Converter.bufferStr(item.SenderAccountAddress),
-          RecipientAccountAddress: Converter.bufferStr(item.RecipientAccountAddress),
+          SenderAccountAddress: item.SenderAccountAddress,
+          RecipientAccountAddress: item.RecipientAccountAddress,
           Fee: parseInt(item.Fee),
           FeeConversion: Converter.zoobitConversion(parseInt(item.Fee)),
           Amount: item.TransactionType === 1 ? parseInt(item.sendMoneyTransactionBody.Amount) : 0,
           AmountConversion: item.TransactionType === 1 ? Converter.zoobitConversion(parseInt(item.sendMoneyTransactionBody.Amount)) : 0,
           BlockHeight: item.Height,
           Timestamp: moment.unix(item.Timestamp).valueOf(),
-          BlockHeight: item.Height,
           // Transaction: item,
         });
 
