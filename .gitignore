@@ -28,6 +28,11 @@ explorer-api-win.exe
 .zoobc.pid
 .pid
 
+# gundb
+db
+data
+dbzoobc
+
 # misc
 .DS_Store
 .idea
