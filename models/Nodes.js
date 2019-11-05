@@ -10,7 +10,7 @@ const schema = new mongoose.Schema(
     LockedFunds: { type: String } /** LockedBalance */,
     RegisteredBlockHeight: { type: Number } /** RegistrationHeight */,
     ParticipationScore: { type: Number } /** ..waiting core */,
-    RegistryStatus: { type: Boolean } /** Queued */,
+    RegistryStatus: { type: Number } /** Queued */,
     BlocksFunds: { type: Number } /** ..waiting core */,
     RewardsPaid: { type: Number } /** ..waiting core */,
     RewardsPaidConversion: { type: String },

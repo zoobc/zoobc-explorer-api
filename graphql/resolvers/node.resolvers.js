@@ -15,11 +15,20 @@ function parseOrder(string) {
 module.exports = {
   Query: {
     nodes: (parent, args, { models }) => {
-      const { page, limit, order, AccountAddress } = args;
+      const { page, limit, order, AccountAddress, RegistryStatus } = args;
       const pg = page !== undefined ? parseInt(page) : 1;
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
-      const accountAddress = AccountAddress !== undefined ? { OwnerAddress: AccountAddress } : {};
+
+      let where = {};
+      if (AccountAddress !== undefined) {
+        where.OwnerAddress = AccountAddress;
+      }
+      if (RegistryStatus !== undefined) {
+        if (RegistryStatus < 3) {
+          where.RegistryStatus = RegistryStatus;
+        }
+      }
 
       return new Promise((resolve, reject) => {
         const cacheNodes = Converter.formatCache(cache.nodes, args);
@@ -30,11 +39,11 @@ module.exports = {
           models.Nodes.countDocuments((err, totalWithoutFilter) => {
             if (err) return reject(err);
 
-            models.Nodes.where(accountAddress).countDocuments((err, totalWithFilter) => {
+            models.Nodes.where(where).countDocuments((err, totalWithFilter) => {
               if (err) return reject(err);
 
               models.Nodes.find()
-                .where(accountAddress)
+                .where(where)
                 .select()
                 .limit(lm)
                 .skip((pg - 1) * lm)
@@ -48,7 +57,7 @@ module.exports = {
                     Paginate: {
                       Page: parseInt(pg),
                       Count: data.length,
-                      Total: accountAddress ? totalWithFilter : totalWithoutFilter,
+                      Total: where ? totalWithFilter : totalWithoutFilter,
                     },
                   };
 
