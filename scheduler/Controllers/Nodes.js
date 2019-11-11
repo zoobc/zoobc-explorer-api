@@ -32,7 +32,7 @@ module.exports = class Nodes extends BaseController {
                     LockedFunds: resp.NodeRegistration.LockedBalance,
                     RegisteredBlockHeight: resp.NodeRegistration.RegistrationHeight,
                     ParticipationScore: null,
-                    RegistryStatus: resp.NodeRegistration.Queued,
+                    RegistryStatus: resp.NodeRegistration.RegistrationStatus,
                     BlocksFunds: null,
                     RewardsPaid: null,
                     RewardsPaidConversion: null,
