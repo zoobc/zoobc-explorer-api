@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   app: {
-    port: 6969,
+    port: process.env.PORT,
     host: process.env.HOST || 'localhost',
     mainRoute: '/zoobc/api/v1',
     modeServer: 'http',
