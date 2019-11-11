@@ -1,0 +1,10 @@
+# DATABASE
+DB_HOST='139.162.15.80'
+DB_NAME='zoobcdb_develop'
+DB_USER=''
+DB_PASSWORD=''
+
+# REDIS
+RD_PORT=6379
+RD_HOST='localhost'
+RD_PASSWORD=''
