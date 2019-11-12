@@ -6,7 +6,7 @@ let options = { port: configRedis.port, host: configRedis.host };
 if (configRedis.password !== '') {
   options.password = configRedis.password;
 }
-const redisClient = redis.createClient(options);
+const redisClient = redis.createClient([options]);
 redisClient
   .once('ready', () => {
     console.log(chalk.green('🚀 Redis client connection success'));
