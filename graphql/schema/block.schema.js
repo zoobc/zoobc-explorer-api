@@ -10,8 +10,10 @@ module.exports = gql`
     Paginate: Paginate!
   }
   type Block {
+    # Block
     _id: ID!
     BlockID: String
+    BlockHash: String
     PreviousBlockID: String
     Height: Int
     Timestamp: Date
@@ -19,21 +21,25 @@ module.exports = gql`
     BlockSignature: String
     CumulativeDifficulty: String
     SmithScale: Int
-    BlocksmithAddress: String
+    BlocksmithID: String
     TotalAmount: Float
     TotalAmountConversion: String
     TotalFee: Float
     TotalFeeConversion: String
     TotalCoinBase: Float
     TotalCoinBaseConversion: String
-    TotalRewards: Float
-    TotalRewardsConversion: String
     Version: Int
     PayloadLength: Int
     PayloadHash: String
-    BlocksmithID: String
+
+    # BlockExtendedInfo
     TotalReceipts: Float
     ReceiptValue: Float
     PopChange: String
+    BlocksmithAddress: String
+
+    # Aggregate
+    TotalRewards: Float
+    TotalRewardsConversion: String
   }
 `;
