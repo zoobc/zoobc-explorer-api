@@ -8,7 +8,7 @@ module.exports = gql`
 
   type TransactionGraph {
     name: String
-    amt: Int
+    amt: Float
   }
 
   type BlockGraph {
