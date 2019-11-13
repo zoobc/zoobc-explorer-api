@@ -14,13 +14,12 @@ module.exports = {
             },
             {
               $group: {
-                // _id: { date: '$Timestamp' },
                 _id: {
                   day: { $dayOfMonth: '$Timestamp' },
                   month: { $month: '$Timestamp' },
                   year: { $year: '$Timestamp' },
                 },
-                amount: { $sum: { $toInt: '$SendMoney.AmountConversion' } },
+                amount: { $sum: { $toDouble: '$SendMoney.AmountConversion' } },
               },
             },
             {

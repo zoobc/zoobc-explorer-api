@@ -5,28 +5,29 @@ option go_package = "github.com/zoobc/zoobc-core/common/model";
 
 import "model/transaction.proto";
 import "model/batchReceipt.proto";
-import "model/receipt.proto";
 import "model/publishedReceipt.proto";
+import "model/skippedBlocksmith.proto";
 
 // Block represent the block data structure stored in the database
 message Block {
   int64 ID = 1 [ jstype = JS_STRING ];
-  bytes PreviousBlockHash = 2;
-  uint32 Height = 3;
-  int64 Timestamp = 4 [ jstype = JS_STRING ];
-  bytes BlockSeed = 5;
-  bytes BlockSignature = 6;
-  string CumulativeDifficulty = 7;
-  int64 SmithScale = 8 [ jstype = JS_STRING ];
-  bytes BlocksmithPublicKey = 9;
-  int64 TotalAmount = 10 [ jstype = JS_STRING ];
-  int64 TotalFee = 11 [ jstype = JS_STRING ];
-  int64 TotalCoinBase = 12 [ jstype = JS_STRING ];
-  uint32 Version = 13;
-  uint32 PayloadLength = 14;
-  bytes PayloadHash = 15;
-  repeated Transaction Transactions = 16;
-  repeated PublishedReceipt PublishedReceipts = 17;
+  bytes BlockHash = 2;
+  bytes PreviousBlockHash = 3;
+  uint32 Height = 4;
+  int64 Timestamp = 5 [ jstype = JS_STRING ];
+  bytes BlockSeed = 6;
+  bytes BlockSignature = 7;
+  string CumulativeDifficulty = 8;
+  int64 SmithScale = 9 [ jstype = JS_STRING ];
+  bytes BlocksmithPublicKey = 10;
+  int64 TotalAmount = 11 [ jstype = JS_STRING ];
+  int64 TotalFee = 12 [ jstype = JS_STRING ];
+  int64 TotalCoinBase = 13 [ jstype = JS_STRING ];
+  uint32 Version = 14;
+  uint32 PayloadLength = 15;
+  bytes PayloadHash = 16;
+  repeated Transaction Transactions = 17;
+  repeated PublishedReceipt PublishedReceipts = 18;
 }
 
 // BlockExtendedInfo represent the Block data plus part of block data not to be persisted to database
@@ -36,6 +37,7 @@ message BlockExtendedInfo {
   int64 ReceiptValue = 3 [ jstype = JS_STRING ];
   string BlocksmithAccountAddress = 4;
   int64 PopChange = 5 [ jstype = JS_STRING ];
+  repeated SkippedBlocksmith SkippedBlocksmiths = 6;
 }
 
 // GetBlockRequest create request for single block

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .git
 .gitignore
 node_modules
@@ -7,3 +8,7 @@ README.md
 LICENSE
 .vscode
 dump.rdb
+=======
+node_modules
+npm-debug.log
+>>>>>>> a6a044eaabbccd1188a2e83247f5a49fe1ec84c0

@@ -12,6 +12,7 @@ function connectMongoose() {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: true,
+    useCreateIndex: true,
   };
   return mongoose.connect(uris, options, error => {
     if (error) {
