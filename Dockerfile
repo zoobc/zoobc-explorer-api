@@ -12,7 +12,6 @@ RUN echo 'deb http://repo.mongodb.org/apt/ubuntu $(cat /etc/lsb-release | grep D
 RUN apt-get install -y mongodb
 RUN mkdir -p /data/db
 
-
 RUN apt-get -y install curl
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash
 RUN apt-get -y install nodejs
@@ -26,13 +25,16 @@ COPY --chown=root:root . .
 
 RUN mv .env.local .env
 
+ARG PORT
+ENV PORT=$PORT
+
 ARG PROTO_HOST
 ENV PROTO_HOST=$PROTO_HOST
 
 ARG PROTO_PORT
 ENV PROTO_PORT=$PROTO_PORT
 
-EXPOSE 6969
+EXPOSE $PORT
 EXPOSE 6379
 EXPOSE 27017
 
