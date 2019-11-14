@@ -1,16 +1,19 @@
-<<<<<<< HEAD
 FROM ubuntu:18.04
+MAINTAINER Docker
 RUN mkdir -p /usr/src/app && chown -R root:root /usr/src/app
 USER root
+RUN mkdir -p /data/db
 
 RUN apt-get update && apt-get install -y gnupg
 RUN apt-get -y install redis-server
 
 #==========MONGO DB============================================================================================================================
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-# RUN echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | tee /etc/apt/sources.list.d/mongodb.list
+RUN echo 'deb http://repo.mongodb.org/apt/ubuntu $(cat /etc/lsb-release | grep DISTRIB_CODENAME | cut -d= -f2)/mongodb-org/3.2'
 RUN apt-get install -y mongodb
+RUN mkdir -p /data/db
 #======================================================================================================================================
+
 
 # install curl
 RUN apt-get -y install curl
@@ -51,36 +54,7 @@ ENV DB_PASSWORD=$DB_PASSWORD
 
 EXPOSE 6969
 EXPOSE 6379
-CMD  node /usr/src/app/app.js;service mongod start;redis-server
-=======
-#################################################################################################################################################
-# How to :
-# Build : docker build -t zoobc-exp-api:9696 --build-arg PORT=9696 --build-arg DB_NAME="zoobcdb_testnet_5000" --build-arg PROTO_HOST="18.139.3.139" --build-arg PROTO_PORT=5000 --no-cache .
-# Run : docker run --name zoobc-exp-api-9696 -d -p 9696:9696 zoobc-exp-api:9696
-# Remove : docker rm -f zoobc-exp-api-9696
-#################################################################################################################################################
+EXPOSE 27017
 
-FROM node:10
-
-WORKDIR /usr/src/app
-COPY . .
-
-RUN npm install
-
-ARG PORT
-ENV PORT=$PORT
-
-ARG DB_NAME
-ENV DB_NAME=${DB_NAME}
-
-ARG PROTO_HOST
-ENV PROTO_HOST=$PROTO_HOST
-
-ARG PROTO_PORT
-ENV PROTO_PORT=PROTO_PORT
-
-CMD PORT=${PORT} DB_NAME=${DB_NAME} PROTO_HOST=${PROTO_HOST} PROTO_PORT=${PROTO_PORT} node app.js
-
-# EXPOSE 9696
-# CMD ["npm", "run", "start"]
->>>>>>> a6a044eaabbccd1188a2e83247f5a49fe1ec84c0
+RUN mkdir ~/log
+CMD mongod --fork --logpath ~/log/mongodb.log && redis-server --daemonize yes && node /usr/src/app/app.js
