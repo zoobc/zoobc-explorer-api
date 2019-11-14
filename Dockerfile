@@ -1,3 +1,10 @@
+#################################################################################################################################################	FROM ubuntu:18.04
+# How to :	MAINTAINER Docker
+# Build : sudo docker build \--build-arg PROTO_HOST='xxx.xxx.xx.xxx' \--build-arg PROTO_PORT=6000 \--build-arg PORT=9966 \-t kevinh2810/nodes-trial .
+# Run : sudo docker run -p 8888:8888 -d kevinh2810/nodes-trial
+# Remove : 'docker rm <image_id>
+#################################################################################################################################################
+
 FROM ubuntu:18.04
 MAINTAINER Docker
 RUN mkdir -p /usr/src/app && chown -R root:root /usr/src/app
