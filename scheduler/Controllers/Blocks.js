@@ -25,32 +25,10 @@ module.exports = class Blocks extends BaseController {
 
         const matchs = ['BlockID', 'Height'];
         const items = result.Blocks.map(item => {
-          if (item.Block.PublishedReceipts && item.Block.PublishedReceipts.length > 0) {
-            console.log('==item.Block.PublishedReceipts', item.Block.PublishedReceipts);
-
-            /** WAITING FROM CORE */
-            // const blockReceipts = item.BlockReceipts.map(receipt => {
-            //   return {
-            //     BlockID: receipt.BlockID,
-            //     Height: receipt.Height,
-            //     SenderPublicKey: receipt.SenderPublicKey,
-            //     ReceiverPublicKey: receipt.ReceiverPublicKey,
-            //     DataType: receipt.DataType,
-            //     DataHash: receipt.DataHash,
-            //     ReceiptMerkleRoot: receipt.ReceiptMerkleRoot,
-            //     ReceiverSignature: receipt.ReceiverSignature,
-            //   };
-            // });
-            // this.service.upsert(item.BlockReceipts, matchs, (err, result) => {
-            //   if (err) return callback(`[Block Receipts] Upsert ${err}`, null);
-            //   if (result && result.ok !== 1) return callback('[Block Receipts] Upsert data failed', null);
-            //   return callback(null, `[Block Receipts] Upsert ${item.BlockReceipts.length} data successfully`);
-            // });
-          }
-
-          const totalRewards = parseFloat(item.Block.TotalCoinBase) + parseFloat(item.Block.TotalFee);
+          const TotalRewards = parseFloat(item.Block.TotalCoinBase) + parseFloat(item.Block.TotalFee);
           return {
             BlockID: item.Block.ID,
+            BlockHash: item.Block.BlockHash,
             PreviousBlockID: item.Block.PreviousBlockHash,
             Height: item.Block.Height,
             Timestamp: moment.unix(item.Block.Timestamp).valueOf(),
@@ -58,22 +36,30 @@ module.exports = class Blocks extends BaseController {
             BlockSignature: item.Block.BlockSignature,
             CumulativeDifficulty: item.Block.CumulativeDifficulty,
             SmithScale: item.Block.SmithScale,
-            BlocksmithAddress: item.Block.BlocksmithPublicKey,
+            BlocksmithID: Converter.bufferStr(item.Block.BlocksmithPublicKey),
             TotalAmount: item.Block.TotalAmount,
             TotalAmountConversion: Converter.zoobitConversion(item.Block.TotalAmount),
             TotalFee: item.Block.TotalFee,
             TotalFeeConversion: Converter.zoobitConversion(item.Block.TotalFee),
             TotalCoinBase: item.Block.TotalCoinBase,
             TotalCoinBaseConversion: Converter.zoobitConversion(item.Block.TotalCoinBase),
-            TotalRewards: totalRewards,
-            TotalRewardsConversion: Converter.zoobitConversion(totalRewards),
             Version: item.Block.Version,
             PayloadLength: item.Block.PayloadLength,
             PayloadHash: item.Block.PayloadHash,
-            BlocksmithID: item.BlocksmithAccountAddress,
+
+            /** BlockExtendedInfo */
             TotalReceipts: item.TotalReceipts,
-            ReceiptValue: item.ReceiptValue,
             PopChange: item.PopChange,
+            ReceiptValue: item.ReceiptValue,
+            BlocksmithAddress: item.BlocksmithAccountAddress,
+
+            /** Aggregate */
+            TotalRewards,
+            TotalRewardsConversion: Converter.zoobitConversion(TotalRewards),
+
+            /** Relations */
+            Transactions: item.Block.Transactions,
+            PublishedReceipts: item.Block.PublishedReceipts,
           };
         });
 
