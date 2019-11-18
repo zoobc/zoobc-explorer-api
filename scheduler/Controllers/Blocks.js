@@ -26,7 +26,15 @@ module.exports = class Blocks extends BaseController {
         const matchs = ['BlockID', 'Height'];
         const items = result.Blocks.map(item => {
           const TotalRewards = parseFloat(item.Block.TotalCoinBase) + parseFloat(item.Block.TotalFee);
-          console.log('xxx : ', item.SkippedBlocksmiths);
+          const SkippedBlockSmithMapped =
+            item.SkippedBlocksmiths.length > 0 &&
+            item.SkippedBlocksmiths.map(skipped => {
+              return {
+                ...skipped,
+                BlocksmithPublicKey: Converter.bufferStr(skipped.BlocksmithPublicKey),
+              };
+            });
+
           return {
             BlockID: item.Block.ID,
             BlockHash: item.Block.BlockHash,
@@ -53,7 +61,7 @@ module.exports = class Blocks extends BaseController {
             PopChange: item.PopChange,
             ReceiptValue: item.ReceiptValue,
             BlocksmithAddress: item.BlocksmithAccountAddress,
-            SkippedBlocksmiths: item.SkippedBlocksmiths,
+            SkippedBlocksmiths: SkippedBlockSmithMapped,
 
             /** Aggregate */
             TotalRewards,
