@@ -29,6 +29,14 @@ const schema = new mongoose.Schema(
     ReceiptValue: { type: Number },
     PopChange: { type: String },
     BlocksmithAddress: { type: String } /** BlocksmithAccountAddress */,
+    SkippedBlocksmiths: [
+      {
+        BlocksmithPublicKey: { type: String },
+        POPChange: { type: String },
+        BlockHeight: { type: Number },
+        BlocksmithIndex: { type: Number },
+      },
+    ],
 
     /** Aggregate */
     TotalRewards: { type: Number },

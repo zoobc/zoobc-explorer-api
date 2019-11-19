@@ -18,7 +18,7 @@ module.exports = class Blocks extends BaseController {
       if (err) return callback(`[Blocks] Blocks Service - Get Last Height ${err}`, null);
 
       const params = { Limit: 500, Height: result ? parseInt(result.Height + 1) : 0 };
-      console.log(`🚀 [ZooBC] Get Blocks From Height ${params.Height}`);
+      console.log(`?? [ZooBC] Get Blocks From Height ${params.Height}`);
       Block.GetBlocks(params, (err, result) => {
         if (err) return callback(`[Blocks] Block - Get Blocks ${err}`, null);
         if (result && result.Blocks && result.Blocks.length < 1) return callback(null, null);
@@ -26,6 +26,15 @@ module.exports = class Blocks extends BaseController {
         const matchs = ['BlockID', 'Height'];
         const items = result.Blocks.map(item => {
           const TotalRewards = parseFloat(item.Block.TotalCoinBase) + parseFloat(item.Block.TotalFee);
+          const SkippedBlockSmithMapped =
+            item.SkippedBlocksmiths.length > 0 &&
+            item.SkippedBlocksmiths.map(skipped => {
+              return {
+                ...skipped,
+                BlocksmithPublicKey: Converter.bufferStr(skipped.BlocksmithPublicKey),
+              };
+            });
+
           return {
             BlockID: item.Block.ID,
             BlockHash: item.Block.BlockHash,
@@ -52,6 +61,7 @@ module.exports = class Blocks extends BaseController {
             PopChange: item.PopChange,
             ReceiptValue: item.ReceiptValue,
             BlocksmithAddress: item.BlocksmithAccountAddress,
+            SkippedBlocksmiths: SkippedBlockSmithMapped,
 
             /** Aggregate */
             TotalRewards,
