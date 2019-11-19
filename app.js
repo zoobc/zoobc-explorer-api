@@ -29,6 +29,6 @@ require('./server/graphql')(app, server);
 require('./server/cluster')(server);
 require('./server/redis')();
 require('./server/mongoose')();
-//require('./scheduler').start();
+require('./scheduler').start();
 
 module.exports = app;
