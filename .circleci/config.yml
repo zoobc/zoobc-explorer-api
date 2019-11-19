@@ -6,15 +6,15 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - '17:49:86:b6:a6:8b:f0:eb:7b:53:3a:3a:c1:40:5b:33'
+            - 'b9:35:de:ea:79:f4:1e:c9:16:04:89:d7:cc:d4:fc:39'
       - run:
           name: Setup SSH Key Host
           command: |
-            ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
+            ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
       - run:
           name: Deploy
           command: |
-            ssh root@139.162.15.80 "cd zoobc-explorer-api/ && chmod +x deploy.sh && ./deploy.sh"
+            ssh $SSH_USER@$SSH_HOST "cd zoobc-explorer-api/ && chmod +x deploy.sh && ./deploy.sh"
 
 workflows:
   version: 2
