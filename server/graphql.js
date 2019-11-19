@@ -16,6 +16,6 @@ module.exports = (app, server) => {
 
   apolloServer.applyMiddleware({ app, path: `${config.app.mainRoute}/graphql` });
   msg.green('🚀', `${config.app.modeServer}://${config.app.host}:${config.app.port}${apolloServer.graphqlPath}`);
-  // apolloServer.installSubscriptionHandlers(server);
-  // msg.green('🚀', `ws://${config.app.host}:${config.app.port}${apolloServer.subscriptionsPath}`);
+  apolloServer.installSubscriptionHandlers(server);
+  msg.green('🚀', `ws://${config.app.host}:${config.app.port}${apolloServer.subscriptionsPath}`);
 };
