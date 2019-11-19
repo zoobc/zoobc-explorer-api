@@ -10,11 +10,11 @@ jobs:
       - run:
           name: Setup SSH Key Host
           command: |
-            ssh-keyscan -H $SSH_HOST_TESTNET >> ~/.ssh/known_hosts
+            ssh-keyscan -H ${SSH_HOST_TESTNET} >> ~/.ssh/known_hosts
       - run:
           name: Deploy
           command: |
-            ssh $SSH_USER@$SSH_HOST_TESTNET "pm2 deploy ecosystem.config.js testnet update"
+            ssh ${SSH_USER}@${SSH_HOST_TESTNET} "pm2 deploy ecosystem.config.js testnet update"
 
   deploy-production:
     docker:
@@ -26,11 +26,11 @@ jobs:
       - run:
           name: Setup SSH Key Host
           command: |
-            ssh-keyscan -H $SSH_HOST_PRODUCTION >> ~/.ssh/known_hosts
+            ssh-keyscan -H ${SSH_HOST_PRODUCTION} >> ~/.ssh/known_hosts
       - run:
           name: Deploy
           command: |
-            ssh $SSH_USER@$SSH_HOST_PRODUCTION "pm2 deploy ecosystem.config.js production update"
+            ssh ${SSH_USER}@${SSH_HOST_PRODUCTION} "pm2 deploy ecosystem.config.js production update"
 
 workflows:
   version: 2
