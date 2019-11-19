@@ -1,23 +1,47 @@
 version: 2
 jobs:
-  deploy:
+  deploy-testnet:
     docker:
       - image: circleci/node:8.10
     steps:
       - add_ssh_keys:
           fingerprints:
-            - '17:49:86:b6:a6:8b:f0:eb:7b:53:3a:3a:c1:40:5b:33'
+            - 'b9:35:de:ea:79:f4:1e:c9:16:04:89:d7:cc:d4:fc:39'
       - run:
           name: Setup SSH Key Host
           command: |
-            ssh-keyscan -H 139.162.15.80 >> ~/.ssh/known_hosts
+            ssh-keyscan -H ${SSH_HOST_TESTNET} >> ~/.ssh/known_hosts
       - run:
           name: Deploy
           command: |
-            ssh root@139.162.15.80 "cd zoobc-explorer-api/ && chmod +x deploy.sh && ./deploy.sh"
+            ssh ${SSH_USER}@${SSH_HOST_TESTNET} "pm2 deploy ecosystem.config.js testnet update"
+
+  deploy-production:
+    docker:
+      - image: circleci/node:8.10
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - 'fd:dc:b5:f9:84:60:7b:d4:ae:78:20:c3:fd:99:9d:53'
+      - run:
+          name: Setup SSH Key Host
+          command: |
+            ssh-keyscan -H ${SSH_HOST_PRODUCTION} >> ~/.ssh/known_hosts
+      - run:
+          name: Deploy
+          command: |
+            ssh ${SSH_USER}@${SSH_HOST_PRODUCTION} "pm2 deploy ecosystem.config.js production update"
 
 workflows:
   version: 2
   build:
     jobs:
-      - deploy
+      - deploy-testnet:
+          filters:
+              branches:
+                only: tesnet
+      - deploy-production:
+          filters:
+              branches:
+                only: master
+
