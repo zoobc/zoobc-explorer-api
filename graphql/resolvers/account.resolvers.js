@@ -21,40 +21,78 @@ module.exports = {
       const od = order !== undefined ? parseOrder(order) : { BlockHeight: 'asc' };
 
       return new Promise((resolve, reject) => {
-        const cacheAccounts = Converter.formatCache(cache.accounts, args);
-        RedisCache.get(cacheAccounts, (err, resRedis) => {
-          if (err) return reject(err);
-          if (resRedis) return resolve(resRedis);
+        models.Accounts.countDocuments((err, total) => {
+          if (err) {
+            return reject(err);
+          }
 
-          models.Accounts.countDocuments((err, total) => {
-            if (err) {
-              return reject(err);
-            }
+          return models.Accounts.find()
+            .select()
+            .limit(lm)
+            .skip((pg - 1) * lm)
+            .sort(od)
+            .lean()
+            .exec()
+            .then(data => {
+              return data.map(async account => {
+                const accountAddress =
+                  account.AccountAddress !== undefined
+                    ? { $or: [{ Sender: account.AccountAddress }, { Recipient: account.AccountAddress }] }
+                    : null;
 
-            models.Accounts.find()
-              .select()
-              .limit(lm)
-              .skip((pg - 1) * lm)
-              .sort(od)
-              .lean()
-              .exec((err, data) => {
-                if (err) return reject(err);
+                return await models.Transactions.find()
+                  .where(accountAddress ? accountAddress : {})
+                  .lean()
+                  .then(data => {
+                    account.BalanceConversion = data
+                      .map(trx => {
+                        const { SendMoney, NodeRegistration, UpdateNodeRegistration } = trx;
+                        return {
+                          Sender: trx.Sender,
+                          FeeConversion: trx.FeeConversion,
+                          Amount: SendMoney
+                            ? SendMoney.AmountConversion
+                            : NodeRegistration
+                            ? NodeRegistration.LockedBalanceConversion
+                            : UpdateNodeRegistration
+                            ? UpdateNodeRegistration.LockedBalanceConversion
+                            : '0',
+                        };
+                      })
+                      .map(trx2 => {
+                        const { Sender, FeeConversion, Amount } = trx2;
 
-                const result = {
-                  Accounts: data,
-                  Paginate: {
-                    Page: parseInt(pg),
-                    Count: data.length,
-                    Total: total,
-                  },
-                };
+                        if (account.AccountAddress === Sender) {
+                          return -(parseFloat(Amount) + parseFloat(FeeConversion));
+                        } else {
+                          return parseFloat(Amount);
+                        }
+                      })
+                      .reduce((acc, curr) => parseFloat((acc + curr).toFixed(3)), 0);
 
-                RedisCache.set(cacheAccounts, result, err => {
-                  if (err) return reject(err);
-                  return resolve(result);
-                });
+                    account.LastActive = data
+                      .map(x => x.Timestamp)
+                      .reduce((a, b) => {
+                        return a > b ? a : b;
+                      });
+
+                    account.TotalFeesPaidConversion = data.map(x => x.FeeConversion).reduce((acc, curr) => acc + parseFloat(curr), 0);
+
+                    return account;
+                  })
+                  .catch(err => reject(err));
               });
-          });
+            })
+            .then(final => {
+              if (!final) return resolve({});
+              const result = {
+                Accounts: final,
+                Paginate: { Page: parseInt(pg), Count: final.length, Total: total },
+              };
+
+              return resolve(result);
+            })
+            .catch(err => reject(err));
         });
       });
     },
@@ -71,15 +109,64 @@ module.exports = {
           models.Accounts.findOne()
             .where({ AccountAddress: AccountAddress })
             .lean()
-            .exec((err, result) => {
-              if (err) return reject(err);
-              if (!result) return resolve({});
+            .exec()
+            .then(async account => {
+              const accountAddress =
+                account.AccountAddress !== undefined
+                  ? { $or: [{ Sender: account.AccountAddress }, { Recipient: account.AccountAddress }] }
+                  : null;
 
-              RedisCache.set(cacheAccount, result, err => {
+              return await models.Transactions.find()
+                .where(accountAddress ? accountAddress : {})
+                .lean()
+                .then(data => {
+                  account.BalanceConversion = data
+                    .map(trx => {
+                      const { SendMoney, NodeRegistration, UpdateNodeRegistration } = trx;
+                      return {
+                        Sender: trx.Sender,
+                        FeeConversion: trx.FeeConversion,
+                        Amount: SendMoney
+                          ? SendMoney.AmountConversion
+                          : NodeRegistration
+                          ? NodeRegistration.LockedBalanceConversion
+                          : UpdateNodeRegistration
+                          ? UpdateNodeRegistration.LockedBalanceConversion
+                          : '0',
+                      };
+                    })
+                    .map(trx2 => {
+                      const { Sender, FeeConversion, Amount } = trx2;
+
+                      if (account.AccountAddress === Sender) {
+                        return -(parseFloat(Amount) + parseFloat(FeeConversion));
+                      } else {
+                        return parseFloat(Amount);
+                      }
+                    })
+                    .reduce((acc, curr) => parseFloat((acc + curr).toFixed(3)), 0);
+
+                  account.LastActive = data
+                    .map(x => x.Timestamp)
+                    .reduce((a, b) => {
+                      return a > b ? a : b;
+                    });
+
+                  account.TotalFeesPaidConversion = data.map(x => x.FeeConversion).reduce((acc, curr) => acc + parseFloat(curr), 0);
+
+                  return account;
+                })
+                .catch(err => reject(err));
+            })
+            .then(final => {
+              if (!final) return resolve({});
+
+              RedisCache.set(cacheAccount, final, err => {
                 if (err) return reject(err);
-                return resolve(result);
+                return resolve(final);
               });
-            });
+            })
+            .catch(err => reject(err));
         });
       });
     },

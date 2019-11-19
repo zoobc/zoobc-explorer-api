@@ -62,7 +62,7 @@ const formatDataGRPC2 = Payload => {
 
 const formatCache = (name, payload) => {
   const valPayload = typeof payload === 'string' ? payload : Object.values(payload).join(',');
-  return `${name}-${process.env.PROTO_PORT}:${valPayload}`;
+  return `${process.env.PORT}-${name}-${process.env.PROTO_PORT}:${valPayload}`;
 };
 
 const concats = (sender, recipient) => {

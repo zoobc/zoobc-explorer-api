@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const { Converter, RedisCache } = require('../../utils');
 
 const cache = {
