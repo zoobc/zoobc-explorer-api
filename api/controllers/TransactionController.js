@@ -5,7 +5,6 @@ const { ResponseBuilder, Converter, RedisCache } = require('../../utils');
 
 const cache = {
   transactions: 'transactions',
-  transactions: 'transactions',
   amount: 'transaction:amount',
   type: 'transaction:type',
 };
@@ -131,93 +130,4 @@ module.exports = class TransactionController extends BaseController {
       handleError.sendCatchError(res, error);
     }
   }
-
-  // async graphAmount(req, res) {
-  //   const responseBuilder = new ResponseBuilder();
-  //   const handleError = new HandleError();
-  //   const { Limit, Page, AccountAddress } = req.query;
-  //   try {
-  //     const cacheAmount = Converter.formatCache(cache.amount, req.query);
-  //     RedisCache.get(cacheAmount, (errRedis, resRedis) => {
-  //       if (errRedis) {
-  //         handleError.sendCatchError(res, errRedis);
-  //         return;
-  //       }
-  //       if (resRedis) {
-  //         this.sendSuccessResponse(
-  //           res,
-  //           responseBuilder
-  //             .setData(resRedis)
-  //             .setMessage('Transactions Amount Graph fetched successfully')
-  //             .build()
-  //         );
-  //       }
-  //       this.service.graphAmount({ Limit, Page, AccountAddress }, (err, result) => {
-  //         if (err) {
-  //           handleError.sendCatchError(res, err);
-  //           return;
-  //         }
-  //         RedisCache.set(cacheAmount, result.data, errRedis => {
-  //           if (errRedis) {
-  //             handleError.sendCatchError(res, errRedis);
-  //             return;
-  //           }
-  //           this.sendSuccessResponse(
-  //             res,
-  //             responseBuilder
-  //               .setData(result.data)
-  //               .setMessage('Transactions Amount Graph fetched successfully')
-  //               .build()
-  //           );
-  //         });
-  //       });
-  //     });
-  //   } catch (error) {
-  //     handleError.sendCatchError(res, error);
-  //   }
-  // }
-  // async graphType(req, res) {
-  //   const responseBuilder = new ResponseBuilder();
-  //   const handleError = new HandleError();
-  //   const { Limit, Page, AccountAddress } = req.query;
-  //   try {
-  //     const cacheType = Converter.formatCache(cache.type, req.query);
-  //     RedisCache.get(cacheType, (errRedis, resRedis) => {
-  //       if (errRedis) {
-  //         handleError.sendCatchError(res, errRedis);
-  //         return;
-  //       }
-  //       if (resRedis) {
-  //         this.sendSuccessResponse(
-  //           res,
-  //           responseBuilder
-  //             .setData(resRedis)
-  //             .setMessage('Transaction Type Graph fetched successfully')
-  //             .build()
-  //         );
-  //       }
-  //       this.service.graphType({ Limit, Page, AccountAddress }, (err, result) => {
-  //         if (err) {
-  //           handleError.sendCatchError(res, err);
-  //           return;
-  //         }
-  //         RedisCache.set(cacheType, result.data, errRedis => {
-  //           if (errRedis) {
-  //             handleError.sendCatchError(res, errRedis);
-  //             return;
-  //           }
-  //           this.sendSuccessResponse(
-  //             res,
-  //             responseBuilder
-  //               .setData(result.data)
-  //               .setMessage('Transaction Type Graph fetched successfully')
-  //               .build()
-  //           );
-  //         });
-  //       });
-  //     });
-  //   } catch (error) {
-  //     handleError.sendCatchError(res, error);
-  //   }
-  // }
 };

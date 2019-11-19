@@ -4,27 +4,22 @@ const { Accounts, Blocks, Transactions, Nodes, AccountTransactions } = require('
 module.exports = class ResetsService extends BaseService {
   resetAll(callback) {
     try {
-      Blocks.deleteMany((err, res) => {
+      Blocks.deleteMany(err => {
         if (err) return callback(err.message, null);
-        // const nBlocks = res.deletedCount;
 
-        Transactions.deleteMany((err, res) => {
+        Transactions.deleteMany(err => {
           if (err) return callback(err.message, null);
-          // const nTransactions = res.deletedCount;
 
-          Nodes.deleteMany((err, res) => {
+          Nodes.deleteMany(err => {
             if (err) return callback(err.message, null);
-            // const nNodes = res.deletedCount;
 
-            Accounts.deleteMany((err, res) => {
+            Accounts.deleteMany(err => {
               if (err) return callback(err.message, null);
-              // const nAccounts = res.deletedCount;
 
-              AccountTransactions.deleteMany((err, res) => {
+              AccountTransactions.deleteMany(err => {
                 if (err) return callback(err.message, null);
-                // const nAccountTransactions = res.deletedCount;
 
-                return callback(null, `Success reset all docs`);
+                return callback(null, 'Success reset all docs');
               });
             });
           });

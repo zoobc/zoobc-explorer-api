@@ -30,7 +30,8 @@ module.exports = class NodesService extends BaseService {
 
           if (results && results.length > 0) {
             results = results.map(item => {
-              let res = { ...item };
+              // let res = { ...item };
+              let res = item;
               res.NodePublicKey = JSON.stringify(item.NodePublicKey).replace(/"/g, '');
               delete res._id;
               return res;
