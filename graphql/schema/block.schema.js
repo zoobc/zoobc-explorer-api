@@ -37,9 +37,16 @@ module.exports = gql`
     ReceiptValue: Float
     PopChange: String
     BlocksmithAddress: String
+    SkippedBlocksmiths: [SkippedBlocksmith!]!
 
     # Aggregate
     TotalRewards: Float
     TotalRewardsConversion: String
+  }
+  type SkippedBlocksmith {
+    BlocksmithPublicKey: String
+    POPChange: String
+    BlockHeight: Int
+    BlocksmithIndex: Int
   }
 `;
