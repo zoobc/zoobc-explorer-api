@@ -10,11 +10,12 @@ jobs:
       - run:
           name: Setup SSH Key Host
           command: |
-            ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+            ssh-keyscan -H 139.162.44.25 >> ~/.ssh/known_hosts
       - run:
           name: Deploy
           command: |
-            ssh $SSH_USER@$SSH_HOST "cd zoobc-explorer-api/ && chmod +x deploy.sh && ./deploy.sh"
+            ssh root@139.162.44.25 "pm2 deploy ecosystem.config.js testnet setup"
+            ssh root@139.162.44.25 "pm2 deploy ecosystem.config.js testnet update"
 
 workflows:
   version: 2
