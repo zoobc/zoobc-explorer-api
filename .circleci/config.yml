@@ -16,7 +16,7 @@ jobs:
           command: |
             ssh ${SSH_USER}@${SSH_HOST_TESTNET} "pm2 deploy ecosystem.config.js testnet update"
 
-  deploy-production:
+  deploy-mainnet:
     docker:
       - image: circleci/node:8.10
     steps:
@@ -26,11 +26,11 @@ jobs:
       - run:
           name: Setup SSH Key Host
           command: |
-            ssh-keyscan -H ${SSH_HOST_PRODUCTION} >> ~/.ssh/known_hosts
+            ssh-keyscan -H ${SSH_HOST_MAINNET} >> ~/.ssh/known_hosts
       - run:
           name: Deploy
           command: |
-            ssh ${SSH_USER}@${SSH_HOST_PRODUCTION} "pm2 deploy ecosystem.config.js production update"
+            ssh ${SSH_USER}@${SSH_HOST_MAINNET} "pm2 deploy ecosystem.config.js mainnet update"
 
 workflows:
   version: 2
@@ -38,10 +38,9 @@ workflows:
     jobs:
       - deploy-testnet:
           filters:
-              branches:
-                only: tesnet
-      - deploy-production:
+            branches:
+              only: tesnet
+      - deploy-mainnet:
           filters:
-              branches:
-                only: master
-
+            branches:
+              only: master
