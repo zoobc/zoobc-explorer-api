@@ -10,16 +10,44 @@ const loaders = require('../graphql/loaders');
 const { msg } = require('../utils');
 const config = require('../config/config');
 
-const getMe = async req => {
-  const token = req.headers['x-token'];
-
-  if (token) {
-    try {
-      return await jwt.verify(token, process.env.TOKEN_SECRET);
-    } catch (e) {
-      throw new AuthenticationError('Your session expired. Sign in again.');
-    }
+const parseToken = token => {
+  if (token.includes('Bearer ')) {
+    return token.slice('Bearer '.length);
   }
+  throw new AuthenticationError('Invalid token format');
+};
+
+const getMe = async req => {
+  const { authorization } = req.headers;
+
+  if (authorization && authorization !== undefined && authorization !== 'Bearer ' + undefined && authorization !== '') {
+    const token = parseToken(authorization);
+
+    if (token && token !== undefined) {
+      const options = {
+        expiresIn: `${config.app.tokenExpired}h`,
+        audience: config.token.audience,
+        issuer: config.token.issuer,
+        subject: config.token.subject,
+      };
+
+      try {
+        const verifiedToken = await jwt.verify(token, config.app.tokenSecret, options);
+        return Array.isArray(verifiedToken) ? verifiedToken[0] : verifiedToken;
+      } catch (err) {
+        if (err && err.name === 'TokenExpiredError') {
+          throw new AuthenticationError('Session has been expired.');
+        }
+        if (err && err.name === 'JsonWebTokenError') {
+          throw new AuthenticationError('Invalid format token.');
+        }
+      }
+    }
+
+    return null;
+  }
+
+  return null;
 };
 
 module.exports = (app, server) => {
@@ -33,7 +61,7 @@ module.exports = (app, server) => {
       return {
         models,
         me,
-        secret: process.env.TOKEN_SECRET,
+        secret: config.app.tokenSecret,
         loaders: {
           user: new DataLoader(keys => loaders.user.batchUsers(keys, models)),
         },

@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 const isEmail = require('validator/lib/isEmail');
-const { upsertMany } = require('../utils');
+const { upsertMany, encrypt, decrypt } = require('../utils');
 
 const schema = new mongoose.Schema(
   {
@@ -41,11 +40,11 @@ schema.pre('save', async function() {
 });
 
 schema.methods.generatePasswordHash = async function() {
-  return await bcrypt.hash(this.password, 10);
+  return await encrypt(this.password);
 };
 
 schema.methods.validatePassword = async function(password) {
-  return await bcrypt.compare(password, this.password);
+  return (await decrypt(this.password.trim())) === password.trim();
 };
 
 module.exports = mongoose.model('User', schema);
