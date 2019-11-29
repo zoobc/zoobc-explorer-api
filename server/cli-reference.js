@@ -1,7 +1,3 @@
-// FOR REFERENCE ONLY
-// KEVIN WILL ENHANCE THIS FILE
-// SUKSEMA
-
 const _ = require('lodash');
 const yargs = require('yargs');
 const storage = require('node-persist');
@@ -39,8 +35,8 @@ if (command === 'signin') {
         try {
           await storage.init();
           const setToken = await storage.setItem('token', result.data.token);
-          if (setToken) {
-            //const token = await storage.getItem('token');
+          const setEmail = await storage.setItem('email', result.data.email);
+          if (setToken && setEmail) {
             console.log('set token succeed. ');
           } else {
             console.log('set token failed. ');
@@ -61,9 +57,11 @@ if (command === 'signin') {
     try {
       await storage.init();
       const token = await storage.getItem('token');
-      if (token) {
+      const email = await storage.getItem('email');
+
+      if (token && email) {
         const service = new UsersService();
-        const result = await service.resetDB(token);
+        const result = await service.resetDB(email, token);
         if (result) {
           console.log('reset db succeed.');
         } else {

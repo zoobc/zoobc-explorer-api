@@ -1,5 +1,4 @@
 const moment = require('moment');
-const jwt = require('jsonwebtoken');
 const BaseService = require('./BaseService');
 const { User } = require('../../models');
 const config = require('../../config/config');
@@ -12,21 +11,11 @@ module.exports = class UsersService extends BaseService {
     super(User);
   }
 
-  async createToken(user, secret) {
-    const { id, email, role, status } = user;
-
-    const options = {
-      expiresIn: `${config.app.tokenExpired}h`,
-      audience: config.token.audience,
-      issuer: config.token.issuer,
-      subject: config.token.subject,
-    };
-
-    const token = await jwt.sign({ id, email, role, status }, secret, options);
-
+  async createToken(user) {
+    const { email, password } = user;
     const result = {
-      user: { id, email, role, status },
-      token,
+      email: email,
+      token: password,
       tokenExpired: moment()
         .add(config.app.tokenExpired, 'hours')
         .toDate(),
@@ -35,12 +24,29 @@ module.exports = class UsersService extends BaseService {
     return result;
   }
 
-  async getMe(token) {
-    if (token) {
+  async getMe(email, token) {
+    if (email && token) {
       try {
-        return await jwt.verify(token, process.env.TOKEN_SECRET);
-      } catch (e) {
-        throw new console.error('Your session expired. Sign in again.');
+        const user = await User.findByEmail(email);
+        if (!user) {
+          return { success: false, message: 'No user found with this login credentials.', data: null };
+        }
+
+        const isValidToken = token.trim() === user.token.trim();
+
+        if (!isValidToken) {
+          return { success: false, message: 'Invalid Token.', data: null };
+        }
+
+        const isExpired = moment().isAfter(user.tokenExpired);
+
+        if (isExpired) {
+          return { success: false, message: 'Your session expired. Sign in again.', data: null };
+        }
+
+        return { success: true, message: 'successfully get user.', data: user };
+      } catch (err) {
+        throw new console.error(err);
       }
     }
   }
@@ -53,7 +59,7 @@ module.exports = class UsersService extends BaseService {
     if (!user) {
       user = await User.create(payload);
 
-      const tokenData = await this.createToken(user, process.env.TOKEN_SECRET);
+      const tokenData = await this.createToken(user);
 
       const { token, tokenExpired } = tokenData;
 
@@ -77,7 +83,7 @@ module.exports = class UsersService extends BaseService {
       return { success: false, message: 'Invalid password.', data: null };
     }
 
-    const tokenData = await this.createToken(user, process.env.TOKEN_SECRET);
+    const tokenData = await this.createToken(user);
 
     const { token, tokenExpired } = tokenData;
 
@@ -86,11 +92,13 @@ module.exports = class UsersService extends BaseService {
     return { success: true, message: 'succesfully login.', data: tokenData };
   }
 
-  async resetDB(token) {
-    const me = await this.getMe(token);
-    const { role } = me;
-    const isAuthenticated = me ? true : false;
-    const isSuperAdmin = role === 'Superadmin' ? true : false;
+  async resetDB(email, token) {
+    const result = await this.getMe(email, token);
+
+    const { success, message, data } = result;
+
+    const isAuthenticated = success && data ? true : false;
+    const isSuperAdmin = isAuthenticated && data.role === 'Superadmin' ? true : false;
 
     if (isAuthenticated && isSuperAdmin) {
       try {
@@ -107,9 +115,9 @@ module.exports = class UsersService extends BaseService {
     }
 
     return {
-      success: false,
-      message: `You do not have authorization to reset this ${db.databaseName} database!. Please login as Superadmin first.`,
-      data: null,
+      success,
+      message: `You do not have authorization to reset this ${db.databaseName} database!. It caused by ${message}`,
+      data,
     };
   }
 };
