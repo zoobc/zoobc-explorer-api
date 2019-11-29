@@ -3,7 +3,7 @@
 # ZooBC Explorer API
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![CircleCI](https://circleci.com/gh/zoobc/zoobc-explorer-api.svg?style=svg&circle-token=b4cabe3402e1055f17201d64f1dd47bfc0dcb3a2)](https://circleci.com/gh/zoobc/zoobc-explorer-api)
+[![CircleCI](https://circleci.com/gh/zoobc/zoobc-explorer-api/tree/testnet.svg?style=svg&circle-token=b4cabe3402e1055f17201d64f1dd47bfc0dcb3a2)](https://circleci.com/gh/zoobc/zoobc-explorer-api/tree/testnet)
 
 
 A web viewer for searching and displaying data published by the explorer server web API, so that a user can easily find any info about the blockchain. Data should include: blocks, transactions, accounts, peers, statistical information. Should have a modular design to make it easy for other companies to extend the explorer UI with screens for their specific use cases. It should be a web application with a browser DB to sort and find data locally.
