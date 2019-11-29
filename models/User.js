@@ -13,7 +13,7 @@ const schema = new mongoose.Schema(
       required: [true, 'Email required!'],
       validate: [isEmail, 'No valid email address provided.'],
     },
-    password: { type: String, trim: true, required: [true, 'Password required!'], minlength: 7, maxlength: 42 },
+    password: { type: String, trim: true, required: [true, 'Password required!'] },
     role: { type: String, default: 'Admin', enum: ['Superadmin', 'Admin'], required: [true, 'Role required!'] },
     token: { type: String },
     tokenExpired: { type: Date },
@@ -36,7 +36,9 @@ schema.statics.findByEmail = async function(email) {
 };
 
 schema.pre('save', async function() {
-  this.password = await this.generatePasswordHash();
+  if (this.role !== 'Superadmin') {
+    this.password = await this.generatePasswordHash();
+  }
 });
 
 schema.methods.generatePasswordHash = async function() {

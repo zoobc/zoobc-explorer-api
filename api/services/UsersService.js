@@ -2,6 +2,7 @@ const moment = require('moment');
 const BaseService = require('./BaseService');
 const { User } = require('../../models');
 const config = require('../../config/config');
+const { encrypt } = require('../../utils');
 
 const mongoose = require('mongoose');
 const db = mongoose.connection;
@@ -52,7 +53,8 @@ module.exports = class UsersService extends BaseService {
   }
 
   async generateSuperadmin(callback) {
-    const payload = { email: 'superadmin@zoobc.net', password: 'P@ssw0rd', role: 'Superadmin', status: 'Active' };
+    const password = await encrypt('P@ssw0rd');
+    const payload = { email: 'superadmin@zoobc.net', password, role: 'Superadmin', status: 'Active' };
 
     let user = await User.findByEmail(payload.email);
 
