@@ -39,7 +39,7 @@ workflows:
       - deploy-testnet:
           filters:
             branches:
-              only: tesnet
+              only: testnet
       - deploy-mainnet:
           filters:
             branches:
