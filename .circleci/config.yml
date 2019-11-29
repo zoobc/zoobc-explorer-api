@@ -6,9 +6,9 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - 'b9:35:de:ea:79:f4:1e:c9:16:04:89:d7:cc:d4:fc:39'
+            - 'd5:04:f5:92:55:14:83:f8:87:c9:96:81:47:8b:33:b4'
       - run:
-          name: Setup SSH Key Host
+          name: Setup SSH Key Testnet
           command: |
             ssh-keyscan -H ${SSH_HOST_TESTNET} >> ~/.ssh/known_hosts
       - run:
@@ -22,9 +22,9 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - 'fd:dc:b5:f9:84:60:7b:d4:ae:78:20:c3:fd:99:9d:53'
+            - 'b6:74:98:6c:ec:e5:93:20:bf:30:8a:5f:09:22:e8:ff'
       - run:
-          name: Setup SSH Key Host
+          name: Setup SSH Key Mainnet
           command: |
             ssh-keyscan -H ${SSH_HOST_MAINNET} >> ~/.ssh/known_hosts
       - run:
