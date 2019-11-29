@@ -10,7 +10,7 @@ module.exports = {
     modeServer: process.env.MODE_SERVER || 'http',
     modeCluster: true,
     redisExpired: 60 /** seconds */,
-    scheduler: false,
+    scheduler: true,
     scheduleEvent: 30 /** seconds */,
     openSslKeyPath: process.env.SSL_KEYPATH || '',
     openSslCertPath: process.env.SSL_CERTPATH || '',
