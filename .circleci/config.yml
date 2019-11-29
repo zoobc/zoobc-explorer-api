@@ -14,7 +14,7 @@ jobs:
       - run:
           name: Deploy
           command: |
-            ssh ${SSH_USER}@${SSH_HOST_TESTNET} "ls -ltr && pm2 deploy ecosystem.config.js testnet update"
+            ssh ${SSH_USER}@${SSH_HOST_TESTNET} "pm2 deploy ecosystem.config.js testnet update"
 
 
   deploy-mainnet:
