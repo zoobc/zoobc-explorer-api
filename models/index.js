@@ -1,4 +1,4 @@
-const Users = require('./Users');
+const User = require('./User');
 const Nodes = require('./Nodes');
 const Blocks = require('./Blocks');
 const Accounts = require('./Accounts');
@@ -7,7 +7,7 @@ const PublishedReceipts = require('./PublishedReceipts');
 const AccountTransactions = require('./AccountTransactions');
 
 module.exports = {
-  Users,
+  User,
   Nodes,
   Blocks,
   Accounts,
