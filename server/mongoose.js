@@ -11,7 +11,7 @@ function connectMongoose() {
     pass: saslprep(config.db.password),
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: true,
+    useFindAndModify: false,
     useCreateIndex: true,
   };
   return mongoose.connect(uris, options, error => {
