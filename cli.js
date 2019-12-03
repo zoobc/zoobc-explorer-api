@@ -87,7 +87,6 @@ if (command === 'zoobc') {
     console.log(' login -u <username> -p <password>             login into database to get the HASH for resetting database');
     console.log(' reset <hash>                                  used for resetting the database after validating the hash');
     console.log('');
-    console.log('');
     process.exit(0);
   } else {
     console.log('Invalid Command, please use -h for help');
