@@ -56,7 +56,6 @@ if (command === 'zoobc') {
       console.log('need more parameter');
       process.exit(0);
     }
-
     (async () => {
       const token = Value[2];
       try {
@@ -74,9 +73,22 @@ if (command === 'zoobc') {
       } catch (error) {
         console.error('reset db error : ', error);
       }
-      console.log('DB RESETED');
+      console.log('database has been reseted');
       process.exit(0);
     })();
+  } else if (Value[1] === '-h') {
+    console.log('Usage:');
+    console.log('');
+    console.log(' node <file path .js> zoobc <command> [arguments]');
+    console.log('');
+
+    console.log('commands are:');
+    console.log('');
+    console.log(' login -u <username> -p <password>             login into database to get the HASH for resetting database');
+    console.log(' reset <hash>                                  used for resetting the database after validating the hash');
+    console.log('');
+    console.log('');
+    process.exit(0);
   } else {
     console.log('Invalid Command, please use -h for help');
     process.exit(0);
