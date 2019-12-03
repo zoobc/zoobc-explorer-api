@@ -57,11 +57,10 @@ if (command === 'signin') {
     try {
       await storage.init();
       const token = await storage.getItem('token');
-      const email = await storage.getItem('email');
 
-      if (token && email) {
+      if (token) {
         const service = new UsersService();
-        const result = await service.resetDB(email, token);
+        const result = await service.resetDB(token);
         if (result) {
           console.log('reset db succeed.');
         } else {

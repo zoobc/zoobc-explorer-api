@@ -25,27 +25,28 @@ module.exports = class UsersService extends BaseService {
     return result;
   }
 
-  async getMe(email, token) {
-    if (email && token) {
+  async getMe(token) {
+    if (token) {
       try {
-        const user = await User.findByEmail(email);
-        if (!user) {
+        const hash = await User.findByToken(token);
+
+        if (!hash) {
           return { success: false, message: 'No user found with this login credentials.', data: null };
         }
 
-        const isValidToken = token.trim() === user.token.trim();
+        const isValidToken = token.trim() === hash.token.trim();
 
         if (!isValidToken) {
           return { success: false, message: 'Invalid Token.', data: null };
         }
 
-        const isExpired = moment().isAfter(user.tokenExpired);
+        const isExpired = moment().isAfter(hash.tokenExpired);
 
         if (isExpired) {
           return { success: false, message: 'Your session expired. Sign in again.', data: null };
         }
 
-        return { success: true, message: 'successfully get user.', data: user };
+        return { success: true, message: 'YOur token session is not expired yet.', data: hash };
       } catch (err) {
         throw new console.error(err);
       }
@@ -91,12 +92,11 @@ module.exports = class UsersService extends BaseService {
 
     await User.findByIdAndUpdate(user.id, { token, tokenExpired }, { new: true });
 
-    return { success: true, message: 'succesfully login.', data: tokenData };
+    return { success: true, message: 'successfully login.', data: tokenData };
   }
 
-  async resetDB(email, token) {
-    const result = await this.getMe(email, token);
-
+  async resetDB(token) {
+    const result = await this.getMe(token);
     const { success, message, data } = result;
 
     const isAuthenticated = success && data ? true : false;
@@ -104,9 +104,12 @@ module.exports = class UsersService extends BaseService {
 
     if (isAuthenticated && isSuperAdmin) {
       try {
-        const res = await db.dropDatabase();
-        if (res) {
-          db.close();
+        const resBlocks = await db.collection('blocks').drop();
+        const resAccounts = await db.collection('accounts').drop();
+        const resTransactions = await db.collection('transactions').drop();
+        const resNodes = await db.collection('nodes').drop();
+
+        if (resBlocks && resAccounts && resTransactions && resNodes) {
           return { success: true, message: 'DB succesfully dropped.', data: null };
         } else {
           return { success: false, message: 'DB failed to drop.', data: null };

@@ -6,6 +6,7 @@ const { msg } = require('../utils');
 
 function connectMongoose() {
   const uris = `mongodb://${config.db.host}:${config.db.port}/${config.db.database}`;
+
   const options = {
     user: config.db.username,
     pass: saslprep(config.db.password),

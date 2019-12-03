@@ -28,11 +28,15 @@ const schema = new mongoose.Schema(
 schema.plugin(upsertMany);
 
 schema.statics.findByEmail = async function(email) {
-  const user = await this.findOne({
-    email,
-  });
+  const user = await this.findOne({ email });
 
   return user;
+};
+
+schema.statics.findByToken = async function(token) {
+  const hash = await this.findOne({ token });
+
+  return hash;
 };
 
 schema.pre('save', async function() {
