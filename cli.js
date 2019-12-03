@@ -76,7 +76,7 @@ if (command === 'zoobc') {
       console.log('database has been reseted');
       process.exit(0);
     })();
-  } else if (Value[1] === '-h') {
+  } else if (Value[1] === '-h' || Value[1] === '--help') {
     console.log('Usage:');
     console.log('');
     console.log(' node <file path .js> zoobc <command> [arguments]');
@@ -86,10 +86,11 @@ if (command === 'zoobc') {
     console.log('');
     console.log(' login -u <username> -p <password>             login into database to get the HASH for resetting database');
     console.log(' reset <hash>                                  used for resetting the database after validating the hash');
+    console.log(' -h [ --help ]                                 show this usage information');
     console.log('');
     process.exit(0);
   } else {
-    console.log('Invalid Command, please use -h for help');
+    console.log('Invalid Command, please use -h or --help for help');
     process.exit(0);
   }
 } else {
