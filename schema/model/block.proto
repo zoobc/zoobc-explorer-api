@@ -18,16 +18,15 @@ message Block {
   bytes BlockSeed = 6;
   bytes BlockSignature = 7;
   string CumulativeDifficulty = 8;
-  int64 SmithScale = 9 [ jstype = JS_STRING ];
-  bytes BlocksmithPublicKey = 10;
-  int64 TotalAmount = 11 [ jstype = JS_STRING ];
-  int64 TotalFee = 12 [ jstype = JS_STRING ];
-  int64 TotalCoinBase = 13 [ jstype = JS_STRING ];
-  uint32 Version = 14;
-  uint32 PayloadLength = 15;
-  bytes PayloadHash = 16;
-  repeated Transaction Transactions = 17;
-  repeated PublishedReceipt PublishedReceipts = 18;
+  bytes BlocksmithPublicKey = 9;
+  int64 TotalAmount = 10 [ jstype = JS_STRING ];
+  int64 TotalFee = 11 [ jstype = JS_STRING ];
+  int64 TotalCoinBase = 12 [ jstype = JS_STRING ];
+  uint32 Version = 13;
+  uint32 PayloadLength = 14;
+  bytes PayloadHash = 15;
+  repeated Transaction Transactions = 16;
+  repeated PublishedReceipt PublishedReceipts = 17;
 }
 
 // BlockExtendedInfo represent the Block data plus part of block data not to be persisted to database

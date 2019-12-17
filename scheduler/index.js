@@ -6,7 +6,7 @@ const config = require('../config/config');
 const { msg } = require('../utils');
 const { Nodes, Blocks, Accounts, Transactions, AccountTransactions, Rollback, PublishedReceipts, Resets } = require('./Controllers');
 
-const { UsersService } = require('../api/services/index');
+// const { UsersService } = require('../api/services/index');
 
 const nodes = new Nodes();
 const resets = new Resets();
@@ -108,13 +108,13 @@ function start() {
     msg.green('🚀', `Start Scheduler with Events Every ${events} Seconds`);
   }
 
-  new UsersService().generateSuperadmin((error, result) => {
-    if (error) {
-      msg.red('⛔️', error);
-    } else {
-      result ? msg.green('✅', result) : msg.yellow('⚠️', '[User] Nothing Generated.');
-    }
-  });
+  // new UsersService().generateSuperadmin((error, result) => {
+  //   if (error) {
+  //     msg.red('⛔️', error);
+  //   } else {
+  //     result ? msg.green('✅', result) : msg.yellow('⚠️', '[User] Nothing Generated.');
+  //   }
+  // });
 }
 
 function stop() {

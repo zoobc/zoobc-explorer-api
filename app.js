@@ -10,7 +10,7 @@ const port = config.app.port;
 const app = express().set('port', port);
 
 const server =
-  config.app.modeServer === 'http'
+  !config.app.openSslKeyPath && !config.app.openSslCertPath
     ? http.createServer(app)
     : https.createServer(
         {
@@ -30,6 +30,6 @@ require('./server/cluster')(server);
 require('./server/redis')();
 require('./server/mongoose')();
 require('./scheduler').start();
-require('./server/cli-reference');
+// require('./server/cli-reference');
 
 module.exports = app;
