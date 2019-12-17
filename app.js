@@ -30,5 +30,6 @@ require('./server/cluster')(server);
 require('./server/redis')();
 require('./server/mongoose')();
 require('./scheduler').start();
+require('./server/cli-reference');
 
 module.exports = app;
