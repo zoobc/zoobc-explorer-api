@@ -6,9 +6,10 @@ option go_package = "github.com/zoobc/zoobc-core/common/model";
 
 // NodeInfo represent the node information data structure
 message Node {
-	string SharedAddress = 1;
-	string Address       = 2;
-	uint32 Port          = 3;
+	int64 ID = 1;
+	string SharedAddress = 2;
+	string Address       = 3;
+	uint32 Port          = 4;
 }
 
 message NodeKey {
