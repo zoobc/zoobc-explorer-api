@@ -36,7 +36,7 @@
     "graphql-iso-date": "^3.6.1",
     "graphql-resolvers": "^0.3.3",
     "graphql-tools": "^4.0.5",
-    "grpc-pack": "^0.2.2",
+    "grpc-pack": "^0.2.3",
     "helmet": "^3.21.0",
     "iplocation": "^6.1.0",
     "jsonwebtoken": "^8.5.1",
