@@ -17,6 +17,7 @@ service P2PCommunication {
     rpc SendPeers(model.SendPeersRequest) returns (model.Empty) {}
     rpc SendBlock (model.SendBlockRequest) returns (model.SendBlockResponse) {}
     rpc SendTransaction (model.SendTransactionRequest) returns (model.SendTransactionResponse) {}
+    rpc RequestBlockTransactions (model.RequestBlockTransactonsRequest) returns (model.Empty){}
 
     rpc GetCumulativeDifficulty(model.GetCumulativeDifficultyRequest) returns (model.GetCumulativeDifficultyResponse){}
     rpc GetCommonMilestoneBlockIDs(model.GetCommonMilestoneBlockIdsRequest) returns (model.GetCommonMilestoneBlockIdsResponse) {}
