@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package model;
+option go_package = "github.com/zoobc/zoobc-core/common/model";
+
+message Escrow {
+    int64 ID = 1 [ jstype = JS_STRING ];
+    string SenderAddress = 2;
+    string RecipientAddress = 3;
+    string ApproverAddress = 4;
+    int64 Amount = 5 [ jstype = JS_STRING ];
+    int64 Commission = 6 [ jstype = JS_STRING ];
+    // Timeout is BlockHeight gap 
+    uint64 Timeout = 7 [ jstype = JS_STRING ];
+    EscrowStatus Status = 8;
+    uint32 BlockHeight = 9;
+    bool Latest = 10;
+}
+enum EscrowStatus {
+    Approved = 0;
+    Rejected = 1;
+    Expired = 2;
+}
+
+enum EscrowApproval {
+    Approve = 0;
+    Reject = 1;
+}
+// PostEscrowApprovalRequest message for approval transaction escrow
+message PostEscrowApprovalRequest {
+    // ApprovalBytes format: [EscrowApproval][int64 TransactionID]
+    bytes ApprovalBytes = 1;
+}

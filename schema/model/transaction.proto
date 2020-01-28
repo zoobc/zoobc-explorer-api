@@ -7,6 +7,7 @@ import "model/proofOfOwnership.proto";
 import "model/pagination.proto";
 import "model/batchReceipt.proto";
 import "model/nodeRegistration.proto";
+import "model/escrow.proto";
 
 // Transaction represent the transaction data structure stored in the database
 message Transaction {
@@ -35,6 +36,8 @@ message Transaction {
         RemoveAccountDatasetTransactionBody removeAccountDatasetTransactionBody = 21;
     }
     bytes Signature = 22;
+    // nullable
+    Escrow Escrow = 23;
 }
 
 enum TransactionType {
@@ -147,10 +150,18 @@ message PostTransactionRequest {
 }
 message PostTransactionResponse { Transaction Transaction = 1; }
 
-// SendTransactionRequest request in p2pCommunication service
+// SendTransactionRequest a model request of send a transaction in p2pCommunication service
 message SendTransactionRequest {
     bytes TransactionBytes = 1;
     int32 ChainType = 2;
     bytes SenderPublicKey = 3;
 }
+// SendTransactionResponse a model response of send a transaction in p2pCommunication service
 message SendTransactionResponse { BatchReceipt BatchReceipt = 1; }
+
+
+// RequestBlockTransactonsRequest a model request of requesting transaction based on ID transactions 
+message RequestBlockTransactonsRequest {
+    repeated int64 TransactionIDs = 1;
+    int32 ChainType = 2;
+}
