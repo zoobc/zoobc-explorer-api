@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package model;
+option go_package = "github.com/zoobc/zoobc-core/common/model";
+
+message MultiSignatureInfo {
+    uint32 MinimumSignatures = 1;
+    int64 Nonce = 2 [ jstype = JS_STRING ];
+    repeated string Addresses = 3;
+    string MultisigAddress = 4;
+    uint32 BlockHeight = 5;
+    bool Latest = 6;
+}
+
+// represent the signature posted by account
+message SignatureInfo {
+    bytes TransactionHash = 1;
+    map<string, bytes> Signatures = 2; 
+}
+
+// represent the pending signature counter stored by node for multi-signature transaction
+message PendingSignature {
+    bytes TransactionHash = 1;
+    string AccountAddress = 2;
+    bytes Signature = 3;
+    uint32 BlockHeight = 4;
+    bool Latest = 5;
+}
+
+// represent transaction inside multisig body
+message PendingTransaction {
+    string SenderAddress = 1;
+    bytes TransactionHash = 2;
+    bytes TransactionBytes = 3;
+    PendingTransactionStatus Status = 4;
+    uint32 BlockHeight = 5;
+    bool Latest = 6;
+}
+
+enum PendingTransactionStatus {
+    PendingTransactionPending = 0;
+    PendingTransactionExecuted = 1;
+    PendingTransactionNoOp = 2;
+    PendingTransactionExpired = 3;
+}

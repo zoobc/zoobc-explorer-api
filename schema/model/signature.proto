@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package model;
+option go_package = "github.com/zoobc/zoobc-core/common/model";
+
+enum SignatureType {
+    // in bytes: []byte{0,0,0,0}, using Ed25519 signature algorithm 
+    DefaultSignature = 0;
+    // in bytes: []byte{1,0,0,0}, bitcoin uses a specific Koblitz curve secp256k1
+    // Koblitz curves are a type of Elliptic Curve Digital Signature Algorithm
+    BitcoinSignature = 1;
+}
