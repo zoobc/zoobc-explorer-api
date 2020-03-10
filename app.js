@@ -1,5 +1,3 @@
-/* eslint-disable indent */
-require('dotenv').config();
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
@@ -20,16 +18,15 @@ const server =
         app
       );
 
-require('./server/cors')(app);
-require('./server/compression')(app);
-require('./server/log')(app);
-require('./server/routes')(app);
-require('./server/swagger')(app);
-require('./server/graphql')(app, server);
-require('./server/cluster')(server);
-require('./server/redis')();
-require('./server/mongoose')();
+require('./modules/cors')(app);
+require('./modules/compression')(app);
+require('./modules/log')(app);
+require('./modules/swagger')(app);
+require('./modules/graphql')(app, server);
+require('./modules/cluster')(server);
+require('./modules/redis')();
+require('./modules/mongoose')();
+require('./api/routes')(app);
 require('./scheduler').start();
-// require('./server/cli-reference');
 
 module.exports = app;

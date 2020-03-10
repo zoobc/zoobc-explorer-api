@@ -26,5 +26,11 @@ service TransactionService {
             post: "/v1/transaction/PostTransaction"
         };
     }
+    
+    rpc GetTransactionMinimumFee(model.GetTransactionMinimumFeeRequest) returns (model.GetTransactionMinimumFeeResponse) {
+        option (google.api.http) = {
+            post: "/v1/transaction/GetTransactionMinimumFee"
+        };
+    }
 
 }
