@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package model;
+option go_package = "github.com/zoobc/zoobc-core/common/model";
+
+import "model/spineBlockManifest.proto";
+import "model/accountBalance.proto";
+import "model/nodeRegistration.proto";
+import "model/accountDatasets.proto";
+import "model/participationScore.proto";
+import "model/publishedReceipt.proto";
+import "model/escrow.proto";
+
+// SnapshotFileInfo model to pass data between snapshot and spineBlockManifest interfaces
+message SnapshotFileInfo {
+    bytes SnapshotFileHash = 1;
+    uint32 Height = 2;
+    int64 ProcessExpirationTimestamp = 3;
+    int32 ChainType = 4;
+    SpineBlockManifestType SpineBlockManifestType = 5;
+    repeated bytes FileChunksHashes = 6;
+}
+
+// SnapshotPayload snapshot data
+message SnapshotPayload {
+    repeated AccountBalance AccountBalances = 1;
+    repeated NodeRegistration NodeRegistrations = 2;
+    repeated AccountDataset AccountDatasets = 3;
+    repeated ParticipationScore ParticipationScores = 4;
+    repeated PublishedReceipt PublishedReceipts = 5;
+    repeated Escrow EscrowTransactions = 6;
+}
+

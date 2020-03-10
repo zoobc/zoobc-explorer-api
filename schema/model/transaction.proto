@@ -8,6 +8,7 @@ import "model/pagination.proto";
 import "model/batchReceipt.proto";
 import "model/nodeRegistration.proto";
 import "model/escrow.proto";
+import "model/multiSignature.proto";
 
 // Transaction represent the transaction data structure stored in the database
 message Transaction {
@@ -24,20 +25,23 @@ message Transaction {
     uint32 TransactionBodyLength = 11;
     bytes TransactionBodyBytes = 12;
     uint32 TransactionIndex = 13;
-    // TransactionBody
+    bool MultisigChild = 14;
+    // transactionbody
     oneof TransactionBody {
-        EmptyTransactionBody emptyTransactionBody = 14;
-        SendMoneyTransactionBody sendMoneyTransactionBody = 15;
-        NodeRegistrationTransactionBody nodeRegistrationTransactionBody = 16;
-        UpdateNodeRegistrationTransactionBody updateNodeRegistrationTransactionBody = 17;
-        RemoveNodeRegistrationTransactionBody removeNodeRegistrationTransactionBody = 18;
-        ClaimNodeRegistrationTransactionBody claimNodeRegistrationTransactionBody = 19;
-        SetupAccountDatasetTransactionBody setupAccountDatasetTransactionBody = 20;
-        RemoveAccountDatasetTransactionBody removeAccountDatasetTransactionBody = 21;
+        EmptyTransactionBody emptyTransactionBody = 15;
+        SendMoneyTransactionBody sendMoneyTransactionBody = 16;
+        NodeRegistrationTransactionBody nodeRegistrationTransactionBody = 17;
+        UpdateNodeRegistrationTransactionBody updateNodeRegistrationTransactionBody = 18;
+        RemoveNodeRegistrationTransactionBody removeNodeRegistrationTransactionBody = 19;
+        ClaimNodeRegistrationTransactionBody claimNodeRegistrationTransactionBody = 20;
+        SetupAccountDatasetTransactionBody setupAccountDatasetTransactionBody = 21;
+        RemoveAccountDatasetTransactionBody removeAccountDatasetTransactionBody = 22;
+        ApprovalEscrowTransactionBody approvalEscrowTransactionBody = 23;
+        MultiSignatureTransactionBody multiSignatureTransactionBody = 24;
     }
-    bytes Signature = 22;
+    bytes Signature = 25;
     // nullable
-    Escrow Escrow = 23;
+    Escrow Escrow = 26;
 }
 
 enum TransactionType {
@@ -57,7 +61,12 @@ enum TransactionType {
     SetupAccountDatasetTransaction = 3;
     // in bytes: []byte{3,1,0,0}
     RemoveAccountDatasetTransaction = 259;
+    // in bytes: []byte{4,0,0,0}
+    ApprovalEscrowTransaction = 4;  
+    // in bytes: []byte{5,0,0,0}
+    MultiSignatureTransaction = 5;
 }
+
 
 message EmptyTransactionBody {}
 
@@ -116,6 +125,20 @@ message RemoveAccountDatasetTransactionBody {
     string Value = 4;
 }
 
+message ApprovalEscrowTransactionBody {
+    EscrowApproval Approval = 1;
+    int64 TransactionID = 2 [ jstype = JS_STRING ];
+}
+
+message MultiSignatureTransactionBody {
+    // MultiSignatureInfo represent the information of the multisig-address
+    MultiSignatureInfo MultiSignatureInfo = 1;
+    // Unsigned transaction bytes that will be executed once the transaction is valid
+    bytes UnsignedTransactionBytes = 2;
+    // List of participantAddress-participantSignature with its tx hash
+    SignatureInfo SignatureInfo = 3;
+}
+
 //------------
 // P2P Content
 //------------
@@ -160,8 +183,32 @@ message SendTransactionRequest {
 message SendTransactionResponse { BatchReceipt BatchReceipt = 1; }
 
 
-// RequestBlockTransactonsRequest a model request of requesting transaction based on ID transactions 
-message RequestBlockTransactonsRequest {
+
+// RequestBlockTransactionsRequest a model request of requesting transaction based on ID transactions 
+message RequestBlockTransactionsRequest {
     repeated int64 TransactionIDs = 1;
     int32 ChainType = 2;
+    int64 BlockID = 3 [ jstype = JS_STRING ];
+}
+
+// SendBlockTransactionsRequest a model request for sending block's transactions
+message SendBlockTransactionsRequest {
+    int32 ChainType = 1;
+    repeated bytes TransactionsBytes = 2;
+    bytes SenderPublicKey = 3;
+}
+
+// SendBlockTransactionsResponse a model response of a process sending block's transactions
+message SendBlockTransactionsResponse {
+    repeated BatchReceipt BatchReceipts = 1;
+}
+
+// GetTransactionMinimumFeeRequest a model request for getting minimum fee required to post the transaction 
+message GetTransactionMinimumFeeRequest {
+    bytes TransactionBytes = 1;
+}
+
+// GetTransactionMinimumFeeResponse a model response for GetTransactionMinimumFeeRequest, indicates the minimum fee for provided tx 
+message GetTransactionMinimumFeeResponse {
+    int64 Fee = 1 [ jstype = JS_STRING ];
 }
