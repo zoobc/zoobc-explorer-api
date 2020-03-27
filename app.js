@@ -4,11 +4,10 @@ const https = require('https');
 const express = require('express');
 
 const config = require('./config/config');
-const port = config.app.port;
-const app = express().set('port', port);
+const app = express().set('port', config.app.port);
 
 const server =
-  !config.app.openSslKeyPath && !config.app.openSslCertPath
+  !fs.existsSync(config.app.openSslKeyPath) || !fs.existsSync(config.app.openSslCertPath)
     ? http.createServer(app)
     : https.createServer(
         {
