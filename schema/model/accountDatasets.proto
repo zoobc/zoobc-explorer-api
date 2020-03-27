@@ -16,3 +16,7 @@ message AccountDataset {
     uint32 Height = 7;
     bool Latest = 8;
 }
+
+enum AccountDatasetProperty {
+    AccountDatasetEscrowApproval = 0;
+}
