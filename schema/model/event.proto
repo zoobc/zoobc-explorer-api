@@ -14,4 +14,5 @@ enum EventType {
     EventRemoveAccountDatasetTransaction = 7;
     EventReward = 8;
     EventApprovalEscrowTransaction = 9;
+    EventMultiSignatureTransaction = 10;
 }
