@@ -1,3 +1,4 @@
+require('dotenv').config();
 const path = require('path');
 
 module.exports = {
@@ -7,7 +8,6 @@ module.exports = {
     tokenSecret: process.env.TOKEN_SECRET || '884d31c5d4766dc624e1225888babeb7',
     tokenExpired: 12 /** hours */,
     mainRoute: '/zoobc/api/v1',
-    modeCluster: true,
     redisExpired: 60 /** seconds */,
     scheduler: false,
     scheduleEvent: 30 /** seconds */,

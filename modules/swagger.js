@@ -2,7 +2,7 @@ const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 
 const config = require('../config/config');
-const { apiLimiter } = require('./apiLimiter');
+const { limiter } = require('./limiter');
 const swaggerConfig = require('../config/swagger').config();
 
 const swaggerOptions = {
@@ -12,7 +12,7 @@ const swaggerOptions = {
 
 module.exports = function(app) {
   /** static api doc with execute */
-  app.use(config.app.mainRoute, apiLimiter);
+  app.use(config.app.mainRoute, limiter);
   app.use(config.app.mainRoute + '/doc', swaggerUi.serve, swaggerUi.setup(swaggerConfig, swaggerOptions));
 
   /** static api doc */
