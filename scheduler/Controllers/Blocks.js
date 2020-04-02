@@ -4,6 +4,7 @@ const BaseController = require('./BaseController');
 const { Block } = require('../Protos');
 const { Converter } = require('../../utils');
 const { BlocksService } = require('../../api/services');
+const { pubsub, events } = require('../../graphql/subscription');
 
 module.exports = class Blocks extends BaseController {
   constructor() {
@@ -74,8 +75,16 @@ module.exports = class Blocks extends BaseController {
 
         this.service.upsert(items, matchs, (err, result) => {
           if (err) return callback(`[Blocks] Upsert ${err}`, null);
-          if (result && result.ok !== 1) return callback('[Blocks] Upsert data failed', null);
+          if (result && result.result.ok !== 1) return callback('[Blocks] Upsert data failed', null);
+
           store.blocksAddition = true;
+
+          const publishBlocks = items.slice(0, 5).sort((a, b) => (a.Height > b.Height ? -1 : 1));
+
+          pubsub.publish(events.blocks, {
+            blocks: publishBlocks,
+          });
+
           return callback(null, `[Blocks] Upsert ${items.length} data successfully`);
         });
       });

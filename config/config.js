@@ -9,7 +9,7 @@ module.exports = {
     tokenExpired: 12 /** hours */,
     mainRoute: '/zoobc/api/v1',
     redisExpired: 60 /** seconds */,
-    scheduler: false,
+    scheduler: true,
     scheduleEvent: 30 /** seconds */,
     openSslKeyPath: process.env.SSL_KEYPATH || null,
     openSslCertPath: process.env.SSL_CERTPATH || null,
