@@ -1,5 +1,6 @@
 const { Converter, RedisCache } = require('../../utils');
 const pageLimit = require('../../config/config').app.pageLimit;
+const { pubsub, events } = require('../subscription');
 
 const cache = {
   transactions: 'transactions',
@@ -94,6 +95,12 @@ module.exports = {
   Transaction: {
     Block: async (transaction, args, { models }) => {
       return await models.Blocks.findOne({ BlockID: transaction.BlockID }).lean();
+    },
+  },
+
+  Subscription: {
+    transactions: {
+      subscribe: () => pubsub.asyncIterator([events.transactions]),
     },
   },
 };
