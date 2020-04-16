@@ -4,7 +4,6 @@ const BaseController = require('./BaseController');
 const { Block } = require('../Protos');
 const { Converter } = require('../../utils');
 const { BlocksService } = require('../../api/services');
-const { pubsub, events } = require('../../graphql/subscription');
 
 module.exports = class Blocks extends BaseController {
   constructor() {
@@ -80,13 +79,19 @@ module.exports = class Blocks extends BaseController {
 
           store.blocksAddition = true;
 
-          const publishBlocks = items.slice(0, 5).sort((a, b) => (a.Height > b.Height ? -1 : 1));
+          const publishBlocks = items
+            .slice(0, 5)
+            .sort((a, b) => (a.Height > b.Height ? -1 : 1))
+            .map(m => {
+              return {
+                BlockID: m.BlockID,
+                Height: m.Height,
+                BlocksmithAddress: m.BlocksmithAddress,
+                Timestamp: m.Timestamp,
+              };
+            });
 
-          pubsub.publish(events.blocks, {
-            blocks: publishBlocks,
-          });
-
-          return callback(null, `[Blocks] Upsert ${items.length} data successfully`);
+          return callback(null, { data: publishBlocks, message: `[Blocks] Upsert ${items.length} data successfully` });
         });
       });
     });

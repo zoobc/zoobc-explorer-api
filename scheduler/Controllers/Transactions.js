@@ -5,7 +5,6 @@ const BaseController = require('./BaseController');
 const { Transaction } = require('../Protos');
 const { Converter } = require('../../utils');
 const { BlocksService, TransactionsService } = require('../../api/services');
-const { pubsub, events } = require('../../graphql/subscription');
 
 module.exports = class Transactions extends BaseController {
   constructor() {
@@ -219,13 +218,18 @@ module.exports = class Transactions extends BaseController {
         if (err) return callback(`[Transactions - Height ${height}] Upsert ${err}`, null);
         if (result && result.result.ok !== 1) return callback(`[Transactions - Height ${height}] Upsert data failed`, null);
 
-        const publishTransactions = items.slice(0, 5).sort((a, b) => (a.Height > b.Height ? -1 : 1));
+        const publishTransactions = items
+          .slice(0, 5)
+          .sort((a, b) => (a.Height > b.Height ? -1 : 1))
+          .map(m => {
+            return {
+              TransactionID: m.TransactionID,
+              Timestamp: m.Timestamp,
+              FeeConversion: m.FeeConversion,
+            };
+          });
 
-        pubsub.publish(events.transactions, {
-          transactions: publishTransactions,
-        });
-
-        return callback(null, items.length);
+        return callback(null, { data: publishTransactions, message: `[Transactions] Upsert ${items.length} data successfully` });
       });
     });
   }
