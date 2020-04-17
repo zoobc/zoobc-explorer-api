@@ -21,6 +21,7 @@ module.exports = class Blocks extends BaseController {
       console.log(`🚀 [ZooBC] Get Blocks From Height ${params.Height}`);
       Block.GetBlocks(params, (err, result) => {
         if (err) return callback(`[Blocks] Block - Get Blocks ${err}`, null);
+
         if (result && result.Blocks && result.Blocks.length < 1) return callback(null, null);
 
         const matchs = ['BlockID', 'Height'];
@@ -39,7 +40,7 @@ module.exports = class Blocks extends BaseController {
             BlockHash: item.Block.BlockHash,
             PreviousBlockID: item.Block.PreviousBlockHash,
             Height: item.Block.Height,
-            Timestamp: moment.unix(item.Block.Timestamp).valueOf(),
+            Timestamp: new Date(moment.unix(item.Block.Timestamp).valueOf()),
             BlockSeed: item.Block.BlockSeed,
             BlockSignature: item.Block.BlockSignature,
             CumulativeDifficulty: item.Block.CumulativeDifficulty,
@@ -74,9 +75,23 @@ module.exports = class Blocks extends BaseController {
 
         this.service.upsert(items, matchs, (err, result) => {
           if (err) return callback(`[Blocks] Upsert ${err}`, null);
-          if (result && result.ok !== 1) return callback('[Blocks] Upsert data failed', null);
+          if (result && result.result.ok !== 1) return callback('[Blocks] Upsert data failed', null);
+
           store.blocksAddition = true;
-          return callback(null, `[Blocks] Upsert ${items.length} data successfully`);
+
+          const publishBlocks = items
+            .slice(0, 5)
+            .sort((a, b) => (a.Height > b.Height ? -1 : 1))
+            .map(m => {
+              return {
+                BlockID: m.BlockID,
+                Height: m.Height,
+                BlocksmithAddress: m.BlocksmithAddress,
+                Timestamp: m.Timestamp,
+              };
+            });
+
+          return callback(null, { data: publishBlocks, message: `[Blocks] Upsert ${items.length} data successfully` });
         });
       });
     });

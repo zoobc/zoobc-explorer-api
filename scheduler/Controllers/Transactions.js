@@ -98,7 +98,7 @@ module.exports = class Transactions extends BaseController {
           Amount: item.TransactionType === 1 ? parseInt(item.sendMoneyTransactionBody.Amount) : 0,
           AmountConversion: item.TransactionType === 1 ? Converter.zoobitConversion(parseInt(item.sendMoneyTransactionBody.Amount)) : 0,
           BlockHeight: item.Height,
-          Timestamp: moment.unix(item.Timestamp).valueOf(),
+          Timestamp: new Date(moment.unix(item.Timestamp).valueOf()),
           // Transaction: item,
         });
 
@@ -184,7 +184,7 @@ module.exports = class Transactions extends BaseController {
 
         return {
           TransactionID: item.ID,
-          Timestamp: moment.unix(item.Timestamp).valueOf(),
+          Timestamp: new Date(moment.unix(item.Timestamp).valueOf()),
           TransactionType: item.TransactionType,
           BlockID: item.BlockID,
           Height: item.Height,
@@ -216,8 +216,20 @@ module.exports = class Transactions extends BaseController {
       const matchs = ['TransactionID', 'Height'];
       this.service.upsert(items, matchs, (err, result) => {
         if (err) return callback(`[Transactions - Height ${height}] Upsert ${err}`, null);
-        if (result && result.ok !== 1) return callback(`[Transactions - Height ${height}] Upsert data failed`, null);
-        return callback(null, items.length);
+        if (result && result.result.ok !== 1) return callback(`[Transactions - Height ${height}] Upsert data failed`, null);
+
+        const publishTransactions = items
+          .slice(0, 5)
+          .sort((a, b) => (a.Height > b.Height ? -1 : 1))
+          .map(m => {
+            return {
+              TransactionID: m.TransactionID,
+              Timestamp: m.Timestamp,
+              FeeConversion: m.FeeConversion,
+            };
+          });
+
+        return callback(null, { data: publishTransactions, message: `[Transactions] Upsert ${items.length} data successfully` });
       });
     });
   }

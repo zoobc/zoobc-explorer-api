@@ -6,6 +6,10 @@ module.exports = gql`
     transaction(TransactionID: String!): Transaction!
   }
 
+  extend type Subscription {
+    transactions: [Transaction!]!
+  }
+
   type Transactions {
     Transactions: [Transaction!]!
     Paginate: Paginate!
