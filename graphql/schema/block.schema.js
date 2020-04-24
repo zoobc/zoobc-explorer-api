@@ -5,6 +5,11 @@ module.exports = gql`
     blocks(page: Int, limit: Int, order: String, NodePublicKey: String): Blocks!
     block(BlockID: String!): Block!
   }
+
+  extend type Subscription {
+    blocks: [Block!]!
+  }
+
   type Blocks {
     Blocks: [Block!]!
     Paginate: Paginate!

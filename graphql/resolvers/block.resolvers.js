@@ -1,5 +1,6 @@
 const { Converter, RedisCache } = require('../../utils');
 const pageLimit = require('../../config/config').app.pageLimit;
+const { pubsub, events } = require('../subscription');
 
 const cache = {
   blocks: 'blocks',
@@ -87,6 +88,11 @@ module.exports = {
             });
         });
       });
+    },
+  },
+  Subscription: {
+    blocks: {
+      subscribe: () => pubsub.asyncIterator([events.blocks]),
     },
   },
 };
