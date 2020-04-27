@@ -5,7 +5,7 @@ const config = require('../config/config');
 const { msg } = require('../utils');
 const { Nodes, Blocks, Accounts, Transactions, AccountTransactions, Rollback, PublishedReceipts, Resets } = require('./Controllers');
 
-const { pubsub } = require('../graphql/subscription');
+// const { pubsub } = require('../graphql/subscription');
 
 const nodes = new Nodes();
 const resets = new Resets();
