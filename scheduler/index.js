@@ -5,6 +5,8 @@ const config = require('../config/config');
 const { msg } = require('../utils');
 const { Nodes, Blocks, Accounts, Transactions, AccountTransactions, Rollback, PublishedReceipts, Resets } = require('./Controllers');
 
+// const { pubsub } = require('../graphql/subscription');
+
 const nodes = new Nodes();
 const resets = new Resets();
 const blocks = new Blocks();
@@ -37,7 +39,11 @@ const cronjob = new cron.CronJob(`*/${events} * * * * *`, () => {
       if (error) {
         msg.red('⛔️', error);
       } else {
-        result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Blocks] Nothing additional data at ${dateNow}`);
+        // pubsub.publish('blocks', {
+        //   blocks: result.data,
+        // });
+
+        result ? msg.green('✅', `${result.message} at ${dateNow}`) : msg.yellow('⚠️', `[Blocks] Nothing additional data at ${dateNow}`);
       }
 
       publishedReceipts.update((error, result) => {
@@ -53,7 +59,13 @@ const cronjob = new cron.CronJob(`*/${events} * * * * *`, () => {
           if (error) {
             msg.red('⛔️', error);
           } else {
-            result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Transactions] Nothing additional data at ${dateNow}`);
+            // pubsub.publish('transactions', {
+            //   transactions: result.data,
+            // });
+
+            result
+              ? msg.green('✅', `${result.message} at ${dateNow}`)
+              : msg.yellow('⚠️', `[Transactions] Nothing additional data at ${dateNow}`);
           }
 
           nodes.update((error, result) => {

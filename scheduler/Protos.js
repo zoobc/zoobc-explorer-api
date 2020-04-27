@@ -41,4 +41,14 @@ const NodeRegistration = createClient(
   config.proto.host
 );
 
-module.exports = { Block, Transaction, AccountBalance, NodeRegistration };
+const HealthCheck = createClient(
+  {
+    protoPath: config.proto.path,
+    protoName: 'healthCheck.proto',
+    servicePath: 'service',
+    serviceName: 'HealthCheckService',
+  },
+  config.proto.host
+);
+
+module.exports = { Block, Transaction, AccountBalance, NodeRegistration, HealthCheck };
