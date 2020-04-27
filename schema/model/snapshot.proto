@@ -6,12 +6,13 @@ option go_package = "github.com/zoobc/zoobc-core/common/model";
 import "model/spineBlockManifest.proto";
 import "model/accountBalance.proto";
 import "model/nodeRegistration.proto";
-import "model/accountDatasets.proto";
+import "model/accountDataset.proto";
 import "model/participationScore.proto";
 import "model/publishedReceipt.proto";
 import "model/escrow.proto";
 import "model/multiSignature.proto";
 import "model/block.proto";
+import "model/skippedBlocksmith.proto";
 
 // SnapshotFileInfo model to pass data between snapshot and spineBlockManifest interfaces
 message SnapshotFileInfo {
@@ -35,5 +36,6 @@ message SnapshotPayload {
     repeated PendingTransaction PendingTransactions = 8;
     repeated PendingSignature PendingSignatures = 9;
     repeated MultiSignatureInfo MultiSignatureInfos = 10;
+    repeated SkippedBlocksmith SkippedBlocksmiths = 11;
 }
 
