@@ -1,10 +1,10 @@
-const fs = require("fs");
-const http = require("http");
-const https = require("https");
-const express = require("express");
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const express = require('express');
 
-const config = require("./config/config");
-const app = express().set("port", config.app.port);
+const config = require('./config/config');
+const app = express().set('port', config.app.port);
 
 const server =
   !fs.existsSync(config.app.openSslKeyPath) ||
@@ -18,15 +18,15 @@ const server =
         app
       );
 
-require("./modules/cors")(app);
-require("./modules/compression")(app);
-require("./modules/log")(app);
-require("./modules/swagger")(app);
-require("./modules/graphql")(app, server);
-require("./modules/cluster")(server);
-require("./modules/redis")();
-require("./modules/mongoose")();
-require("./api/routes")(app);
-require("./scheduler").stop();
+require('./modules/cors')(app);
+require('./modules/compression')(app);
+require('./modules/log')(app);
+require('./modules/swagger')(app);
+require('./modules/graphql')(app, server);
+require('./modules/cluster')(server);
+require('./modules/redis')();
+require('./modules/mongoose')();
+require('./api/routes')(app);
+require('./scheduler').stop();
 
 module.exports = app;
