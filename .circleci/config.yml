@@ -6,7 +6,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "d5:04:f5:92:55:14:83:f8:87:c9:96:81:47:8b:33:b4"
+            - "25:bd:a4:87:dc:6b:08:d1:32:40:96:5a:8c:90:a6:8c"
       - run:
           name: Setup SSH Key Testnet
           command: |
@@ -23,7 +23,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "b6:74:98:6c:ec:e5:93:20:bf:30:8a:5f:09:22:e8:ff"
+            - "04:a3:fa:ae:79:4f:97:4d:e8:66:74:45:8a:0c:c1:33"
       - run:
           name: Setup SSH Key Mainnet
           command: |
