@@ -7,7 +7,8 @@ const config = require('./config/config');
 const app = express().set('port', config.app.port);
 
 const server =
-  !fs.existsSync(config.app.openSslKeyPath) || !fs.existsSync(config.app.openSslCertPath)
+  !fs.existsSync(config.app.openSslKeyPath) ||
+  !fs.existsSync(config.app.openSslCertPath)
     ? http.createServer(app)
     : https.createServer(
         {
@@ -26,6 +27,6 @@ require('./modules/cluster')(server);
 require('./modules/redis')();
 require('./modules/mongoose')();
 require('./api/routes')(app);
-require('./scheduler').start();
+require('./scheduler').stop();
 
 module.exports = app;

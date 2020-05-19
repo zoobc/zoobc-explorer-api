@@ -28,6 +28,10 @@ message GetPeerInfoRequest {
     string Version =1;
 }
 
+message GetPeerInfoResponse {
+    Node HostInfo = 1;
+}
+
 message GetMorePeersResponse {
     repeated Node Peers = 1;
 }
