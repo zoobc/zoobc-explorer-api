@@ -76,7 +76,9 @@ module.exports = {
                         return a > b ? a : b;
                       });
 
-                    account.TotalFeesPaidConversion = data.map(x => x.FeeConversion).reduce((acc, curr) => acc + parseFloat(curr), 0);
+                    account.TotalFeesPaidConversion = data
+                      .map(x => x.FeeConversion)
+                      .reduce((acc, curr) => parseFloat((acc + parseFloat(curr)).toFixed(2)), 0);
 
                     return account;
                   })
@@ -152,7 +154,9 @@ module.exports = {
                       return a > b ? a : b;
                     });
 
-                  account.TotalFeesPaidConversion = data.map(x => x.FeeConversion).reduce((acc, curr) => acc + parseFloat(curr), 0);
+                  account.TotalFeesPaidConversion = data
+                    .map(x => x.FeeConversion)
+                    .reduce((acc, curr) => parseFloat((acc + parseFloat(curr)).toFixed(2)), 0);
 
                   return account;
                 })
