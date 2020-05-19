@@ -26,6 +26,6 @@ require('./modules/cluster')(server);
 require('./modules/redis')();
 require('./modules/mongoose')();
 require('./api/routes')(app);
-require('./scheduler').start();
+require('./scheduler').stop();
 
 module.exports = app;
