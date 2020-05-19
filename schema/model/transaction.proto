@@ -62,7 +62,7 @@ enum TransactionType {
     // in bytes: []byte{3,1,0,0}
     RemoveAccountDatasetTransaction = 259;
     // in bytes: []byte{4,0,0,0}
-    ApprovalEscrowTransaction = 4;  
+    ApprovalEscrowTransaction = 4;
     // in bytes: []byte{5,0,0,0}
     MultiSignatureTransaction = 5;
 }
@@ -70,8 +70,8 @@ enum TransactionType {
 
 message EmptyTransactionBody {}
 
-message SendMoneyTransactionBody { 
-    int64 Amount = 1 [ jstype = JS_STRING ]; 
+message SendMoneyTransactionBody {
+    int64 Amount = 1 [ jstype = JS_STRING ];
 }
 
 message NodeRegistrationTransactionBody {
@@ -111,7 +111,6 @@ message SetupAccountDatasetTransactionBody {
     // Value of property
     string Value = 4;
     // How long Dataset will active in second
-    uint64 MuchTime = 5 [ jstype = JS_STRING ];
 }
 
 message RemoveAccountDatasetTransactionBody {
@@ -184,7 +183,7 @@ message SendTransactionResponse { BatchReceipt BatchReceipt = 1; }
 
 
 
-// RequestBlockTransactionsRequest a model request of requesting transaction based on ID transactions 
+// RequestBlockTransactionsRequest a model request of requesting transaction based on ID transactions
 message RequestBlockTransactionsRequest {
     repeated int64 TransactionIDs = 1;
     int32 ChainType = 2;
@@ -203,12 +202,12 @@ message SendBlockTransactionsResponse {
     repeated BatchReceipt BatchReceipts = 1;
 }
 
-// GetTransactionMinimumFeeRequest a model request for getting minimum fee required to post the transaction 
+// GetTransactionMinimumFeeRequest a model request for getting minimum fee required to post the transaction
 message GetTransactionMinimumFeeRequest {
     bytes TransactionBytes = 1;
 }
 
-// GetTransactionMinimumFeeResponse a model response for GetTransactionMinimumFeeRequest, indicates the minimum fee for provided tx 
+// GetTransactionMinimumFeeResponse a model response for GetTransactionMinimumFeeRequest, indicates the minimum fee for provided tx
 message GetTransactionMinimumFeeResponse {
     int64 Fee = 1 [ jstype = JS_STRING ];
 }
