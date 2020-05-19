@@ -49,8 +49,18 @@ module.exports = {
                   if (err) return reject(err);
                   if (resRedis) return resolve(resRedis);
 
+                  criteria = {
+                    $or: [
+                      { TransactionID: Id },
+                      { 'NodeRegistration.NodePublicKey': Id },
+                      { 'UpdateNodeRegistration.NodePublicKey': Id },
+                      { 'RemoveNodeRegistration.NodePublicKey': Id },
+                      { 'ClaimNodeRegistration.NodePublicKey': Id },
+                    ],
+                  };
+
                   models.Transactions.findOne()
-                    .where({ TransactionID: Id })
+                    .where(criteria)
                     .lean()
                     .exec((err, transaction) => {
                       if (err) return reject(err);
