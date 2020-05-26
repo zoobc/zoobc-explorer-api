@@ -44,31 +44,31 @@ module.exports = {
                   .where(accountAddress ? accountAddress : {})
                   .lean()
                   .then(data => {
-                    account.BalanceConversion = data
-                      .map(trx => {
-                        const { SendMoney, NodeRegistration, UpdateNodeRegistration } = trx;
-                        return {
-                          Sender: trx.Sender,
-                          FeeConversion: trx.FeeConversion,
-                          Amount: SendMoney
-                            ? SendMoney.AmountConversion
-                            : NodeRegistration
-                            ? NodeRegistration.LockedBalanceConversion
-                            : UpdateNodeRegistration
-                            ? UpdateNodeRegistration.LockedBalanceConversion
-                            : '0',
-                        };
-                      })
-                      .map(trx2 => {
-                        const { Sender, FeeConversion, Amount } = trx2;
+                    // account.BalanceConversion = data
+                    //   .map(trx => {
+                    //     const { SendMoney, NodeRegistration, UpdateNodeRegistration } = trx;
+                    //     return {
+                    //       Sender: trx.Sender,
+                    //       FeeConversion: trx.FeeConversion,
+                    //       Amount: SendMoney
+                    //         ? SendMoney.AmountConversion
+                    //         : NodeRegistration
+                    //         ? NodeRegistration.LockedBalanceConversion
+                    //         : UpdateNodeRegistration
+                    //         ? UpdateNodeRegistration.LockedBalanceConversion
+                    //         : '0',
+                    //     };
+                    //   })
+                    //   .map(trx2 => {
+                    //     const { Sender, FeeConversion, Amount } = trx2;
 
-                        if (account.AccountAddress === Sender) {
-                          return -(parseFloat(Amount) + parseFloat(FeeConversion));
-                        } else {
-                          return parseFloat(Amount);
-                        }
-                      })
-                      .reduce((acc, curr) => parseFloat((acc + curr).toFixed(3)), 0);
+                    //     if (account.AccountAddress === Sender) {
+                    //       return -(parseFloat(Amount) + parseFloat(FeeConversion));
+                    //     } else {
+                    //       return parseFloat(Amount);
+                    //     }
+                    //   })
+                    //   .reduce((acc, curr) => parseFloat((acc + curr).toFixed(3)), 0);
 
                     account.LastActive = data
                       .map(x => x.Timestamp)
@@ -76,7 +76,9 @@ module.exports = {
                         return a > b ? a : b;
                       });
 
-                    account.TotalFeesPaidConversion = data.map(x => x.FeeConversion).reduce((acc, curr) => acc + parseFloat(curr), 0);
+                    account.TotalFeesPaidConversion = data
+                      .map(x => x.FeeConversion)
+                      .reduce((acc, curr) => parseFloat((acc + parseFloat(curr)).toFixed(2)), 0);
 
                     return account;
                   })
@@ -120,31 +122,31 @@ module.exports = {
                 .where(accountAddress ? accountAddress : {})
                 .lean()
                 .then(data => {
-                  account.BalanceConversion = data
-                    .map(trx => {
-                      const { SendMoney, NodeRegistration, UpdateNodeRegistration } = trx;
-                      return {
-                        Sender: trx.Sender,
-                        FeeConversion: trx.FeeConversion,
-                        Amount: SendMoney
-                          ? SendMoney.AmountConversion
-                          : NodeRegistration
-                          ? NodeRegistration.LockedBalanceConversion
-                          : UpdateNodeRegistration
-                          ? UpdateNodeRegistration.LockedBalanceConversion
-                          : '0',
-                      };
-                    })
-                    .map(trx2 => {
-                      const { Sender, FeeConversion, Amount } = trx2;
+                  // account.BalanceConversion = data
+                  //   .map(trx => {
+                  //     const { SendMoney, NodeRegistration, UpdateNodeRegistration } = trx;
+                  //     return {
+                  //       Sender: trx.Sender,
+                  //       FeeConversion: trx.FeeConversion,
+                  //       Amount: SendMoney
+                  //         ? SendMoney.AmountConversion
+                  //         : NodeRegistration
+                  //         ? NodeRegistration.LockedBalanceConversion
+                  //         : UpdateNodeRegistration
+                  //         ? UpdateNodeRegistration.LockedBalanceConversion
+                  //         : '0',
+                  //     };
+                  //   })
+                  //   .map(trx2 => {
+                  //     const { Sender, FeeConversion, Amount } = trx2;
 
-                      if (account.AccountAddress === Sender) {
-                        return -(parseFloat(Amount) + parseFloat(FeeConversion));
-                      } else {
-                        return parseFloat(Amount);
-                      }
-                    })
-                    .reduce((acc, curr) => parseFloat((acc + curr).toFixed(3)), 0);
+                  //     if (account.AccountAddress === Sender) {
+                  //       return -(parseFloat(Amount) + parseFloat(FeeConversion));
+                  //     } else {
+                  //       return parseFloat(Amount);
+                  //     }
+                  //   })
+                  //   .reduce((acc, curr) => parseFloat((acc + curr).toFixed(3)), 0);
 
                   account.LastActive = data
                     .map(x => x.Timestamp)
@@ -152,7 +154,9 @@ module.exports = {
                       return a > b ? a : b;
                     });
 
-                  account.TotalFeesPaidConversion = data.map(x => x.FeeConversion).reduce((acc, curr) => acc + parseFloat(curr), 0);
+                  account.TotalFeesPaidConversion = data
+                    .map(x => x.FeeConversion)
+                    .reduce((acc, curr) => parseFloat((acc + parseFloat(curr)).toFixed(2)), 0);
 
                   return account;
                 })
