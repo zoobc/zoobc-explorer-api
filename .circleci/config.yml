@@ -15,6 +15,7 @@ jobs:
           name: Deploy Testnet
           command: |
             ssh ${SSH_USER}@${SSH_HOST_TESTNET} "pm2 deploy ecosystem.config.js testnet update"
+            
           # command: |
           #   ssh ${SSH_USER}@${SSH_HOST_TESTNET} "pm2 deploy ecosystem.config.js testnet exec "git pull origin master && yarn install && pm2 restart all --update-env""
 
