@@ -6,16 +6,15 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "25:bd:a4:87:dc:6b:08:d1:32:40:96:5a:8c:90:a6:8c"
+            - '13:56:00:d1:a0:36:a8:17:07:17:b6:5c:19:71:8f:b9'
       - run:
           name: Setup SSH Key Testnet
           command: |
             ssh-keyscan -H ${SSH_HOST_TESTNET} >> ~/.ssh/known_hosts
       - run:
-          name: Deploy
+          name: Deploy Testnet
           command: |
-            ssh ${SSH_USER}@${SSH_HOST_TESTNET} "pm2 deploy ecosystem.config.js testnet update"
-
+            ssh ${SSH_USER}@${SSH_HOST_TESTNET} "pm2 deploy ecosystem.config.js testnet update --force"
 
   deploy-mainnet:
     docker:
@@ -23,13 +22,13 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "04:a3:fa:ae:79:4f:97:4d:e8:66:74:45:8a:0c:c1:33"
+            - '04:a3:fa:ae:79:4f:97:4d:e8:66:74:45:8a:0c:c1:33'
       - run:
           name: Setup SSH Key Mainnet
           command: |
             ssh-keyscan -H ${SSH_HOST_MAINNET} >> ~/.ssh/known_hosts
       - run:
-          name: Deploy
+          name: Deploy Mainnet
           command: |
             ssh ${SSH_USER}@${SSH_HOST_MAINNET} "pm2 deploy ecosystem.config.js mainnet update"
 
