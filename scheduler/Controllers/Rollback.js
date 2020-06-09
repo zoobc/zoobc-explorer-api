@@ -1,6 +1,12 @@
 const BaseController = require('./BaseController');
 const { Block } = require('../Protos');
-const { BlocksService, TransactionsService, NodesService, AccountsService, AccountTransactionsService } = require('../../api/services');
+const {
+  BlocksService,
+  TransactionsService,
+  NodesService,
+  AccountsService,
+  AccountTransactionsService,
+} = require('../../api/services');
 
 module.exports = class Rollback extends BaseController {
   constructor() {
@@ -27,30 +33,44 @@ module.exports = class Rollback extends BaseController {
         this.blocksService.destroyMany({ Height: { $gte: result.Height } }, (err, result) => {
           if (err) return callback(`[Rollback] Blocks Service - Destroy Many ${err}`, { success: false, info: null });
           if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Blocks' });
-          return callback(null, { success: true, info: `[Rollback - Blocks] Delete ${result.deletedCount} data successfully` });
+          return callback(null, {
+            success: true,
+            info: `[Rollback - Blocks] Delete ${result.deletedCount} data successfully`,
+          });
         });
 
         this.transactionsService.destroyMany({ Height: { $gte: result.Height } }, (err, result) => {
-          if (err) return callback(`[Rollback] Transactions Service - Destroy Many ${err}`, { success: false, info: null });
+          if (err)
+            return callback(`[Rollback] Transactions Service - Destroy Many ${err}`, { success: false, info: null });
           if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Transactions' });
-          return callback(null, { success: true, info: `[Rollback - Transactions] Delete ${result.deletedCount} data successfully` });
+          return callback(null, {
+            success: true,
+            info: `[Rollback - Transactions] Delete ${result.deletedCount} data successfully`,
+          });
         });
 
         this.nodesService.destroyMany({ Height: { $gte: result.Height } }, (err, result) => {
           if (err) return callback(`[Rollback] Nodes Service - Destroy Many ${err}`, { success: false, info: null });
           if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Nodes' });
-          return callback(null, { success: true, info: `[Rollback - Nodes] Delete ${result.deletedCount} data successfully` });
+          return callback(null, {
+            success: true,
+            info: `[Rollback - Nodes] Delete ${result.deletedCount} data successfully`,
+          });
         });
 
         this.accountsService.destroyMany({ BlockHeight: { $gte: result.Height } }, (err, result) => {
           if (err) return callback(`[Rollback] Accounts Service - Destroy Many ${err}`, { success: false, info: null });
           if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Accounts' });
-          return callback(null, { success: true, info: `[Rollback - Accounts] Delete ${result.deletedCount} data successfully` });
+          return callback(null, {
+            success: true,
+            info: `[Rollback - Accounts] Delete ${result.deletedCount} data successfully`,
+          });
         });
 
         this.accountTransactionsService.destroyMany({ BlockHeight: { $gte: result.Height } }, (err, result) => {
           if (err) return callback(`[Rollback] Accounts Service - Destroy Many ${err}`, { success: false, info: null });
-          if (result.ok < 1 || result.deletedCount < 1) return callback(null, { success: false, info: 'Account Transactions' });
+          if (result.ok < 1 || result.deletedCount < 1)
+            return callback(null, { success: false, info: 'Account Transactions' });
           return callback(null, {
             success: true,
             info: `[Rollback - Account Transactions] Delete ${result.deletedCount} data successfully`,
@@ -86,7 +106,9 @@ module.exports = class Rollback extends BaseController {
           .map(item => ({ BlockID: item.BlockID, Height: item.Height }))
           .sort((a, b) => (a.Height > b.Height ? 1 : -1));
 
-        const diffs = resultsCore.filter(({ BlockID: val1 }) => !resultsExplorer.some(({ BlockID: val2 }) => val2 === val1));
+        const diffs = resultsCore.filter(
+          ({ BlockID: val1 }) => !resultsExplorer.some(({ BlockID: val2 }) => val2 === val1)
+        );
         if (diffs && diffs.length < 1) {
           const prevHeight = height - limit;
           return this.recursiveBlockHeight(limit, prevHeight, callback);

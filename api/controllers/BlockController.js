@@ -32,7 +32,11 @@ module.exports = class BlockController extends BaseController {
         if (resRedis) {
           this.sendSuccessResponse(
             res,
-            responseBuilder.setData(resRedis.data).setPaginate(resRedis.setPaginate).setMessage('Blocks fetched successfully').build()
+            responseBuilder
+              .setData(resRedis.data)
+              .setPaginate(resRedis.setPaginate)
+              .setMessage('Blocks fetched successfully')
+              .build()
           );
           return;
         }
@@ -51,7 +55,11 @@ module.exports = class BlockController extends BaseController {
 
             this.sendSuccessResponse(
               res,
-              responseBuilder.setData(result.data).setPaginate(result.paginate).setMessage('Blocks fetched successfully').build()
+              responseBuilder
+                .setData(result.data)
+                .setPaginate(result.paginate)
+                .setMessage('Blocks fetched successfully')
+                .build()
             );
             return;
           });
@@ -69,7 +77,10 @@ module.exports = class BlockController extends BaseController {
 
     try {
       if (!id) {
-        this.sendInvalidPayloadResponse(res, responseBuilder.setData({}).setMessage('Invalid Payload Parameter').build());
+        this.sendInvalidPayloadResponse(
+          res,
+          responseBuilder.setData({}).setMessage('Invalid Payload Parameter').build()
+        );
         return;
       }
 
@@ -81,7 +92,10 @@ module.exports = class BlockController extends BaseController {
         }
 
         if (resRedis) {
-          this.sendSuccessResponse(res, responseBuilder.setData(resRedis).setMessage('Block fetched successfully').build());
+          this.sendSuccessResponse(
+            res,
+            responseBuilder.setData(resRedis).setMessage('Block fetched successfully').build()
+          );
           return;
         }
 
@@ -102,7 +116,10 @@ module.exports = class BlockController extends BaseController {
               return;
             }
 
-            this.sendSuccessResponse(res, responseBuilder.setData(result).setMessage('Block fetched successfully').build());
+            this.sendSuccessResponse(
+              res,
+              responseBuilder.setData(result).setMessage('Block fetched successfully').build()
+            );
             return;
           });
         });
