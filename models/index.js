@@ -3,7 +3,7 @@ const Blocks = require('./Blocks');
 const Accounts = require('./Accounts');
 const Transactions = require('./Transactions');
 const PublishedReceipts = require('./PublishedReceipts');
-const AccountTransactions = require('./AccountTransactions');
+const MultiSig = require('./MultiSignature');
 
 module.exports = {
   Nodes,
@@ -11,5 +11,5 @@ module.exports = {
   Accounts,
   Transactions,
   PublishedReceipts,
-  AccountTransactions,
+  MultiSig,
 };
