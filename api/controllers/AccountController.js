@@ -29,11 +29,7 @@ module.exports = class AccountController extends BaseController {
         if (resRedis) {
           this.sendSuccessResponse(
             res,
-            responseBuilder
-              .setData(resRedis.data)
-              .setPaginate(resRedis.setPaginate)
-              .setMessage('Accounts fetched successfully')
-              .build()
+            responseBuilder.setData(resRedis.data).setPaginate(resRedis.setPaginate).setMessage('Accounts fetched successfully').build()
           );
           return;
         }
@@ -52,11 +48,7 @@ module.exports = class AccountController extends BaseController {
 
             this.sendSuccessResponse(
               res,
-              responseBuilder
-                .setData(result.data)
-                .setPaginate(result.paginate)
-                .setMessage('Accounts fetched successfully')
-                .build()
+              responseBuilder.setData(result.data).setPaginate(result.paginate).setMessage('Accounts fetched successfully').build()
             );
             return;
           });
@@ -74,13 +66,7 @@ module.exports = class AccountController extends BaseController {
 
     try {
       if (!accountAddress) {
-        this.sendInvalidPayloadResponse(
-          res,
-          responseBuilder
-            .setData({})
-            .setMessage('Invalid Payload Parameter')
-            .build()
-        );
+        this.sendInvalidPayloadResponse(res, responseBuilder.setData({}).setMessage('Invalid Payload Parameter').build());
         return;
       }
 
@@ -92,13 +78,7 @@ module.exports = class AccountController extends BaseController {
         }
 
         if (resRedis) {
-          this.sendSuccessResponse(
-            res,
-            responseBuilder
-              .setData(resRedis)
-              .setMessage('Account fetched successfully')
-              .build()
-          );
+          this.sendSuccessResponse(res, responseBuilder.setData(resRedis).setMessage('Account fetched successfully').build());
           return;
         }
 
@@ -109,13 +89,7 @@ module.exports = class AccountController extends BaseController {
           }
 
           if (!result) {
-            this.sendNotFoundResponse(
-              res,
-              responseBuilder
-                .setData({})
-                .setMessage('Account not found')
-                .build()
-            );
+            this.sendNotFoundResponse(res, responseBuilder.setData({}).setMessage('Account not found').build());
             return;
           }
 
@@ -125,13 +99,7 @@ module.exports = class AccountController extends BaseController {
               return;
             }
 
-            this.sendSuccessResponse(
-              res,
-              responseBuilder
-                .setData(result)
-                .setMessage('Account fetched successfully')
-                .build()
-            );
+            this.sendSuccessResponse(res, responseBuilder.setData(result).setMessage('Account fetched successfully').build());
             return;
           });
         });

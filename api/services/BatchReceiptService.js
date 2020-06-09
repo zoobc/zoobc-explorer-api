@@ -7,19 +7,10 @@ module.exports = class BatchReceiptService extends BaseService {
   }
 
   getLastHeight(callback) {
-    BatchReceipt.findOne()
-      .select('Height')
-      .sort('-Height')
-      .exec(callback);
+    BatchReceipt.findOne().select('Height').sort('-Height').exec(callback);
   }
 
   getFromHeight({ Limit, Height }, callback) {
-    BatchReceipt.find()
-      .select('BlockID Height')
-      .where('Height')
-      .gte(Height)
-      .limit(Limit)
-      .sort('Height')
-      .exec(callback);
+    BatchReceipt.find().select('BlockID Height').where('Height').gte(Height).limit(Limit).sort('Height').exec(callback);
   }
 };

@@ -24,23 +24,11 @@ module.exports = class SearchController extends BaseController {
     const { id } = req.query;
     try {
       if (!id) {
-        this.sendInvalidPayloadResponse(
-          res,
-          responseBuilder
-            .setData({})
-            .setMessage('Invalid Payload Parameter')
-            .build()
-        );
+        this.sendInvalidPayloadResponse(res, responseBuilder.setData({}).setMessage('Invalid Payload Parameter').build());
         return;
       }
       if (id === 0) {
-        this.sendInvalidPayloadResponse(
-          res,
-          responseBuilder
-            .setData({})
-            .setMessage('Invalid data: unable to add value by zero.')
-            .build()
-        );
+        this.sendInvalidPayloadResponse(res, responseBuilder.setData({}).setMessage('Invalid data: unable to add value by zero.').build());
         return;
       }
       const cacheBlocks = Converter.formatCache(cacheBlock.block, id);
@@ -53,11 +41,7 @@ module.exports = class SearchController extends BaseController {
         if (resRedis) {
           this.sendSuccessResponse(
             res,
-            responseBuilder
-              .setData(resRedis.data)
-              .setPaginate(resRedis.setPaginate)
-              .setMessage('Block fetched successfully')
-              .build()
+            responseBuilder.setData(resRedis.data).setPaginate(resRedis.setPaginate).setMessage('Block fetched successfully').build()
           );
           return;
         }
@@ -78,13 +62,7 @@ module.exports = class SearchController extends BaseController {
                 }
               },
 
-              this.sendSuccessResponse(
-                res,
-                responseBuilder
-                  .setData(resultBlock)
-                  .setMessage('Block fetched successfully')
-                  .build()
-              )
+              this.sendSuccessResponse(res, responseBuilder.setData(resultBlock).setMessage('Block fetched successfully').build())
             );
             return;
           } else {
@@ -125,21 +103,12 @@ module.exports = class SearchController extends BaseController {
 
                     this.sendSuccessResponse(
                       res,
-                      responseBuilder
-                        .setData(resultTrans)
-                        .setMessage('Transaction fetched successfully')
-                        .build()
+                      responseBuilder.setData(resultTrans).setMessage('Transaction fetched successfully').build()
                     )
                   );
                   return;
                 } else {
-                  this.sendSuccessResponse(
-                    res,
-                    responseBuilder
-                      .setData({})
-                      .setMessage('No Data fetched')
-                      .build()
-                  );
+                  this.sendSuccessResponse(res, responseBuilder.setData({}).setMessage('No Data fetched').build());
                   return;
                 }
               });
