@@ -16,7 +16,6 @@
   ],
   "scripts": {
     "start": "nodemon app.js",
-    "schema": "./schema.sh",
     "eslint": "eslint .",
     "eslint:fix": "eslint --fix ."
   },
