@@ -58,7 +58,7 @@ module.exports = gql`
   }
 
   type PublishedReceipt {
-    BatchReceipt: BatchReceipt!
+    BatchReceipt: BatchReceipt
     IntermediateHashes: String
     BlockHeight: Int
     ReceiptIndex: Int
