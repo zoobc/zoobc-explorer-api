@@ -21,7 +21,7 @@ module.exports = class BaseService {
     if (where) {
       const splitWhere = where.split(',');
       var NewWhere = [];
-      splitWhere.forEach(function(element) {
+      splitWhere.forEach(function (element) {
         NewWhere.push({ [element.split(':')[0]]: element.split(':')[1].toString() });
       });
 

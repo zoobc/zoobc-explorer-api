@@ -25,7 +25,7 @@ function splitArgObjects(args) {
   return newArgs;
 }
 
-const parse = function parse(args = [], options = {}) {
+const parse = function parse(args = []) {
   if (!args.length) {
     args = process.argv.slice(2);
   }

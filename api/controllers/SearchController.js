@@ -26,20 +26,14 @@ module.exports = class SearchController extends BaseController {
       if (!id) {
         this.sendInvalidPayloadResponse(
           res,
-          responseBuilder
-            .setData({})
-            .setMessage('Invalid Payload Parameter')
-            .build()
+          responseBuilder.setData({}).setMessage('Invalid Payload Parameter').build()
         );
         return;
       }
       if (id === 0) {
         this.sendInvalidPayloadResponse(
           res,
-          responseBuilder
-            .setData({})
-            .setMessage('Invalid data: unable to add value by zero.')
-            .build()
+          responseBuilder.setData({}).setMessage('Invalid data: unable to add value by zero.').build()
         );
         return;
       }
@@ -80,10 +74,7 @@ module.exports = class SearchController extends BaseController {
 
               this.sendSuccessResponse(
                 res,
-                responseBuilder
-                  .setData(resultBlock)
-                  .setMessage('Block fetched successfully')
-                  .build()
+                responseBuilder.setData(resultBlock).setMessage('Block fetched successfully').build()
               )
             );
             return;
@@ -125,21 +116,12 @@ module.exports = class SearchController extends BaseController {
 
                     this.sendSuccessResponse(
                       res,
-                      responseBuilder
-                        .setData(resultTrans)
-                        .setMessage('Transaction fetched successfully')
-                        .build()
+                      responseBuilder.setData(resultTrans).setMessage('Transaction fetched successfully').build()
                     )
                   );
                   return;
                 } else {
-                  this.sendSuccessResponse(
-                    res,
-                    responseBuilder
-                      .setData({})
-                      .setMessage('No Data fetched')
-                      .build()
-                  );
+                  this.sendSuccessResponse(res, responseBuilder.setData({}).setMessage('No Data fetched').build());
                   return;
                 }
               });

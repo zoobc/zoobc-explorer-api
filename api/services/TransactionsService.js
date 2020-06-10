@@ -7,10 +7,7 @@ module.exports = class TransactionsService extends BaseService {
   }
 
   getLastHeight(callback) {
-    Transactions.findOne()
-      .select('Height')
-      .sort('-Height')
-      .exec(callback);
+    Transactions.findOne().select('Height').sort('-Height').exec(callback);
   }
 
   getAccountsByLastHeight(callback) {
