@@ -15,6 +15,7 @@
     "blockchain"
   ],
   "scripts": {
+    "models": "./models.sh",
     "start": "nodemon app.js",
     "eslint": "eslint .",
     "eslint:fix": "eslint --fix ."

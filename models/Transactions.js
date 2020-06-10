@@ -10,6 +10,7 @@ const schema = new mongoose.Schema(
     Height: { type: Number },
     Sender: { type: String } /** SenderAccountAddress */,
     Recipient: { type: String } /** RecipientAccountAddress */,
+    Confirmations: { type: Boolean } /** ..waiting core */,
     Fee: { type: Number },
     FeeConversion: { type: String },
     Version: { type: Number } /** additional */,
@@ -28,6 +29,7 @@ const schema = new mongoose.Schema(
     },
     ClaimNodeRegistration: {
       NodePublicKey: { type: String },
+      AccountAddress: { type: String },
       ProofOfOwnership: {
         MessageBytes: { type: Buffer },
         Signature: { type: Buffer },
@@ -36,10 +38,7 @@ const schema = new mongoose.Schema(
     NodeRegistration: {
       NodePublicKey: { type: String },
       AccountAddress: { type: String },
-      NodeAddress: {
-        Address: { type: String },
-        Port: { type: Number },
-      },
+      NodeAddress: { type: String },
       LockedBalance: { type: Number },
       LockedBalanceConversion: { type: String },
       ProofOfOwnership: {
@@ -52,10 +51,7 @@ const schema = new mongoose.Schema(
     },
     UpdateNodeRegistration: {
       NodePublicKey: { type: String },
-      NodeAddress: {
-        Address: { type: String },
-        Port: { type: Number },
-      },
+      NodeAddress: { type: String },
       LockedBalance: { type: Number },
       LockedBalanceConversion: { type: String },
       ProofOfOwnership: {
@@ -68,6 +64,7 @@ const schema = new mongoose.Schema(
       RecipientAccountAddress: { type: String },
       Property: { type: String },
       Value: { type: String },
+      MuchTime: { type: Number },
     },
     RemoveAccount: {
       SetterAccountAddress: { type: String },
@@ -79,41 +76,22 @@ const schema = new mongoose.Schema(
       MultiSignatureInfo: {
         MultisigAddress: { type: String },
         BlockHeight: { type: Number },
-        Nonce: { type: String },
+        Nonce: { type: Number },
         MinimumSignatures: { type: Number },
-        Latest: { type: Boolean },
-        Addresses: {
-          type: [String],
-          default: undefined,
-        },
+        Addresses: { type: String },
       },
       UnsignedTransactionBytes: { type: Buffer },
       SignatureInfo: {
         TransactionHash: { type: Buffer },
         Signatures: {
           type: Map,
-          of: Buffer,
+          of: String,
         },
       },
     },
     ApprovalEscrow: {
       Approval: { type: String },
-      TransactionID: { type: String },
-    },
-    Escrow: {
-      ID: { type: String },
-      SenderAddress: { type: String },
-      RecipientAddress: { type: String },
-      ApproverAddress: { type: String },
-      Amount: { type: Number },
-      AmountConversion: { type: String },
-      Commission: { type: Number },
-      CommissionConversion: { type: String },
-      Timeout: { type: String },
-      Status: { type: String },
-      BlockHeight: { type: Number },
-      Latest: { type: Boolean },
-      Instruction: { type: String },
+      TransactionID: { type: Number },
     },
   },
   {

@@ -50,11 +50,11 @@ $ yarn start or npm start
 # starting app using yarn or npm
 ```
 
-## Usage with CLI
+## How to Update Models
 
 ```bash
-$ yarn start or npm start
-# start the service and wait for a minute. The scheduler always run evey minute to check for any updates
+$ ./models.sh
+# delete and clone repository zoobc-explorer-scheduler
 ```
 
 ## Issue
