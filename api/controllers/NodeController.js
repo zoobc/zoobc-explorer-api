@@ -76,10 +76,7 @@ module.exports = class NodeController extends BaseController {
       if (!nodeID) {
         this.sendInvalidPayloadResponse(
           res,
-          responseBuilder
-            .setData({})
-            .setMessage('Invalid Payload Parameter')
-            .build()
+          responseBuilder.setData({}).setMessage('Invalid Payload Parameter').build()
         );
         return;
       }
@@ -94,10 +91,7 @@ module.exports = class NodeController extends BaseController {
         if (resRedis) {
           this.sendSuccessResponse(
             res,
-            responseBuilder
-              .setData(resRedis)
-              .setMessage('Node fetched successfully')
-              .build()
+            responseBuilder.setData(resRedis).setMessage('Node fetched successfully').build()
           );
           return;
         }
@@ -109,13 +103,7 @@ module.exports = class NodeController extends BaseController {
           }
 
           if (!result) {
-            this.sendNotFoundResponse(
-              res,
-              responseBuilder
-                .setData({})
-                .setMessage('Node not found')
-                .build()
-            );
+            this.sendNotFoundResponse(res, responseBuilder.setData({}).setMessage('Node not found').build());
             return;
           }
 
@@ -127,10 +115,7 @@ module.exports = class NodeController extends BaseController {
 
             this.sendSuccessResponse(
               res,
-              responseBuilder
-                .setData(result)
-                .setMessage('Node fetched successfully')
-                .build()
+              responseBuilder.setData(result).setMessage('Node fetched successfully').build()
             );
             return;
           });

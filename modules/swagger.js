@@ -10,7 +10,7 @@ const swaggerOptions = {
   customCss: '.topbar { display: none }',
 };
 
-module.exports = function(app) {
+module.exports = function (app) {
   /** static api doc with execute */
   app.use(config.app.mainRoute, limiter);
   app.use(config.app.mainRoute + '/doc', swaggerUi.serve, swaggerUi.setup(swaggerConfig, swaggerOptions));

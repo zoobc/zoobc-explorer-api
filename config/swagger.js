@@ -2,7 +2,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const nconf = require('nconf');
 const config = require('./config');
 
-const { description, version, license, author } = require('../package.json');
+const { description, version, license } = require('../package.json');
 const host = nconf.get('app_host') || config.app.host;
 const port = nconf.get('app_port') || config.app.port;
 const apiDoc = `http://${host}:${port}${config.app.mainRoute}`;

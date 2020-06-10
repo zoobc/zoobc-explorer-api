@@ -17,9 +17,7 @@ module.exports = class UsersService extends BaseService {
     const result = {
       email: email,
       token: password,
-      tokenExpired: moment()
-        .add(config.app.tokenExpired, 'hours')
-        .toDate(),
+      tokenExpired: moment().add(config.app.tokenExpired, 'hours').toDate(),
     };
 
     return result;
