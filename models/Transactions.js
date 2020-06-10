@@ -17,23 +17,8 @@ const schema = new mongoose.Schema(
     TransactionBodyLength: { type: Number } /** additional */,
     TransactionBodyBytes: { type: Buffer } /** additional */,
     TransactionIndex: { type: Number } /** additional */,
-    MultisigChild: { type: Boolean },
+    MultisigChild: { type: Boolean } /** additional */,
     Signature: { type: Buffer } /** additional */,
-    Escrow: {
-      ID: { type: String },
-      SenderAddress: { type: String },
-      RecipientAddress: { type: String },
-      ApproverAddress: { type: String },
-      Amount: { type: Number },
-      AmountConversion: { type: String },
-      Commission: { type: Number },
-      CommissionConversion: { type: String },
-      Timeout: { type: String },
-      Status: { type: String },
-      BlockHeight: { type: Number },
-      Latest: { type: Boolean },
-      Instruction: { type: String },
-    },
     TransactionBody: { type: String },
     /** convertion by transaction body */
     TransactionTypeName: { type: String },
@@ -43,7 +28,7 @@ const schema = new mongoose.Schema(
     },
     ClaimNodeRegistration: {
       NodePublicKey: { type: String },
-      Poown: {
+      ProofOfOwnership: {
         MessageBytes: { type: Buffer },
         Signature: { type: Buffer },
       },
@@ -57,7 +42,7 @@ const schema = new mongoose.Schema(
       },
       LockedBalance: { type: Number },
       LockedBalanceConversion: { type: String },
-      Poown: {
+      ProofOfOwnership: {
         MessageBytes: { type: Buffer },
         Signature: { type: Buffer },
       },
@@ -73,7 +58,7 @@ const schema = new mongoose.Schema(
       },
       LockedBalance: { type: Number },
       LockedBalanceConversion: { type: String },
-      Poown: {
+      ProofOfOwnership: {
         MessageBytes: { type: Buffer },
         Signature: { type: Buffer },
       },
@@ -90,21 +75,17 @@ const schema = new mongoose.Schema(
       Property: { type: String },
       Value: { type: String },
     },
-    ApprovalEscrow: {
-      TransactionID: { type: String },
-      Approval: { type: String },
-    },
     MultiSignature: {
       MultiSignatureInfo: {
-        MinimumSignatures: { type: Number },
+        MultisigAddress: { type: String },
+        BlockHeight: { type: Number },
         Nonce: { type: String },
+        MinimumSignatures: { type: Number },
+        Latest: { type: Boolean },
         Addresses: {
           type: [String],
           default: undefined,
         },
-        MultisigAddress: { type: String },
-        BlockHeight: { type: Number },
-        Latest: { type: Boolean },
       },
       UnsignedTransactionBytes: { type: Buffer },
       SignatureInfo: {
@@ -114,6 +95,25 @@ const schema = new mongoose.Schema(
           of: Buffer,
         },
       },
+    },
+    ApprovalEscrow: {
+      Approval: { type: String },
+      TransactionID: { type: String },
+    },
+    Escrow: {
+      ID: { type: String },
+      SenderAddress: { type: String },
+      RecipientAddress: { type: String },
+      ApproverAddress: { type: String },
+      Amount: { type: Number },
+      AmountConversion: { type: String },
+      Commission: { type: Number },
+      CommissionConversion: { type: String },
+      Timeout: { type: String },
+      Status: { type: String },
+      BlockHeight: { type: Number },
+      Latest: { type: Boolean },
+      Instruction: { type: String },
     },
   },
   {
