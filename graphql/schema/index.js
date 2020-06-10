@@ -30,4 +30,13 @@ const linkSchema = gql`
   }
 `;
 
-module.exports = [linkSchema, blockSchema, transactionSchema, accountSchema, searchSchema, nodeSchema, publishedReceiptSchema, graphSchema];
+module.exports = [
+  linkSchema,
+  blockSchema,
+  transactionSchema,
+  accountSchema,
+  searchSchema,
+  nodeSchema,
+  publishedReceiptSchema,
+  graphSchema,
+];

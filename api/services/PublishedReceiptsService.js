@@ -7,10 +7,7 @@ module.exports = class PublishedReceiptsService extends BaseService {
   }
 
   getLastHeight(callback) {
-    PublishedReceipts.findOne()
-      .select('BlockHeight')
-      .sort('-BlockHeight')
-      .exec(callback);
+    PublishedReceipts.findOne().select('BlockHeight').sort('-BlockHeight').exec(callback);
   }
 
   getFromHeight({ Limit, BlockHeight }, callback) {

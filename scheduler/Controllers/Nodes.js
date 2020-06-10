@@ -12,8 +12,12 @@ module.exports = class Nodes extends BaseController {
 
   update(callback) {
     if (store.nodePublicKeys.length < 1) return callback(null, null);
-    const addNodePublicKeys = store.nodePublicKeys.filter(f => f.TransactionType === 'Upsert').map(m => m.NodePublicKey);
-    const delNodePublicKeys = store.nodePublicKeys.filter(f => f.TransactionType === 'Remove').map(m => m.NodePublicKey);
+    const addNodePublicKeys = store.nodePublicKeys
+      .filter(f => f.TransactionType === 'Upsert')
+      .map(m => m.NodePublicKey);
+    const delNodePublicKeys = store.nodePublicKeys
+      .filter(f => f.TransactionType === 'Remove')
+      .map(m => m.NodePublicKey);
 
     const addNodes =
       addNodePublicKeys.length > 0
@@ -21,7 +25,8 @@ module.exports = class Nodes extends BaseController {
             return new Promise((resolve, reject) => {
               NodeRegistration.GetNodeRegistration({ NodePublicKey: nodePublicKey }, (err, resp) => {
                 if (err) return reject(`[Nodes] Node Registration - Get Node Registration ${err}`, null);
-                if (resp && resp.NodeRegistration && resp.NodeRegistration === {}) return resolve({ count: 0, type: 'upsert' });
+                if (resp && resp.NodeRegistration && resp.NodeRegistration === {})
+                  return resolve({ count: 0, type: 'upsert' });
 
                 const items = [
                   {

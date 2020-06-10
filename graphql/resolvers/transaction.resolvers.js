@@ -22,7 +22,8 @@ module.exports = {
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit);
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' };
       const blockId = BlockID !== undefined ? { BlockID } : null;
-      const accountAddress = AccountAddress !== undefined ? { $or: [{ Sender: AccountAddress }, { Recipient: AccountAddress }] } : null;
+      const accountAddress =
+        AccountAddress !== undefined ? { $or: [{ Sender: AccountAddress }, { Recipient: AccountAddress }] } : null;
 
       return new Promise((resolve, reject) => {
         const cacheTransactions = Converter.formatCache(cache.transactions, args);
@@ -33,34 +34,36 @@ module.exports = {
           models.Transactions.countDocuments((err, totalWithoutFilter) => {
             if (err) return reject(err);
 
-            models.Transactions.where(blockId ? blockId : accountAddress ? accountAddress : {}).countDocuments((err, totalWithFilter) => {
-              if (err) return reject(err);
+            models.Transactions.where(blockId ? blockId : accountAddress ? accountAddress : {}).countDocuments(
+              (err, totalWithFilter) => {
+                if (err) return reject(err);
 
-              models.Transactions.find()
-                .where(blockId ? blockId : accountAddress ? accountAddress : {})
-                .select()
-                .limit(lm)
-                .skip((pg - 1) * lm)
-                .sort(od)
-                .lean()
-                .exec((err, data) => {
-                  if (err) return reject(err);
-
-                  const result = {
-                    Transactions: data,
-                    Paginate: {
-                      Page: parseInt(pg),
-                      Count: data.length,
-                      Total: blockId || accountAddress ? totalWithFilter : totalWithoutFilter,
-                    },
-                  };
-
-                  RedisCache.set(cacheTransactions, result, err => {
+                models.Transactions.find()
+                  .where(blockId ? blockId : accountAddress ? accountAddress : {})
+                  .select()
+                  .limit(lm)
+                  .skip((pg - 1) * lm)
+                  .sort(od)
+                  .lean()
+                  .exec((err, data) => {
                     if (err) return reject(err);
-                    return resolve(result);
+
+                    const result = {
+                      Transactions: data,
+                      Paginate: {
+                        Page: parseInt(pg),
+                        Count: data.length,
+                        Total: blockId || accountAddress ? totalWithFilter : totalWithoutFilter,
+                      },
+                    };
+
+                    RedisCache.set(cacheTransactions, result, err => {
+                      if (err) return reject(err);
+                      return resolve(result);
+                    });
                   });
-                });
-            });
+              }
+            );
           });
         });
       });

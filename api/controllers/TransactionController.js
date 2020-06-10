@@ -74,10 +74,7 @@ module.exports = class TransactionController extends BaseController {
       if (!id) {
         this.sendInvalidPayloadResponse(
           res,
-          responseBuilder
-            .setData({})
-            .setMessage('Invalid Payload Parameter')
-            .build()
+          responseBuilder.setData({}).setMessage('Invalid Payload Parameter').build()
         );
         return;
       }
@@ -90,10 +87,7 @@ module.exports = class TransactionController extends BaseController {
         if (resRedis) {
           this.sendSuccessResponse(
             res,
-            responseBuilder
-              .setData(resRedis)
-              .setMessage('Transaction fetched successfully')
-              .build()
+            responseBuilder.setData(resRedis).setMessage('Transaction fetched successfully').build()
           );
         }
         this.service.findOne({ TransactionID: id }, (err, result) => {
@@ -102,13 +96,7 @@ module.exports = class TransactionController extends BaseController {
             return;
           }
           if (!result) {
-            this.sendNotFoundResponse(
-              res,
-              responseBuilder
-                .setData({})
-                .setMessage('Transaction not found')
-                .build()
-            );
+            this.sendNotFoundResponse(res, responseBuilder.setData({}).setMessage('Transaction not found').build());
             return;
           }
           RedisCache.set(cacheTransaction, result, errRedis => {
@@ -118,10 +106,7 @@ module.exports = class TransactionController extends BaseController {
             }
             this.sendSuccessResponse(
               res,
-              responseBuilder
-                .setData(result)
-                .setMessage('Transaction fetched successfully')
-                .build()
+              responseBuilder.setData(result).setMessage('Transaction fetched successfully').build()
             );
           });
         });

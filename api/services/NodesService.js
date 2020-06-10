@@ -8,10 +8,7 @@ module.exports = class NodesService extends BaseService {
   }
 
   getLastHeight(callback) {
-    Nodes.findOne()
-      .select('Height')
-      .sort('-Height')
-      .exec(callback);
+    Nodes.findOne().select('Height').sort('-Height').exec(callback);
   }
 
   checkIsNewNodes(nodes, callback) {

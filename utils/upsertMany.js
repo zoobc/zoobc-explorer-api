@@ -31,7 +31,7 @@ function lookupPath(obj, path) {
 }
 
 module.exports = function upsertMany(schema) {
-  schema.statics.upsertMany = function(items, matchFields, callback) {
+  schema.statics.upsertMany = function (items, matchFields, callback) {
     matchFields = matchFields || schema.options.upsertMatchFields;
     if (!Array.isArray(matchFields) || matchFields.length === 0) {
       matchFields = ['_id'];
@@ -47,10 +47,7 @@ module.exports = function upsertMany(schema) {
             delete item._id;
           }
 
-          bulk
-            .find(match)
-            .upsert()
-            .replaceOne(item);
+          bulk.find(match).upsert().replaceOne(item);
         });
 
       bulk.execute(callback);

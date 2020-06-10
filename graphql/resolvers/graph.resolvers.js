@@ -30,7 +30,7 @@ module.exports = {
               },
             },
           ],
-          function(err, data) {
+          function (err, data) {
             if (err) return reject(err);
 
             const result = data.map(item => {
@@ -74,7 +74,7 @@ module.exports = {
               },
             },
           ],
-          function(err, data) {
+          function (err, data) {
             if (err) return reject(err);
 
             const result = data.map(item => {
