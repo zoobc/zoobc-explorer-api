@@ -3,20 +3,19 @@ const { upserts } = require('../utils');
 
 const schema = new mongoose.Schema(
   {
-    // BatchReceipt: { type: mongoose.Schema.Types.ObjectId, ref: 'Batch_Receipt' },
-    IntermediateHashes: { type: String } /** IntermediateHashes */,
-    BlockHeight: { type: Number } /** BlockHeight */,
-    ReceiptIndex: { type: Number } /** ReceiptIndex */,
-    PublishedIndex: { type: Number } /** PublishedIndex */,
+    IntermediateHashes: { type: String },
+    BlockHeight: { type: Number },
+    ReceiptIndex: { type: Number },
+    PublishedIndex: { type: Number },
     BatchReceipt: {
       SenderPublicKey: { type: String },
-      ReceiverPublicKey: { type: String } /** RecipientPublicKey */,
-      DataType: { type: String } /** DatumType */,
-      DataHash: { type: Buffer } /** DatumHash */,
-      Height: { type: Number } /** ReferenceBlockHeight */,
-      ReferenceBlockHash: { type: Buffer } /** additional */,
-      ReceiptMerkleRoot: { type: Buffer } /** RMRLinked */,
-      ReceiverSignature: { type: Buffer } /** RecipientSignature */,
+      RecipientPublicKey: { type: String },
+      DatumType: { type: Number },
+      DatumHash: { type: Buffer },
+      ReferenceBlockHeight: { type: Number },
+      ReferenceBlockHash: { type: Buffer },
+      RMRLinked: { type: Buffer },
+      RecipientSignature: { type: Buffer },
     },
   },
   {

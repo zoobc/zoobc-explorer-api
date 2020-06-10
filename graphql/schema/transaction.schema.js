@@ -24,7 +24,6 @@ module.exports = gql`
     Height: Int
     Sender: String
     Recipient: String
-    Confirmations: Boolean
     Fee: Float
     FeeConversion: String
     Version: Int
@@ -32,7 +31,9 @@ module.exports = gql`
     TransactionBodyLength: Int
     TransactionBodyBytes: String
     TransactionIndex: Int
+    MultisigChild: Boolean
     Signature: String
+    Escrow: Escrow
     TransactionBody: String
     TransactionTypeName: String
     SendMoney: SendMoney
@@ -42,7 +43,25 @@ module.exports = gql`
     RemoveAccount: RemoveAccount
     RemoveNodeRegistration: RemoveNodeRegistration
     ClaimNodeRegistration: ClaimNodeRegistration
+    ApprovalEscrow: ApprovalEscrow
+    MultiSignature: MultiSignature
     Block: Block!
+  }
+
+  type Escrow {
+    ID: String
+    SenderAddress: String
+    RecipientAddress: String
+    ApproverAddress: String
+    Amount: Float
+    AmountConversion: String
+    Commission: Float
+    CommissionConversion: String
+    Timeout: String
+    Status: String
+    BlockHeight: Int
+    Latest: Boolean
+    Instruction: String
   }
 
   type SendMoney {
@@ -53,7 +72,7 @@ module.exports = gql`
   type NodeRegistration {
     NodePublicKey: String
     AccountAddress: String
-    NodeAddress: String
+    NodeAddress: NodeAddress
     LockedBalance: Float
     LockedBalanceConversion: String
     ProofOfOwnership: ProofOfOwnership
@@ -64,12 +83,11 @@ module.exports = gql`
     RecipientAccountAddress: String
     Property: String
     Value: String
-    MuchTime: Int
   }
 
   type UpdateNodeRegistration {
     NodePublicKey: String
-    NodeAddress: String
+    NodeAddress: NodeAddress
     LockedBalance: Float
     LockedBalanceConversion: String
     ProofOfOwnership: ProofOfOwnership
@@ -88,12 +106,41 @@ module.exports = gql`
 
   type ClaimNodeRegistration {
     NodePublicKey: String
-    AccountAddress: String
     ProofOfOwnership: ProofOfOwnership
+  }
+
+  type ApprovalEscrow {
+    TransactionID: String
+    Approval: String
+  }
+
+  type MultiSignature {
+    MultiSignatureInfo: MultiSignatureInfo
+    UnsignedTransactionBytes: String
+    SignatureInfo: SignatureInfo
+  }
+
+  type MultiSignatureInfo {
+    MinimumSignatures: Int
+    Nonce: String
+    Addresses: [String]
+    MultisigAddress: String
+    BlockHeight: Int
+    Latest: Boolean
+  }
+
+  type SignatureInfo {
+    TransactionHash: String
+    Signatures: [String]
   }
 
   type ProofOfOwnership {
     MessageBytes: String
     Signature: String
+  }
+
+  type NodeAddress {
+    Address: String
+    Port: Int
   }
 `;
