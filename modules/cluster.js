@@ -21,8 +21,6 @@ module.exports = server => {
 
     process.on('SIGINT', () => {
       server.close(err => {
-        require('../scheduler').stop();
-
         if (err) {
           msg.red('❌', `Error ZooBC API : ${err}`);
           process.exit(1);
