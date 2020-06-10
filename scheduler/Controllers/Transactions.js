@@ -96,7 +96,8 @@ module.exports = class Transactions extends BaseController {
           Fee: parseInt(item.Fee),
           FeeConversion: Converter.zoobitConversion(parseInt(item.Fee)),
           Amount: item.TransactionType === 1 ? parseInt(item.sendMoneyTransactionBody.Amount) : 0,
-          AmountConversion: item.TransactionType === 1 ? Converter.zoobitConversion(parseInt(item.sendMoneyTransactionBody.Amount)) : 0,
+          AmountConversion:
+            item.TransactionType === 1 ? Converter.zoobitConversion(parseInt(item.sendMoneyTransactionBody.Amount)) : 0,
           BlockHeight: item.Height,
           Timestamp: new Date(moment.unix(item.Timestamp).valueOf()),
           // Transaction: item,
@@ -142,7 +143,9 @@ module.exports = class Transactions extends BaseController {
               NodePublicKey: Converter.bufferStr(item.updateNodeRegistrationTransactionBody.NodePublicKey),
               NodeAddress: item.updateNodeRegistrationTransactionBody.NodeAddress,
               LockedBalance: item.updateNodeRegistrationTransactionBody.LockedBalance,
-              LockedBalanceConversion: Converter.zoobitConversion(item.updateNodeRegistrationTransactionBody.LockedBalance),
+              LockedBalanceConversion: Converter.zoobitConversion(
+                item.updateNodeRegistrationTransactionBody.LockedBalance
+              ),
               ProofOfOwnership: item.updateNodeRegistrationTransactionBody.ProofOfOwnership,
             };
             transactionTypeName = 'Update Node Registration';
@@ -216,7 +219,8 @@ module.exports = class Transactions extends BaseController {
       const matchs = ['TransactionID', 'Height'];
       this.service.upsert(items, matchs, (err, result) => {
         if (err) return callback(`[Transactions - Height ${height}] Upsert ${err}`, null);
-        if (result && result.result.ok !== 1) return callback(`[Transactions - Height ${height}] Upsert data failed`, null);
+        if (result && result.result.ok !== 1)
+          return callback(`[Transactions - Height ${height}] Upsert data failed`, null);
 
         const publishTransactions = items
           .slice(0, 5)
@@ -229,7 +233,10 @@ module.exports = class Transactions extends BaseController {
             };
           });
 
-        return callback(null, { data: publishTransactions, message: `[Transactions] Upsert ${items.length} data successfully` });
+        return callback(null, {
+          data: publishTransactions,
+          message: `[Transactions] Upsert ${items.length} data successfully`,
+        });
       });
     });
   }

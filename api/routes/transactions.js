@@ -11,5 +11,4 @@ router.get('/:id', (req, res) => {
   transactionController.getOne(req, res);
 });
 
-
 module.exports = router;

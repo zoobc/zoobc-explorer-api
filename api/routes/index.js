@@ -1,7 +1,7 @@
 const config = require('../../config/config');
 const { limiter } = require('../../modules/limiter');
 
-module.exports = function(app) {
+module.exports = function (app) {
   app.use(config.app.mainRoute + '/blocks', limiter, require('./blocks'));
   app.use(config.app.mainRoute + '/blocks-graph', limiter, require('./blocksGraph'));
   app.use(config.app.mainRoute + '/transactions', limiter, require('./transactions'));

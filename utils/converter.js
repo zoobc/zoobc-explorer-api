@@ -7,7 +7,7 @@ const isValidByteArray = array => {
 
 // for argument type of array
 const formatDataGRPC = Payload => {
-  Payload.map(function(item) {
+  Payload.map(function (item) {
     Object.entries(item).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         formatDataGRPC(item[key]);

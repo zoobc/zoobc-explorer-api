@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
@@ -7,8 +8,7 @@ const config = require('./config/config');
 const app = express().set('port', config.app.port);
 
 const server =
-  !fs.existsSync(config.app.openSslKeyPath) ||
-  !fs.existsSync(config.app.openSslCertPath)
+  !fs.existsSync(config.app.openSslKeyPath) || !fs.existsSync(config.app.openSslCertPath)
     ? http.createServer(app)
     : https.createServer(
         {

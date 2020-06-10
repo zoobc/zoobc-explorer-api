@@ -3,7 +3,16 @@ const moment = require('moment');
 
 const config = require('../config/config');
 const { msg } = require('../utils');
-const { Nodes, Blocks, Accounts, Transactions, AccountTransactions, Rollback, PublishedReceipts, Resets } = require('./Controllers');
+const {
+  Nodes,
+  Blocks,
+  Accounts,
+  Transactions,
+  AccountTransactions,
+  Rollback,
+  PublishedReceipts,
+  Resets,
+} = require('./Controllers');
 
 // const { pubsub } = require('../graphql/subscription');
 
@@ -43,7 +52,9 @@ const cronjob = new cron.CronJob(`*/${events} * * * * *`, () => {
         //   blocks: result.data,
         // });
 
-        result ? msg.green('✅', `${result.message} at ${dateNow}`) : msg.yellow('⚠️', `[Blocks] Nothing additional data at ${dateNow}`);
+        result
+          ? msg.green('✅', `${result.message} at ${dateNow}`)
+          : msg.yellow('⚠️', `[Blocks] Nothing additional data at ${dateNow}`);
       }
 
       publishedReceipts.update((error, result) => {
@@ -72,14 +83,18 @@ const cronjob = new cron.CronJob(`*/${events} * * * * *`, () => {
             if (error) {
               msg.red('⛔️', error);
             } else {
-              result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Nodes] Nothing additional data at ${dateNow}`);
+              result
+                ? msg.green('✅', `${result} at ${dateNow}`)
+                : msg.yellow('⚠️', `[Nodes] Nothing additional data at ${dateNow}`);
             }
 
             accounts.update((error, result) => {
               if (error) {
                 msg.red('⛔️', error);
               } else {
-                result ? msg.green('✅', `${result} at ${dateNow}`) : msg.yellow('⚠️', `[Accounts] Nothing additional data at ${dateNow}`);
+                result
+                  ? msg.green('✅', `${result} at ${dateNow}`)
+                  : msg.yellow('⚠️', `[Accounts] Nothing additional data at ${dateNow}`);
               }
 
               accountTransactions.update((error, result) => {
@@ -97,7 +112,10 @@ const cronjob = new cron.CronJob(`*/${events} * * * * *`, () => {
                   } else {
                     success
                       ? msg.green('✅', `${info} at ${dateNow}`)
-                      : msg.yellow('⚠️', `${info ? `[Rollback - ${info}]` : `[Rollback]`} No data rollback at ${dateNow}`);
+                      : msg.yellow(
+                          '⚠️',
+                          `${info ? `[Rollback - ${info}]` : `[Rollback]`} No data rollback at ${dateNow}`
+                        );
                   }
                 });
               });

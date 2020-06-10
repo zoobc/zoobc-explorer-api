@@ -22,10 +22,10 @@ module.exports = (pid, signal, callback) => {
         pid,
         tree,
         pidsToProcess,
-        function(parentPid) {
+        function (parentPid) {
           return spawn('pgrep', ['-P', parentPid]);
         },
-        function() {
+        function () {
           killAll(tree, signal, callback);
         }
       );
@@ -41,10 +41,10 @@ module.exports = (pid, signal, callback) => {
         pid,
         tree,
         pidsToProcess,
-        function(parentPid) {
+        function (parentPid) {
           return spawn('ps', ['-o', 'pid', '--no-headers', '--ppid', parentPid]);
         },
-        function() {
+        function () {
           killAll(tree, signal, callback);
         }
       );
@@ -55,8 +55,8 @@ module.exports = (pid, signal, callback) => {
 function killAll(tree, signal, callback) {
   var killed = {};
   try {
-    Object.keys(tree).forEach(function(pid) {
-      tree[pid].forEach(function(pidpid) {
+    Object.keys(tree).forEach(function (pid) {
+      tree[pid].forEach(function (pidpid) {
         if (!killed[pidpid]) {
           killPid(pidpid, signal);
           killed[pidpid] = 1;
@@ -90,12 +90,12 @@ function killPid(pid, signal) {
 function buildProcessTree(parentPid, tree, pidsToProcess, spawnChildProcessesList, cb) {
   var ps = spawnChildProcessesList(parentPid);
   var allData = '';
-  ps.stdout.on('data', function(data) {
-    var data = data.toString('ascii');
-    allData += data;
+  ps.stdout.on('data', function (data) {
+    var temp = data.toString('ascii');
+    allData += temp;
   });
 
-  var onClose = function(code) {
+  var onClose = function (code) {
     delete pidsToProcess[parentPid];
 
     if (code != 0) {
@@ -106,7 +106,7 @@ function buildProcessTree(parentPid, tree, pidsToProcess, spawnChildProcessesLis
       return;
     }
 
-    allData.match(/\d+/g).forEach(function(pid) {
+    allData.match(/\d+/g).forEach(function (pid) {
       pid = parseInt(pid, 10);
       tree[parentPid].push(pid);
       tree[pid] = [];
