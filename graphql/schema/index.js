@@ -5,7 +5,6 @@ const transactionSchema = require('./transaction.schema');
 const accountSchema = require('./account.schema');
 const searchSchema = require('./search.schema');
 const nodeSchema = require('./node.schema');
-const publishedReceiptSchema = require('./published.receipt.schema');
 const graphSchema = require('./graph.schema');
 
 const linkSchema = gql`
@@ -30,13 +29,4 @@ const linkSchema = gql`
   }
 `;
 
-module.exports = [
-  linkSchema,
-  blockSchema,
-  transactionSchema,
-  accountSchema,
-  searchSchema,
-  nodeSchema,
-  publishedReceiptSchema,
-  graphSchema,
-];
+module.exports = [linkSchema, blockSchema, transactionSchema, accountSchema, searchSchema, nodeSchema, graphSchema];
