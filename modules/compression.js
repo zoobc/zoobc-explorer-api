@@ -1,3 +1,3 @@
 module.exports = app => {
-  app.use(require('compression')());
-};
+  app.use(require('compression')())
+}

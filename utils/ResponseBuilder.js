@@ -8,9 +8,9 @@ module.exports = class ResponseBuilder {
       message: 'Operations success',
       success: true,
       errors: [],
-    };
-    this.data = {};
-    this.paginate = null;
+    }
+    this.data = {}
+    this.paginate = null
   }
 
   /**
@@ -18,8 +18,8 @@ module.exports = class ResponseBuilder {
    * @param {Object} data
    */
   setData(data) {
-    this.data = data;
-    return this;
+    this.data = data
+    return this
   }
 
   /**
@@ -27,8 +27,8 @@ module.exports = class ResponseBuilder {
    * @param {Object} paginate
    */
   setPaginate(paginate) {
-    this.paginate = paginate;
-    return this;
+    this.paginate = paginate
+    return this
   }
 
   /**
@@ -36,8 +36,8 @@ module.exports = class ResponseBuilder {
    * @param {String} status
    */
   setStatus(status) {
-    this.meta.status = status;
-    return this;
+    this.meta.status = status
+    return this
   }
 
   /**
@@ -45,8 +45,8 @@ module.exports = class ResponseBuilder {
    * @param {Boolean} success
    */
   setSuccess(success) {
-    this.meta.success = success;
-    return this;
+    this.meta.success = success
+    return this
   }
 
   /**
@@ -54,8 +54,8 @@ module.exports = class ResponseBuilder {
    * @param {String} message
    */
   setMessage(message) {
-    this.meta.message = message;
-    return this;
+    this.meta.message = message
+    return this
   }
 
   /**
@@ -63,8 +63,8 @@ module.exports = class ResponseBuilder {
    * @param {Integer} total
    */
   setTotal(total) {
-    this.meta.total = total;
-    return this;
+    this.meta.total = total
+    return this
   }
 
   /**
@@ -72,8 +72,8 @@ module.exports = class ResponseBuilder {
    * @param {Integer} count
    */
   setCount(count) {
-    this.meta.count = count;
-    return this;
+    this.meta.count = count
+    return this
   }
 
   /**
@@ -81,8 +81,8 @@ module.exports = class ResponseBuilder {
    * @param {Array} errors
    */
   setErrors(errors) {
-    this.meta.errors = errors;
-    return this;
+    this.meta.errors = errors
+    return this
   }
 
   build() {
@@ -90,6 +90,6 @@ module.exports = class ResponseBuilder {
       meta: this.meta,
       data: this.data,
       paginate: this.paginate,
-    };
+    }
   }
-};
+}

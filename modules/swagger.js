@@ -1,30 +1,30 @@
-const path = require('path');
-const swaggerUi = require('swagger-ui-express');
+const path = require('path')
+const swaggerUi = require('swagger-ui-express')
 
-const config = require('../config/config');
-const { limiter } = require('./limiter');
-const swaggerConfig = require('../config/swagger').config();
+const config = require('../config/config')
+const { limiter } = require('./limiter')
+const swaggerConfig = require('../config/swagger').config()
 
 const swaggerOptions = {
   customSiteTitle: 'ZooBC Explorer API',
   customCss: '.topbar { display: none }',
-};
+}
 
 module.exports = function (app) {
   /** static api doc with execute */
-  app.use(config.app.mainRoute, limiter);
-  app.use(config.app.mainRoute + '/doc', swaggerUi.serve, swaggerUi.setup(swaggerConfig, swaggerOptions));
+  app.use(config.app.mainRoute, limiter)
+  app.use(config.app.mainRoute + '/doc', swaggerUi.serve, swaggerUi.setup(swaggerConfig, swaggerOptions))
 
   /** static api doc */
   app.get(
     config.app.mainRoute,
     (req, res) => {
-      res.sendFile(path.join(__dirname, '../html/apidoc.html'));
+      res.sendFile(path.join(__dirname, '../html/apidoc.html'))
     },
     swaggerUi.setup(swaggerConfig, swaggerOptions)
-  );
+  )
   app.get(config.app.mainRoute + '/docs/swagger.json', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(swaggerConfig);
-  });
-};
+    res.setHeader('Content-Type', 'application/json')
+    res.status(200).json(swaggerConfig)
+  })
+}
