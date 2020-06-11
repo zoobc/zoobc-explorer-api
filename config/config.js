@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config()
 
 module.exports = {
   app: {
@@ -14,6 +14,7 @@ module.exports = {
     rateLimitSuspendTime: 5,
     rateLimitMaxHitPerIP: 500,
     pageLimit: 10,
+    useCluster: process.env.USE_CLUSTER || 'true',
   },
   db: {
     port: process.env.DB_PORT || 27017,
@@ -32,4 +33,4 @@ module.exports = {
     issuer: 'zoobc-service.id-backend',
     subject: 'zoobc-service-access-token',
   },
-};
+}
