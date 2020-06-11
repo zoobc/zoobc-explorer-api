@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+const { gql } = require('apollo-server-express')
 
 module.exports = gql`
   extend type Query {
@@ -58,7 +58,7 @@ module.exports = gql`
   }
 
   type PublishedReceipt {
-    BatchReceipt: BatchReceipt
+    BatchReceipt: BatchReceipt!
     IntermediateHashes: String
     BlockHeight: Int
     ReceiptIndex: Int
@@ -75,4 +75,4 @@ module.exports = gql`
     RMRLinked: String
     RecipientSignature: String
   }
-`;
+`

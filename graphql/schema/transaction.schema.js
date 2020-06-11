@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+const { gql } = require('apollo-server-express')
 
 module.exports = gql`
   extend type Query {
@@ -138,9 +138,4 @@ module.exports = gql`
     MessageBytes: String
     Signature: String
   }
-
-  type NodeAddress {
-    Address: String
-    Port: Int
-  }
-`;
+`
