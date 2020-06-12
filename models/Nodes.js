@@ -1,12 +1,12 @@
-const mongoose = require('mongoose');
-const { upsertMany } = require('../utils');
+const mongoose = require('mongoose')
+const { upserts } = require('../utils')
 
 const schema = new mongoose.Schema(
   {
     NodeID: { type: String },
     NodePublicKey: { type: String },
     OwnerAddress: { type: String } /** AccountAddress */,
-    NodeAddress: { type: String },
+    NodeAddress: { type: Object },
     LockedFunds: { type: String } /** LockedBalance */,
     RegisteredBlockHeight: { type: Number } /** RegistrationHeight */,
     ParticipationScore: { type: Number } /** ..waiting core */,
@@ -21,8 +21,8 @@ const schema = new mongoose.Schema(
   {
     toJSON: { virtuals: true },
   }
-);
+)
 
-schema.plugin(upsertMany);
+schema.plugin(upserts)
 
-module.exports = mongoose.model('Nodes', schema);
+module.exports = mongoose.model('Nodes', schema)

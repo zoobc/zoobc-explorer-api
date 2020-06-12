@@ -1,35 +1,35 @@
-const childProcess = require('child_process');
-const spawn = childProcess.spawn;
-const exec = childProcess.exec;
+const childProcess = require('child_process')
+const spawn = childProcess.spawn
+const exec = childProcess.exec
 
 module.exports = (pid, signal, callback) => {
-  var tree = {};
-  var pidsToProcess = {};
-  tree[pid] = [];
-  pidsToProcess[pid] = 1;
+  var tree = {}
+  var pidsToProcess = {}
+  tree[pid] = []
+  pidsToProcess[pid] = 1
 
   if (typeof signal === 'function' && callback === undefined) {
-    callback = signal;
-    signal = undefined;
+    callback = signal
+    signal = undefined
   }
 
   switch (process.platform) {
     case 'win32':
-      exec('taskkill /pid ' + pid + ' /T /F', callback);
-      break;
+      exec('taskkill /pid ' + pid + ' /T /F', callback)
+      break
     case 'darwin':
       buildProcessTree(
         pid,
         tree,
         pidsToProcess,
         function (parentPid) {
-          return spawn('pgrep', ['-P', parentPid]);
+          return spawn('pgrep', ['-P', parentPid])
         },
         function () {
-          killAll(tree, signal, callback);
+          killAll(tree, signal, callback)
         }
-      );
-      break;
+      )
+      break
     // case 'sunos':
     //     buildProcessTreeSunOS(pid, tree, pidsToProcess, function () {
     //         killAll(tree, signal, callback);
@@ -42,78 +42,78 @@ module.exports = (pid, signal, callback) => {
         tree,
         pidsToProcess,
         function (parentPid) {
-          return spawn('ps', ['-o', 'pid', '--no-headers', '--ppid', parentPid]);
+          return spawn('ps', ['-o', 'pid', '--no-headers', '--ppid', parentPid])
         },
         function () {
-          killAll(tree, signal, callback);
+          killAll(tree, signal, callback)
         }
-      );
-      break;
+      )
+      break
   }
-};
+}
 
 function killAll(tree, signal, callback) {
-  var killed = {};
+  var killed = {}
   try {
     Object.keys(tree).forEach(function (pid) {
       tree[pid].forEach(function (pidpid) {
         if (!killed[pidpid]) {
-          killPid(pidpid, signal);
-          killed[pidpid] = 1;
+          killPid(pidpid, signal)
+          killed[pidpid] = 1
         }
-      });
+      })
       if (!killed[pid]) {
-        killPid(pid, signal);
-        killed[pid] = 1;
+        killPid(pid, signal)
+        killed[pid] = 1
       }
-    });
+    })
   } catch (err) {
     if (callback) {
-      return callback(err);
+      return callback(err)
     } else {
-      throw err;
+      throw err
     }
   }
   if (callback) {
-    return callback();
+    return callback()
   }
 }
 
 function killPid(pid, signal) {
   try {
-    process.kill(parseInt(pid, 10), signal);
+    process.kill(parseInt(pid, 10), signal)
   } catch (err) {
-    if (err.code !== 'ESRCH') throw err;
+    if (err.code !== 'ESRCH') throw err
   }
 }
 
 function buildProcessTree(parentPid, tree, pidsToProcess, spawnChildProcessesList, cb) {
-  var ps = spawnChildProcessesList(parentPid);
-  var allData = '';
+  var ps = spawnChildProcessesList(parentPid)
+  var allData = ''
   ps.stdout.on('data', function (data) {
-    var temp = data.toString('ascii');
-    allData += temp;
-  });
+    var temp = data.toString('ascii')
+    allData += temp
+  })
 
   var onClose = function (code) {
-    delete pidsToProcess[parentPid];
+    delete pidsToProcess[parentPid]
 
     if (code != 0) {
       // no more parent processes
       if (Object.keys(pidsToProcess).length == 0) {
-        cb();
+        cb()
       }
-      return;
+      return
     }
 
     allData.match(/\d+/g).forEach(function (pid) {
-      pid = parseInt(pid, 10);
-      tree[parentPid].push(pid);
-      tree[pid] = [];
-      pidsToProcess[pid] = 1;
-      buildProcessTree(pid, tree, pidsToProcess, spawnChildProcessesList, cb);
-    });
-  };
+      pid = parseInt(pid, 10)
+      tree[parentPid].push(pid)
+      tree[pid] = []
+      pidsToProcess[pid] = 1
+      buildProcessTree(pid, tree, pidsToProcess, spawnChildProcessesList, cb)
+    })
+  }
 
-  ps.on('close', onClose);
+  ps.on('close', onClose)
 }
