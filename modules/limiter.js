@@ -1,5 +1,5 @@
-const rateLimit = require('express-rate-limit');
-const config = require('../config/config');
+const rateLimit = require('express-rate-limit')
+const config = require('../config/config')
 
 module.exports = {
   /** set rate limit */
@@ -9,4 +9,4 @@ module.exports = {
     /** max hit per IP */
     max: config.app.rateLimitMaxHitPerIP,
   }),
-};
+}
