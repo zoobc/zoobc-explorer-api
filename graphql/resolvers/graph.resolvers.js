@@ -31,19 +31,19 @@ module.exports = {
             },
           ],
           function (err, data) {
-            if (err) return reject(err);
+            if (err) return reject(err)
 
             const result = data.map(item => {
-              const { day, month, year } = item._id;
+              const { day, month, year } = item._id
               return {
                 name: `${day}-${month}-${year}`,
                 amt: item.amount,
-              };
-            });
-            return resolve(result);
+              }
+            })
+            return resolve(result)
           }
-        );
-      });
+        )
+      })
     },
     blockGraph: (parent, args, { models }) => {
       return new Promise((resolve, reject) => {
@@ -75,19 +75,19 @@ module.exports = {
             },
           ],
           function (err, data) {
-            if (err) return reject(err);
+            if (err) return reject(err)
 
             const result = data.map(item => {
-              const { day, month, year } = item._id;
+              const { day, month, year } = item._id
               return {
                 name: `${day}-${month}-${year}`,
                 amt: item.count,
-              };
-            });
-            return resolve(result);
+              }
+            })
+            return resolve(result)
           }
-        );
-      });
+        )
+      })
     },
   },
-};
+}

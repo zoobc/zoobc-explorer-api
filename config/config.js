@@ -1,5 +1,4 @@
-require('dotenv').config();
-const path = require('path');
+require('dotenv').config()
 
 module.exports = {
   app: {
@@ -9,14 +8,13 @@ module.exports = {
     tokenExpired: 12 /** hours */,
     mainRoute: '/zoobc/api/v1',
     redisExpired: 60 /** seconds */,
-    scheduler: true,
-    scheduleEvent: 30 /** seconds */,
     openSslKeyPath: process.env.SSL_KEYPATH || null,
     openSslCertPath: process.env.SSL_CERTPATH || null,
     loggerFilePath: './logs/access.log',
     rateLimitSuspendTime: 5,
     rateLimitMaxHitPerIP: 500,
     pageLimit: 10,
+    useCluster: process.env.USE_CLUSTER || 'true',
   },
   db: {
     port: process.env.DB_PORT || 27017,
@@ -30,13 +28,9 @@ module.exports = {
     host: process.env.RD_HOST,
     password: process.env.RD_PASSWORD,
   },
-  proto: {
-    host: `${process.env.PROTO_HOST}:${process.env.PROTO_PORT}`,
-    path: path.resolve(__dirname, '../schema'),
-  },
   token: {
     audience: 'zoobc-service.user',
     issuer: 'zoobc-service.id-backend',
     subject: 'zoobc-service-access-token',
   },
-};
+}

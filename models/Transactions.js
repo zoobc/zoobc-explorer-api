@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { upsertMany } = require('../utils');
+const mongoose = require('mongoose')
+const { upserts } = require('../utils')
 
 const schema = new mongoose.Schema(
   {
@@ -18,6 +18,7 @@ const schema = new mongoose.Schema(
     TransactionBodyLength: { type: Number } /** additional */,
     TransactionBodyBytes: { type: Buffer } /** additional */,
     TransactionIndex: { type: Number } /** additional */,
+    MultisigChild: { type: Boolean } /** additional */,
     Signature: { type: Buffer } /** additional */,
     TransactionBody: { type: String },
     /** convertion by transaction body */
@@ -71,12 +72,33 @@ const schema = new mongoose.Schema(
       Property: { type: String },
       Value: { type: String },
     },
+    MultiSignature: {
+      MultiSignatureInfo: {
+        MultisigAddress: { type: String },
+        BlockHeight: { type: Number },
+        Nonce: { type: Number },
+        MinimumSignatures: { type: Number },
+        Addresses: { type: String },
+      },
+      UnsignedTransactionBytes: { type: Buffer },
+      SignatureInfo: {
+        TransactionHash: { type: Buffer },
+        Signatures: {
+          type: Map,
+          of: String,
+        },
+      },
+    },
+    ApprovalEscrow: {
+      Approval: { type: String },
+      TransactionID: { type: Number },
+    },
   },
   {
     toJSON: { virtuals: true },
   }
-);
+)
 
-schema.plugin(upsertMany);
+schema.plugin(upserts)
 
-module.exports = mongoose.model('Transactions', schema);
+module.exports = mongoose.model('Transactions', schema)

@@ -1,13 +1,13 @@
-const BaseService = require('./BaseService');
-const { Transactions } = require('../../models');
+const BaseService = require('./BaseService')
+const { Transactions } = require('../../models')
 
 module.exports = class TransactionsService extends BaseService {
   constructor() {
-    super(Transactions);
+    super(Transactions)
   }
 
   getLastHeight(callback) {
-    Transactions.findOne().select('Height').sort('-Height').exec(callback);
+    Transactions.findOne().select('Height').sort('-Height').exec(callback)
   }
 
   getAccountsByLastHeight(callback) {
@@ -16,24 +16,24 @@ module.exports = class TransactionsService extends BaseService {
       .sort('-Height')
       .exec((err, result) => {
         if (err) {
-          callback(err, null);
-          return;
+          callback(err, null)
+          return
         }
 
         if (result) {
-          let accounts = [];
+          let accounts = []
           if (result.SenderAccountAddress) {
-            accounts.push(result.SenderAccountAddress);
+            accounts.push(result.SenderAccountAddress)
           }
           if (result.RecipientAccountAddress) {
-            accounts.push(result.RecipientAccountAddress);
+            accounts.push(result.RecipientAccountAddress)
           }
-          callback(null, accounts);
-          return;
+          callback(null, accounts)
+          return
         }
 
-        callback(null, null);
-      });
+        callback(null, null)
+      })
   }
 
   getAccountsFromTransactions(callback) {
@@ -49,22 +49,22 @@ module.exports = class TransactionsService extends BaseService {
       ],
       (err, results) => {
         if (err) {
-          callback(err, null);
-          return;
+          callback(err, null)
+          return
         }
 
         if (results && results.length > 0) {
           const accounts = results[0].SenderAccountAddress.concat(
             results[0].RecipientAccountAddress.filter(item => {
-              return results[0].SenderAccountAddress.indexOf(item) < 0;
+              return results[0].SenderAccountAddress.indexOf(item) < 0
             })
-          );
-          callback(null, accounts);
+          )
+          callback(null, accounts)
         } else {
-          callback(null, null);
-          return;
+          callback(null, null)
+          return
         }
       }
-    );
+    )
   }
-};
+}

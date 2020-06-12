@@ -1,13 +1,13 @@
-const BaseController = require('./BaseController');
-const { ResponseBuilder } = require('../../utils');
+const BaseController = require('./BaseController')
+const { ResponseBuilder } = require('../../utils')
 
 module.exports = class HandleError extends BaseController {
   constructor() {
-    super();
+    super()
   }
 
   sendCatchError(res, error) {
-    const responseBuilder = new ResponseBuilder();
+    const responseBuilder = new ResponseBuilder()
 
     this.sendInternalServerErrorResponse(
       res,
@@ -17,7 +17,7 @@ module.exports = class HandleError extends BaseController {
         // eslint-disable-next-line no-useless-escape
         .setMessage(error.toString().replace(/\"/gi, ''))
         .build()
-    );
-    return;
+    )
+    return
   }
-};
+}
