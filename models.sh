@@ -20,6 +20,9 @@ fi
 git clone git@github.com:zoobc/zoobc-explorer-scheduler.git
 
 # 2. copy repo zoobc-explorer-scheduler
+if [ -d "./schema" ]; then
+  rm -rf "./schema"
+fi
 if [ -d "./models" ]; then
   rm -rf "./models"
 fi
