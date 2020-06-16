@@ -48,8 +48,34 @@ module.exports = {
                   .exec((err, data) => {
                     if (err) return reject(err)
 
+                    const dataMapped = data.map(i => {
+                      return {
+                        ...i,
+                        ...(i.MultiSignature && {
+                          MultiSignature: {
+                            ...i.MultiSignature,
+                            SignatureInfo: {
+                              ...(i.MultiSignature.SignatureInfo && {
+                                ...i.MultiSignature.SignatureInfo,
+                                ...(i.MultiSignature.SignatureInfo.Signatures && {
+                                  Signatures: Object.entries(i.MultiSignature.SignatureInfo.Signatures).map(
+                                    ([key, value]) => {
+                                      return {
+                                        Address: key,
+                                        Signature: value,
+                                      }
+                                    }
+                                  ),
+                                }),
+                              }),
+                            },
+                          },
+                        }),
+                      }
+                    })
+
                     const result = {
-                      Transactions: data,
+                      Transactions: dataMapped,
                       Paginate: {
                         Page: parseInt(pg),
                         Count: data.length,
@@ -72,6 +98,13 @@ module.exports = {
     transaction: (parent, args, { models }) => {
       const { TransactionID } = args
 
+      const criteria = {
+        $or: [
+          { TransactionID: TransactionID },
+          { 'MultiSignature.SignatureInfo.TransactionHash': Buffer.from(TransactionID, 'base64') },
+        ],
+      }
+
       return new Promise((resolve, reject) => {
         const cacheTransaction = Converter.formatCache(cache.transaction, args)
         RedisCache.get(cacheTransaction, (err, resRedis) => {
@@ -79,15 +112,39 @@ module.exports = {
           if (resRedis) return resolve(resRedis)
 
           models.Transactions.findOne()
-            .where({ TransactionID: TransactionID })
+            .where(criteria)
             .lean()
             .exec((err, result) => {
               if (err) return reject(err)
               if (!result) return resolve({})
 
-              RedisCache.set(cacheTransaction, result, err => {
+              const resultMapped = {
+                ...result,
+                ...(result.MultiSignature && {
+                  MultiSignature: {
+                    ...result.MultiSignature,
+                    SignatureInfo: {
+                      ...(result.MultiSignature.SignatureInfo && {
+                        ...result.MultiSignature.SignatureInfo,
+                        ...(result.MultiSignature.SignatureInfo.Signatures && {
+                          Signatures: Object.entries(result.MultiSignature.SignatureInfo.Signatures).map(
+                            ([key, value]) => {
+                              return {
+                                Address: key,
+                                Signature: value,
+                              }
+                            }
+                          ),
+                        }),
+                      }),
+                    },
+                  },
+                }),
+              }
+
+              RedisCache.set(cacheTransaction, resultMapped, err => {
                 if (err) return reject(err)
-                return resolve(result)
+                return resolve(resultMapped)
               })
             })
         })
