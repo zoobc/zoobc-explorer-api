@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+const { gql } = require('apollo-server-express')
 
 module.exports = gql`
   extend type Query {
@@ -16,7 +16,7 @@ module.exports = gql`
     NodeID: String
     NodePublicKey: String
     OwnerAddress: String
-    NodeAddress: String
+    NodeAddress: NodeAddress
     LockedFunds: String
     RegisteredBlockHeight: Int
     ParticipationScore: Int
@@ -27,4 +27,4 @@ module.exports = gql`
     Latest: Boolean
     Height: Int
   }
-`;
+`

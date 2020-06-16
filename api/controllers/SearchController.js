@@ -1,47 +1,47 @@
-const BaseController = require('./BaseController');
-const HandleError = require('./HandleError');
-const { ResponseBuilder, Converter, RedisCache } = require('../../utils');
-const { BlocksService, TransactionsService } = require('../services');
+const BaseController = require('./BaseController')
+const HandleError = require('./HandleError')
+const { ResponseBuilder, Converter, RedisCache } = require('../../utils')
+const { BlocksService, TransactionsService } = require('../services')
 
 const cacheBlock = {
   block: 'block',
-};
+}
 
 const cacheTransaction = {
   transaction: 'transaction',
-};
+}
 
 module.exports = class SearchController extends BaseController {
   constructor() {
-    super();
-    this.blockService = new BlocksService();
-    this.transactionService = new TransactionsService();
+    super()
+    this.blockService = new BlocksService()
+    this.transactionService = new TransactionsService()
   }
 
   async SearchIdHash(req, res) {
-    const responseBuilder = new ResponseBuilder();
-    const handleError = new HandleError();
-    const { id } = req.query;
+    const responseBuilder = new ResponseBuilder()
+    const handleError = new HandleError()
+    const { id } = req.query
     try {
       if (!id) {
         this.sendInvalidPayloadResponse(
           res,
           responseBuilder.setData({}).setMessage('Invalid Payload Parameter').build()
-        );
-        return;
+        )
+        return
       }
       if (id === 0) {
         this.sendInvalidPayloadResponse(
           res,
           responseBuilder.setData({}).setMessage('Invalid data: unable to add value by zero.').build()
-        );
-        return;
+        )
+        return
       }
-      const cacheBlocks = Converter.formatCache(cacheBlock.block, id);
+      const cacheBlocks = Converter.formatCache(cacheBlock.block, id)
       RedisCache.get(cacheBlocks, (errRedis, resRedis) => {
         if (errRedis) {
-          handleError.sendCatchError(res, errRedis);
-          return;
+          handleError.sendCatchError(res, errRedis)
+          return
         }
 
         if (resRedis) {
@@ -52,13 +52,13 @@ module.exports = class SearchController extends BaseController {
               .setPaginate(resRedis.setPaginate)
               .setMessage('Block fetched successfully')
               .build()
-          );
-          return;
+          )
+          return
         }
         this.blockService.findOne({ BlockID: id }, (errBlock, resultBlock) => {
           if (errBlock) {
-            handleError.sendCatchError(res, errBlock);
-            return;
+            handleError.sendCatchError(res, errBlock)
+            return
           }
 
           if (resultBlock) {
@@ -67,8 +67,8 @@ module.exports = class SearchController extends BaseController {
               resultBlock,
               err => {
                 if (err) {
-                  handleError.sendCatchError(res, err);
-                  return;
+                  handleError.sendCatchError(res, err)
+                  return
                 }
               },
 
@@ -76,14 +76,14 @@ module.exports = class SearchController extends BaseController {
                 res,
                 responseBuilder.setData(resultBlock).setMessage('Block fetched successfully').build()
               )
-            );
-            return;
+            )
+            return
           } else {
-            const cacheTransactions = Converter.formatCache(cacheTransaction.transaction, id);
+            const cacheTransactions = Converter.formatCache(cacheTransaction.transaction, id)
             RedisCache.get(cacheTransactions, (errRedis, resRedis) => {
               if (errRedis) {
-                handleError.sendCatchError(res, errRedis);
-                return;
+                handleError.sendCatchError(res, errRedis)
+                return
               }
 
               if (resRedis) {
@@ -94,13 +94,13 @@ module.exports = class SearchController extends BaseController {
                     .setPaginate(resRedis.setPaginate)
                     .setMessage('Transaction fetched successfully')
                     .build()
-                );
-                return;
+                )
+                return
               }
               this.transactionService.findOne({ TransactionID: id }, (errTrans, resultTrans) => {
                 if (errTrans) {
-                  handleError.sendCatchError(res, errTrans);
-                  return;
+                  handleError.sendCatchError(res, errTrans)
+                  return
                 }
 
                 if (resultTrans !== null) {
@@ -109,8 +109,8 @@ module.exports = class SearchController extends BaseController {
                     resultTrans,
                     err => {
                       if (err) {
-                        handleError.sendCatchError(res, err);
-                        return;
+                        handleError.sendCatchError(res, err)
+                        return
                       }
                     },
 
@@ -118,19 +118,19 @@ module.exports = class SearchController extends BaseController {
                       res,
                       responseBuilder.setData(resultTrans).setMessage('Transaction fetched successfully').build()
                     )
-                  );
-                  return;
+                  )
+                  return
                 } else {
-                  this.sendSuccessResponse(res, responseBuilder.setData({}).setMessage('No Data fetched').build());
-                  return;
+                  this.sendSuccessResponse(res, responseBuilder.setData({}).setMessage('No Data fetched').build())
+                  return
                 }
-              });
-            });
+              })
+            })
           }
-        });
-      });
+        })
+      })
     } catch (error) {
-      handleError.sendCatchError(res, error);
+      handleError.sendCatchError(res, error)
     }
   }
-};
+}

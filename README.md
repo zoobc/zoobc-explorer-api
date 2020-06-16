@@ -12,11 +12,9 @@ A web viewer for searching and displaying data published by the explorer server 
 
 - [Express](https://www.npmjs.com/package/express)
 - [Redis](https://redis.io/topics/quickstart)
-- [gRPC](https://grpc.io/docs/quickstart/node/)
 - [Rest API](https://restfulapi.net/)
 - [GraphQL](https://graphql.org/code/#javascript)
 - [Apollo-Graphql](https://www.apollographql.com/docs/)
-- [IP Location](https://www.npmjs.com/package/iplocation)
 - [SSL Certificate](https://support.microfocus.com/kb/doc.php?id=7013103)
 - [Swagger](https://swagger.io/)
 - [MongoDB](https://www.mongodb.com/)
@@ -52,18 +50,11 @@ $ yarn start or npm start
 # starting app using yarn or npm
 ```
 
-## How to Update Schema
+## How to Update Models
 
 ```bash
-$ ./schema.sh
-# delete and clone repository zoobc-schema
-```
-
-## Usage with CLI
-
-```bash
-$ yarn start or npm start
-# start the service and wait for a minute. The scheduler always run evey minute to check for any updates
+$ ./models.sh
+# delete and clone repository zoobc-explorer-scheduler
 ```
 
 ## Issue
@@ -88,18 +79,12 @@ $ kill xxxx     //listen number
     ├   └── services          # Containing class files for the service controllers
     ├── config                # Configuration application, graphql and doc api
     ├── docs                  # The screnshoot, doc api and json format import insomnia
-    ├── grapqhl               # Directory a query language for API
-    ├   ├── resovers          # Containing files for the resolver
+    ├── graphql               # Directory a query language for API
+    ├   ├── resolvers          # Containing files for the resolver
     ├   └── schema            # Schema models
     ├── html                  # Base template to generate api documentation tools using swagger
     ├── logs                  # Log files
     ├── models                # Structure of tables and properties
-    ├── scheduler             # Contain files for scheduler
-    ├── schema                # Directory for proto
-    ├   ├── google            # Directory for api
-    ├       ├── api           # Containing class files for the api files
-    ├   ├── model             # Containing models for grpc
-    ├   └── service           # Containing class files for the grpc service
     ├── server                # Configuration base files for RestAPI and GraphQL
     └── utils                 # Functions that are provided application
 

@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  deploy-testnet:
+  deploy-development:
     docker:
       - image: circleci/node:8.10
     steps:
@@ -14,9 +14,9 @@ jobs:
       - run:
           name: Deploy Testnet
           command: |
-            ssh ${SSH_USER}@${SSH_HOST_TESTNET} "pm2 deploy ecosystem.config.js testnet update --force"
+            ssh ${SSH_USER}@${SSH_HOST_TESTNET} "pm2 deploy ecosystem.config.js api update --force"
 
-  deploy-mainnet:
+  deploy-production:
     docker:
       - image: circleci/node:8.10
     steps:
@@ -30,17 +30,17 @@ jobs:
       - run:
           name: Deploy Mainnet
           command: |
-            ssh ${SSH_USER}@${SSH_HOST_MAINNET} "pm2 deploy ecosystem.config.js mainnet update"
+            ssh ${SSH_USER}@${SSH_HOST_MAINNET} "pm2 deploy ecosystem.config.js api update"
 
 workflows:
   version: 2
   build:
     jobs:
-      - deploy-testnet:
+      - deploy-development:
           filters:
             branches:
               only: testnet
-      - deploy-mainnet:
+      - deploy-production:
           filters:
             branches:
               only: master

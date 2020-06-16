@@ -1,28 +1,28 @@
-const config = require('../config/config');
-const redisClient = require('../modules/redis')();
+const config = require('../config/config')
+const redisClient = require('../modules/redis')()
 
-var RedisCache = { get, set };
+var RedisCache = { get, set }
 
 function get(key, callback) {
   try {
     redisClient.get(key, (err, result) => {
       if (err) {
-        callback(err, null);
-        return;
+        callback(err, null)
+        return
       }
-      callback(null, result ? JSON.parse(result) : null);
-    });
+      callback(null, result ? JSON.parse(result) : null)
+    })
   } catch (error) {
-    callback(error, null);
+    callback(error, null)
   }
 }
 
 function set(key, data, callback) {
   try {
-    redisClient.setex(key, config.app.redisExpired, JSON.stringify(data), callback);
+    redisClient.setex(key, config.app.redisExpired, JSON.stringify(data), callback)
   } catch (error) {
-    callback(error, null);
+    callback(error, null)
   }
 }
 
-module.exports = RedisCache;
+module.exports = RedisCache

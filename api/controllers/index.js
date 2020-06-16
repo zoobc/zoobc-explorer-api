@@ -1,8 +1,8 @@
-const BlockController = require('./BlockController');
-const TransactionController = require('./TransactionController');
-const SearchController = require('./SearchController');
-const AccountController = require('./AccountController');
-const NodeController = require('./NodeController');
+const BlockController = require('./BlockController')
+const TransactionController = require('./TransactionController')
+const SearchController = require('./SearchController')
+const AccountController = require('./AccountController')
+const NodeController = require('./NodeController')
 
 module.exports = {
   blockController: new BlockController(),
@@ -10,4 +10,4 @@ module.exports = {
   searchController: new SearchController(),
   accountController: new AccountController(),
   nodeController: new NodeController(),
-};
+}

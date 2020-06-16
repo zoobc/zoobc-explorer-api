@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+const { gql } = require('apollo-server-express')
 
 module.exports = gql`
   extend type Query {
@@ -47,6 +47,8 @@ module.exports = gql`
     # Aggregate
     TotalRewards: Float
     TotalRewardsConversion: String
+
+    PublishedReceipts: [PublishedReceipt!]!
   }
   type SkippedBlocksmith {
     BlocksmithPublicKey: String
@@ -54,4 +56,23 @@ module.exports = gql`
     BlockHeight: Int
     BlocksmithIndex: Int
   }
-`;
+
+  type PublishedReceipt {
+    BatchReceipt: BatchReceipt!
+    IntermediateHashes: String
+    BlockHeight: Int
+    ReceiptIndex: Int
+    PublishedIndex: Int
+  }
+
+  type BatchReceipt {
+    SenderPublicKey: String
+    RecipientPublicKey: String
+    DatumType: Int
+    DatumHash: String
+    ReferenceBlockHeight: Int
+    ReferenceBlockHash: String
+    RMRLinked: String
+    RecipientSignature: String
+  }
+`
