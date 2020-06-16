@@ -131,11 +131,16 @@ module.exports = gql`
 
   type SignatureInfo {
     TransactionHash: String
-    Signatures: [String]
+    Signatures: [Signatures]
   }
 
   type ProofOfOwnership {
     MessageBytes: String
+    Signature: String
+  }
+
+  type Signatures {
+    Address: String
     Signature: String
   }
 `
