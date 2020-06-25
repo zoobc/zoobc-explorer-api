@@ -45,6 +45,7 @@ module.exports = gql`
     ClaimNodeRegistration: ClaimNodeRegistration
     ApprovalEscrow: ApprovalEscrow
     MultiSignature: MultiSignature
+    MultiSignatureTransactions: [Transaction!]!
     Block: Block!
   }
 
