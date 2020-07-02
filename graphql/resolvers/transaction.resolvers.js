@@ -164,6 +164,8 @@ module.exports = {
       const getTransaction = async () => {
         const trx = await models.Transactions.findOne().where(criteria).select().lean().exec()
 
+        if (!trx) return {}
+
         if (trx.MultisigChild === true) {
           const multisig = await models.Transactions.find()
             .where({ 'MultiSignature.SignatureInfo.TransactionHash': trx.TransactionHash })
