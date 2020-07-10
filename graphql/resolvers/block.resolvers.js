@@ -75,8 +75,17 @@ module.exports = {
           if (err) return reject(err)
           if (resRedis) return resolve(resRedis)
 
+          let criteria
+          const checkId = Number(BlockID)
+
+          if (typeof checkId === 'number' && isNaN(checkId)) {
+            criteria = BlockID != null ? { BlockID: BlockID } : {}
+          } else {
+            criteria = BlockID != null ? { $or: [{ BlockID: BlockID }, { Height: BlockID }] } : {}
+          }
+
           models.Blocks.findOne()
-            .where({ BlockID: BlockID })
+            .where(criteria)
             .lean()
             .exec((err, result) => {
               if (err) return reject(err)

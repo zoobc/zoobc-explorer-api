@@ -25,71 +25,130 @@ module.exports = {
       const accountAddress =
         AccountAddress !== undefined ? { $or: [{ Sender: AccountAddress }, { Recipient: AccountAddress }] } : null
 
+      const criteria = {
+        $and: [blockId ? blockId : accountAddress ? accountAddress : {}, { TransactionType: { $nin: [4, 5] } }],
+      }
+
+      const getTransactions = async () => {
+        const transactions = await models.Transactions.find()
+          .where(criteria)
+          .select()
+          .limit(lm)
+          .skip((pg - 1) * lm)
+          .sort(od)
+          .lean()
+          .exec()
+
+        const result = []
+
+        transactions &&
+          transactions.length > 0 &&
+          (await Promise.all(
+            transactions.map(async trx => {
+              if (trx.MultisigChild === true) {
+                const multisig = await models.Transactions.find()
+                  .where({
+                    'MultiSignature.SignatureInfo.TransactionHash': trx.TransactionHash,
+                  })
+                  .select()
+                  .sort({ Height: 'desc' })
+                  .lean()
+                  .exec()
+
+                const multisigMapped =
+                  multisig &&
+                  multisig.length > 0 &&
+                  multisig.map(i => {
+                    return {
+                      ...i,
+                      ...(i.MultiSignature && {
+                        MultiSignature: {
+                          ...i.MultiSignature,
+                          SignatureInfo: {
+                            ...(i.MultiSignature.SignatureInfo && {
+                              ...i.MultiSignature.SignatureInfo,
+                              ...(i.MultiSignature.SignatureInfo.Signatures && {
+                                Signatures: Object.entries(i.MultiSignature.SignatureInfo.Signatures).map(
+                                  ([key, value]) => {
+                                    return {
+                                      Address: key,
+                                      Signature: value,
+                                    }
+                                  }
+                                ),
+                              }),
+                            }),
+                          },
+                        },
+                      }),
+                    }
+                  })
+
+                result.push({
+                  ...trx,
+                  MultiSignatureTransactions: multisigMapped,
+                  ...(multisigMapped.length > 0 && {
+                    MultiSignature: multisigMapped[0].MultiSignature,
+                  }),
+                })
+
+                return
+              }
+
+              if (trx.Escrow != null) {
+                const escrow = await models.Transactions.findOne()
+                  .where({
+                    'ApprovalEscrow.TransactionID': trx.TransactionID,
+                  })
+                  .select()
+                  .lean()
+                  .exec()
+
+                result.push({
+                  ...trx,
+                  EscrowTransaction: escrow && { ...escrow },
+                })
+                return
+              }
+
+              result.push({
+                ...trx,
+              })
+            })
+          ))
+
+        return result
+      }
+
       return new Promise((resolve, reject) => {
         const cacheTransactions = Converter.formatCache(cache.transactions, args)
         RedisCache.get(cacheTransactions, (err, resRedis) => {
           if (err) return reject(err)
           if (resRedis) return resolve(resRedis)
 
-          models.Transactions.countDocuments((err, totalWithoutFilter) => {
+          models.Transactions.where({ TransactionType: { $nin: [4, 5] } }).countDocuments((err, totalWithoutFilter) => {
             if (err) return reject(err)
 
-            models.Transactions.where(blockId ? blockId : accountAddress ? accountAddress : {}).countDocuments(
-              (err, totalWithFilter) => {
-                if (err) return reject(err)
+            models.Transactions.where(criteria).countDocuments((err, totalWithFilter) => {
+              if (err) return reject(err)
 
-                models.Transactions.find()
-                  .where(blockId ? blockId : accountAddress ? accountAddress : {})
-                  .select()
-                  .limit(lm)
-                  .skip((pg - 1) * lm)
-                  .sort(od)
-                  .lean()
-                  .exec((err, data) => {
+              getTransactions()
+                .then(res => {
+                  const result = {
+                    Transactions: res,
+                    Paginate: {
+                      Page: parseInt(pg),
+                      Count: res.length,
+                      Total: blockId || accountAddress ? totalWithFilter : totalWithoutFilter,
+                    },
+                  }
+                  RedisCache.set(cacheTransactions, result, err => {
                     if (err) return reject(err)
-
-                    const dataMapped = data.map(i => {
-                      return {
-                        ...i,
-                        ...(i.MultiSignature && {
-                          MultiSignature: {
-                            ...i.MultiSignature,
-                            SignatureInfo: {
-                              ...(i.MultiSignature.SignatureInfo && {
-                                ...i.MultiSignature.SignatureInfo,
-                                ...(i.MultiSignature.SignatureInfo.Signatures && {
-                                  Signatures: Object.entries(i.MultiSignature.SignatureInfo.Signatures).map(
-                                    ([key, value]) => {
-                                      return {
-                                        Address: key,
-                                        Signature: value,
-                                      }
-                                    }
-                                  ),
-                                }),
-                              }),
-                            },
-                          },
-                        }),
-                      }
-                    })
-
-                    const result = {
-                      Transactions: dataMapped,
-                      Paginate: {
-                        Page: parseInt(pg),
-                        Count: data.length,
-                        Total: blockId || accountAddress ? totalWithFilter : totalWithoutFilter,
-                      },
-                    }
-
-                    RedisCache.set(cacheTransactions, result, err => {
-                      if (err) return reject(err)
-                      return resolve(result)
-                    })
+                    return resolve(result)
                   })
-              }
-            )
+                })
+                .catch(err => reject(err))
+            })
           })
         })
       })
@@ -99,10 +158,96 @@ module.exports = {
       const { TransactionID } = args
 
       const criteria = {
-        $or: [
-          { TransactionID: TransactionID },
-          { 'MultiSignature.SignatureInfo.TransactionHash': Buffer.from(TransactionID, 'base64') },
-        ],
+        $or: [{ TransactionID: TransactionID }, { TransactionHash: Buffer.from(TransactionID, 'base64') }],
+      }
+
+      const getTransaction = async () => {
+        const trx = await models.Transactions.findOne().where(criteria).select().lean().exec()
+
+        if (!trx) return {}
+
+        if (trx.MultisigChild === true) {
+          const multisig = await models.Transactions.find()
+            .where({ 'MultiSignature.SignatureInfo.TransactionHash': trx.TransactionHash })
+            .select()
+            .sort({ Height: 'desc' })
+            .lean()
+            .exec()
+
+          const multisigMapped =
+            multisig &&
+            multisig.length > 0 &&
+            (await Promise.all(
+              multisig.map(i => {
+                return {
+                  ...i,
+                  ...(i.MultiSignature && {
+                    MultiSignature: {
+                      ...i.MultiSignature,
+                      SignatureInfo: {
+                        ...(i.MultiSignature.SignatureInfo && {
+                          ...i.MultiSignature.SignatureInfo,
+                          ...(i.MultiSignature.SignatureInfo.Signatures && {
+                            Signatures: Object.entries(i.MultiSignature.SignatureInfo.Signatures).map(
+                              ([key, value]) => {
+                                return {
+                                  Address: key,
+                                  Signature: value,
+                                }
+                              }
+                            ),
+                          }),
+                        }),
+                      },
+                    },
+                  }),
+                }
+              })
+            ))
+
+          return {
+            ...trx,
+            MultiSignatureTransactions: multisigMapped,
+            ...(multisigMapped.length > 0 && {
+              MultiSignature: multisigMapped[0].MultiSignature,
+            }),
+          }
+        }
+
+        if (trx.Escrow != null) {
+          const escrow = await models.Transactions.findOne()
+            .where({ 'ApprovalEscrow.TransactionID': trx.TransactionID })
+            .select()
+            .lean()
+            .exec()
+
+          return {
+            ...trx,
+            EscrowTransaction: escrow && { ...escrow },
+          }
+        }
+
+        return {
+          ...trx,
+          ...(trx.MultiSignature && {
+            MultiSignature: {
+              ...trx.MultiSignature,
+              SignatureInfo: {
+                ...(trx.MultiSignature.SignatureInfo && {
+                  ...trx.MultiSignature.SignatureInfo,
+                  ...(trx.MultiSignature.SignatureInfo.Signatures && {
+                    Signatures: Object.entries(trx.MultiSignature.SignatureInfo.Signatures).map(([key, value]) => {
+                      return {
+                        Address: key,
+                        Signature: value,
+                      }
+                    }),
+                  }),
+                }),
+              },
+            },
+          }),
+        }
       }
 
       return new Promise((resolve, reject) => {
@@ -111,42 +256,14 @@ module.exports = {
           if (err) return reject(err)
           if (resRedis) return resolve(resRedis)
 
-          models.Transactions.findOne()
-            .where(criteria)
-            .lean()
-            .exec((err, result) => {
-              if (err) return reject(err)
-              if (!result) return resolve({})
-
-              const resultMapped = {
-                ...result,
-                ...(result.MultiSignature && {
-                  MultiSignature: {
-                    ...result.MultiSignature,
-                    SignatureInfo: {
-                      ...(result.MultiSignature.SignatureInfo && {
-                        ...result.MultiSignature.SignatureInfo,
-                        ...(result.MultiSignature.SignatureInfo.Signatures && {
-                          Signatures: Object.entries(result.MultiSignature.SignatureInfo.Signatures).map(
-                            ([key, value]) => {
-                              return {
-                                Address: key,
-                                Signature: value,
-                              }
-                            }
-                          ),
-                        }),
-                      }),
-                    },
-                  },
-                }),
-              }
-
-              RedisCache.set(cacheTransaction, resultMapped, err => {
+          getTransaction()
+            .then(result => {
+              RedisCache.set(cacheTransaction, result, err => {
                 if (err) return reject(err)
-                return resolve(resultMapped)
+                return resolve(result)
               })
             })
+            .catch(err => reject(err))
         })
       })
     },
