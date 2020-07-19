@@ -6,6 +6,7 @@ const accountSchema = require('./account.schema')
 const searchSchema = require('./search.schema')
 const nodeSchema = require('./node.schema')
 const graphSchema = require('./graph.schema')
+const mapSchema = require('./map.schema')
 
 const linkSchema = gql`
   scalar Date
@@ -34,4 +35,13 @@ const linkSchema = gql`
   }
 `
 
-module.exports = [linkSchema, blockSchema, transactionSchema, accountSchema, searchSchema, nodeSchema, graphSchema]
+module.exports = [
+  linkSchema,
+  blockSchema,
+  transactionSchema,
+  accountSchema,
+  searchSchema,
+  nodeSchema,
+  graphSchema,
+  mapSchema,
+]
