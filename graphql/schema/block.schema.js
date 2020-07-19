@@ -42,13 +42,13 @@ module.exports = gql`
     ReceiptValue: Float
     PopChange: String
     BlocksmithAddress: String
-    SkippedBlocksmiths: [SkippedBlocksmith!]!
+    SkippedBlocksmiths: [SkippedBlocksmith!]
 
     # Aggregate
     TotalRewards: Float
     TotalRewardsConversion: String
 
-    PublishedReceipts: [PublishedReceipt!]!
+    PublishedReceipts: [PublishedReceipt!]
   }
   type SkippedBlocksmith {
     BlocksmithPublicKey: String

@@ -31,9 +31,7 @@ module.exports = gql`
     TransactionBodyLength: Int
     TransactionBodyBytes: String
     TransactionIndex: Int
-    MultisigChild: Boolean
     Signature: String
-    Escrow: Escrow
     TransactionBody: String
     TransactionTypeName: String
     SendMoney: SendMoney
@@ -44,7 +42,11 @@ module.exports = gql`
     RemoveNodeRegistration: RemoveNodeRegistration
     ClaimNodeRegistration: ClaimNodeRegistration
     ApprovalEscrow: ApprovalEscrow
+    Escrow: Escrow
+    EscrowTransaction: Transaction
+    MultisigChild: Boolean
     MultiSignature: MultiSignature
+    MultiSignatureTransactions: [Transaction!]
     Block: Block!
   }
 
