@@ -14,13 +14,20 @@ function parseOrder(string) {
   return { [string]: 'asc' }
 }
 
+function parseOrder2(string) {
+  if (string[0] === '-') {
+    return `${string.slice(1)}`
+  }
+  return `${string}`
+}
+
 module.exports = {
   Query: {
     transactions: (parent, args, { models }) => {
       const { page, limit, order, BlockID, AccountAddress } = args
       const pg = page !== undefined ? parseInt(page) : 1
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit)
-      const od = order !== undefined ? parseOrder(order) : { Height: 'asc' }
+      const od = order !== undefined ? parseOrder(order) : { Height: 'desc' }
       const blockId = BlockID !== undefined ? { BlockID } : null
       const accountAddress =
         AccountAddress !== undefined ? { $or: [{ Sender: AccountAddress }, { Recipient: AccountAddress }] } : null
@@ -51,7 +58,7 @@ module.exports = {
                     'MultiSignature.SignatureInfo.TransactionHash': trx.TransactionHash,
                   })
                   .select()
-                  .sort({ Height: 'desc' })
+                  .sort(od)
                   .lean()
                   .exec()
 
@@ -117,7 +124,10 @@ module.exports = {
             })
           ))
 
-        return result
+        return result.sort((a, b) => {
+          const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
+          return a[orderFormatted] > b[orderFormatted] ? -1 : 1
+        })
       }
 
       return new Promise((resolve, reject) => {

@@ -5,6 +5,7 @@ const accountResolvers = require('./account.resolvers')
 const searchResolvers = require('./search.resolvers')
 const nodeResolvers = require('./node.resolvers')
 const graphResolvers = require('./graph.resolvers')
+const mapResolvers = require('./map.resolvers')
 
 const customScalarResolver = {
   Date: GraphQLDateTime,
@@ -18,4 +19,5 @@ module.exports = [
   searchResolvers,
   nodeResolvers,
   graphResolvers,
+  mapResolvers,
 ]
