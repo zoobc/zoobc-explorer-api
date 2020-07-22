@@ -285,6 +285,18 @@ module.exports = {
     },
   },
 
+  Mutation: {
+    transactions: (parent, { transactions }, { models }) => {
+      if (transactions != null && transactions.length > 0) {
+        pubsub.publish(events.transactions, {
+          transactions,
+        })
+        return 'succesfully publish transactions data'
+      }
+      return 'failed publish transactions data'
+    },
+  },
+
   Subscription: {
     transactions: {
       subscribe: () => pubsub.asyncIterator([events.transactions]),

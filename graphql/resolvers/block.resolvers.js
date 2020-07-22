@@ -99,6 +99,19 @@ module.exports = {
       })
     },
   },
+
+  Mutation: {
+    blocks: (parent, { blocks }, { models }) => {
+      if (blocks != null && blocks.length > 0) {
+        pubsub.publish(events.blocks, {
+          blocks,
+        })
+        return 'succesfully publish blocks data'
+      }
+      return 'failed publish blocks data'
+    },
+  },
+
   Subscription: {
     blocks: {
       subscribe: () => pubsub.asyncIterator([events.blocks]),

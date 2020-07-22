@@ -6,6 +6,10 @@ module.exports = gql`
     block(BlockID: String!): Block!
   }
 
+  extend type Mutation {
+    blocks(blocks: [InputBlock!]!): String!
+  }
+
   extend type Subscription {
     blocks: [Block!]!
   }
@@ -74,5 +78,12 @@ module.exports = gql`
     ReferenceBlockHash: String
     RMRLinked: String
     RecipientSignature: String
+  }
+
+  input InputBlock {
+    BlockID: String
+    Height: Int
+    BlocksmithAddress: String
+    Timestamp: Date
   }
 `
