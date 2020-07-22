@@ -13,6 +13,11 @@ module.exports = (app, server) => {
     typeDefs,
     resolvers,
     context: { models },
+    subscriptions: {
+      path: `${config.app.mainRoute}/graphql`,
+      onConnect: () => console.log('Connected to websocket'),
+      onDisconnect: () => console.log('Disconnected from websocket'),
+    },
   })
 
   apolloServer.applyMiddleware({ app, path: `${config.app.mainRoute}/graphql` })
