@@ -101,11 +101,9 @@ module.exports = {
   },
 
   Mutation: {
-    blocks: (parent, { blocks }, { models }) => {
+    blocks: (parent, { blocks }) => {
       if (blocks != null && blocks.length > 0) {
-        pubsub.publish(events.blocks, {
-          blocks,
-        })
+        pubsub.publish(events.blocks, { blocks })
         return 'succesfully publish blocks data'
       }
       return 'failed publish blocks data'
