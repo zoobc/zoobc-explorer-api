@@ -1,5 +1,4 @@
-// const { ApolloServer } = require('apollo-server-express')
-const { ApolloServer } = require('apollo-server')
+const { ApolloServer } = require('apollo-server-express')
 
 const models = require('../models')
 const resolvers = require('../graphql/resolvers')
@@ -14,30 +13,15 @@ module.exports = (app, server) => {
     resolvers,
     tracing: true,
     context: { models },
+    introspection: true,
     subscriptions: {
       path: `${config.app.mainRoute}/graphql`,
       onConnect: () => console.log('Connected to websocket'),
+      onDisconnect: () => console.log('Disconnected from websocket'),
     },
   })
-
-  apolloServer.listen(config.app.port).then(({ url, subscriptionsUrl }) => {
-    console.log('==url', url)
-    console.log('==subscriptionsUrl', subscriptionsUrl)
-  })
-
-  // const apolloServer = new ApolloServer({
-  //   introspection: true,
-  //   typeDefs,
-  //   resolvers,
-  //   context: { models },
-  //   subscriptions: {
-  //     path: `${config.app.mainRoute}/graphql`,
-  //     onConnect: () => console.log('Connected to websocket'),
-  //     onDisconnect: () => console.log('Disconnected from websocket'),
-  //   },
-  // })
-  // apolloServer.applyMiddleware({ app, path: `${config.app.mainRoute}/graphql` })
-  // msg.green('🚀', `http://${config.app.host}:${config.app.port}${apolloServer.graphqlPath}`)
-  // apolloServer.installSubscriptionHandlers(server)
-  // msg.green('🚀', `ws://${config.app.host}:${config.app.port}${apolloServer.subscriptionsPath}`)
+  apolloServer.applyMiddleware({ app, path: `${config.app.mainRoute}/graphql` })
+  msg.green('🚀', `http://${config.app.host}:${config.app.port}${apolloServer.graphqlPath}`)
+  apolloServer.installSubscriptionHandlers(server)
+  msg.green('🚀', `ws://${config.app.host}:${config.app.port}${apolloServer.subscriptionsPath}`)
 }
