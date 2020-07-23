@@ -23,7 +23,7 @@ module.exports = () => {
 
   apolloServer.listen(config.app.port).then(({ url, subscriptionsUrl }) => {
     const graphqlUrl = `${url.slice(0, -1)}${config.app.mainRoute}/graphql`
-    msg.green('🚀', `ZooBC GraphQL Running on ${graphqlUrl} Handled by Process ${process.pid}`)
-    msg.green('🚀', `ZooBC Subscriptions Running on ${subscriptionsUrl} Handled by Process ${process.pid}`)
+    msg.green('🚀', `Graphql at ${graphqlUrl}`)
+    msg.green('🚀', `Subscriptions at ${subscriptionsUrl}`)
   })
 }
