@@ -17,6 +17,7 @@ module.exports = () => {
     subscriptions: {
       path: `${config.app.mainRoute}/graphql`,
       onConnect: () => msg.green('🚀', 'Connected to websocket'),
+      onDisconnect: () => msg.green('🚀', 'Disconnected from websocket'),
     },
   })
 
