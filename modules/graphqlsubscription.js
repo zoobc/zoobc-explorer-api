@@ -1,4 +1,4 @@
-const { ApolloServer } = require('apollo-server-express')
+const { ApolloServer } = require('apollo-server')
 
 const models = require('../models')
 const resolvers = require('../graphql/resolvers')
@@ -7,7 +7,7 @@ const typeDefs = require('../graphql/schema')
 const { msg } = require('../utils')
 const config = require('../config/config')
 
-module.exports = (app, server) => {
+module.exports = () => {
   const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
@@ -22,16 +22,16 @@ module.exports = (app, server) => {
     },
   })
 
-  apolloServer.applyMiddleware({ app, path: `${config.app.mainRoute}/graphql`, cors: false })
-  apolloServer.installSubscriptionHandlers(server)
+  // apolloServer.applyMiddleware({ app, path: `${config.app.mainRoute}/graphql` })
+  // apolloServer.installSubscriptionHandlers(server)
 
-  server.listen(config.app.port, () => {
-    msg.green('🚀', `Start ZooBC Graphql at ${apolloServer.graphqlPath} Handled by Process ${process.pid}`)
-  })
-
-  // apolloServer.listen(config.app.port).then(({ url, subscriptionsUrl }) => {
-  //   const graphqlUrl = `${url.slice(0, -1)}${config.app.mainRoute}/graphql`
-  //   msg.green('🚀', `Graphql at ${graphqlUrl}`)
-  //   msg.green('🚀', `Subscriptions at ${subscriptionsUrl}`)
+  // server.listen(config.app.port, () => {
+  //   msg.green('🚀', `Start ZooBC Graphql at ${apolloServer.graphqlPath} Handled by Process ${process.pid}`)
   // })
+
+  apolloServer.listen(config.app.port).then(({ url, subscriptionsUrl }) => {
+    const graphqlUrl = `${url.slice(0, -1)}${config.app.mainRoute}/graphql`
+    msg.green('🚀', `Graphql at ${graphqlUrl}`)
+    msg.green('🚀', `Subscriptions at ${subscriptionsUrl}`)
+  })
 }
