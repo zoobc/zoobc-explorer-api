@@ -24,8 +24,6 @@ module.exports = (app, server) => {
   apolloServer.applyMiddleware({ app, path: `${config.app.mainRoute}/graphql` })
   apolloServer.installSubscriptionHandlers(server)
 
-  server.listen(config.app.port, () => {
-    msg.green('🚀', `Graphql at http://${config.app.host}:${config.app.port}${apolloServer.graphqlPath}`)
-    msg.green('🚀', `Subscriptions at ws://${config.app.host}:${config.app.port}${apolloServer.subscriptionsPath}`)
-  })
+  msg.green('🚀', `Graphql at http://${config.app.host}:${config.app.port}${apolloServer.graphqlPath}`)
+  msg.green('🚀', `Subscriptions at ws://${config.app.host}:${config.app.port}${apolloServer.subscriptionsPath}`)
 }
