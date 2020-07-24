@@ -21,7 +21,7 @@ module.exports = (app, server) => {
       onDisconnect: () => msg.green('🚀', 'Disconnected from websocket'),
     },
   })
-  apolloServer.applyMiddleware({ app, path: `${config.app.mainRoute}/graphql` })
+  apolloServer.applyMiddleware({ app, path: `${config.app.mainRoute}/graphql`, cors: false })
   apolloServer.installSubscriptionHandlers(server)
 
   msg.green('🚀', `Graphql at http://${config.app.host}:${config.app.port}${apolloServer.graphqlPath}`)
