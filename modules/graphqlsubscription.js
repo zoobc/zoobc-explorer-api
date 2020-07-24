@@ -14,7 +14,11 @@ module.exports = () => {
     tracing: true,
     playground: true,
     introspection: true,
-    context: { models },
+    // context: { models },
+    context: async ({ connection }) => {
+      if (connection) return connection.context
+      else return { models }
+    },
     subscriptions: {
       path: `${config.app.mainRoute}/subscriptions`,
       onConnect: () => msg.green('🚀', 'Connected to websocket'),
