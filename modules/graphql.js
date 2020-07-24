@@ -12,8 +12,9 @@ module.exports = (app, server) => {
     typeDefs,
     resolvers,
     tracing: true,
-    context: { models },
+    playground: true,
     introspection: true,
+    context: { models },
     subscriptions: {
       path: `${config.app.mainRoute}/graphql`,
       onConnect: () => msg.green('🚀', 'Connected to websocket'),
