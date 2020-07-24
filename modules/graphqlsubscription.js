@@ -1,8 +1,9 @@
-const { ApolloServer } = require('apollo-server')
+const { ApolloServer, PubSub } = require('apollo-server')
 
 const models = require('../models')
 const resolvers = require('../graphql/resolvers')
 const typeDefs = require('../graphql/schema')
+const { pubsub } = require('../graphql/subscription')
 
 const { msg } = require('../utils')
 const config = require('../config/config')
@@ -14,7 +15,7 @@ module.exports = () => {
     tracing: true,
     playground: true,
     introspection: true,
-    context: { models },
+    context: { pubsub },
     subscriptions: {
       path: `${config.app.mainRoute}/subscriptions`,
       onConnect: () => msg.green('🚀', 'Connected to websocket'),
