@@ -286,7 +286,7 @@ module.exports = {
   },
 
   Mutation: {
-    transactions: (parent, { transactions }, { models }) => {
+    transactions: (parent, { transactions }) => {
       if (transactions != null && transactions.length > 0) {
         pubsub.publish(events.transactions, {
           transactions,
