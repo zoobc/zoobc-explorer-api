@@ -1,10 +1,10 @@
-const { ApolloServer } = require('apollo-server')
+const { ApolloServer, AuthenticationError } = require('apollo-server')
+const moment = require('moment')
 
 const models = require('../models')
 const resolvers = require('../graphql/resolvers')
 const typeDefs = require('../graphql/schema')
-
-const { msg } = require('../utils')
+const { msg, hmacEncrypt } = require('../utils')
 const config = require('../config/config')
 
 module.exports = () => {
@@ -14,11 +14,27 @@ module.exports = () => {
     tracing: true,
     playground: true,
     introspection: true,
-    // context: { models },
-    context: async ({ connection }) => {
-      if (connection) return connection.context
-      else return { models }
+    context: async ({ req, connection }) => {
+      if (connection) {
+        return connection.context
+      }
+
+      if (req) {
+        /** adding security header */
+        const timestamp = moment.utc().unix() - moment.utc('1970-01-01 00:00:00').unix()
+        const signature = hmacEncrypt(`${config.graphql_client.id}&${timestamp}`, config.graphql_client.secret)
+
+        const signatureClient = req.headers['x-signature']
+
+        if (signatureClient !== signature)
+          throw new AuthenticationError('You do not have authentication to access this endpoint')
+
+        return {
+          models,
+        }
+      }
     },
+
     subscriptions: {
       path: `${config.app.mainRoute}/subscriptions`,
       onConnect: () => msg.green('🚀', 'Connected to websocket'),
