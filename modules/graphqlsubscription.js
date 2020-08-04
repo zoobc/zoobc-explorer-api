@@ -15,23 +15,19 @@ module.exports = () => {
     playground: true,
     introspection: true,
     context: async ({ req, connection }) => {
-      if (connection) {
-        return connection.context
-      }
+      if (connection) return connection.context
 
       if (req) {
         /** adding security header */
-        const timestamp = moment.utc().unix() - moment.utc('1970-01-01 00:00:00').unix()
+        const timestamp = parseInt(req.headers['x-timestamp']) - moment.utc('1970-01-01 00:00:00').unix()
         const signature = hmacEncrypt(`${config.graphql_client.id}&${timestamp}`, config.graphql_client.secret)
 
-        const signatureClient = req.headers['X-signature']
+        const signatureClient = req.headers['x-signature']
 
         if (signatureClient !== signature)
           throw new AuthenticationError('You do not have authentication to access this endpoint')
 
-        return {
-          models,
-        }
+        return { models }
       }
     },
 
