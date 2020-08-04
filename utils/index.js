@@ -3,7 +3,7 @@ const RedisCache = require('./redis')
 const Converter = require('./converter')
 const upserts = require('./upserts')
 const ResponseBuilder = require('./ResponseBuilder')
-const { encrypt, decrypt } = require('./util')
+const { hmacEncrypt, encrypt, decrypt } = require('./util')
 
 module.exports = {
   msg,
@@ -11,6 +11,7 @@ module.exports = {
   RedisCache,
   upserts,
   ResponseBuilder,
+  hmacEncrypt,
   encrypt,
   decrypt,
 }
