@@ -15,7 +15,7 @@ function parseOrder(string) {
 module.exports = {
   Query: {
     nodes: (parent, args, { models }) => {
-      const { page, limit, order, AccountAddress, RegistryStatus } = args
+      const { page, limit, order, AccountAddress, RegistrationStatus } = args
       const pg = page !== undefined ? parseInt(page) : 1
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit)
       const od = order !== undefined ? parseOrder(order) : { Height: 'asc' }
@@ -24,9 +24,9 @@ module.exports = {
       if (AccountAddress !== undefined) {
         where.OwnerAddress = AccountAddress
       }
-      if (RegistryStatus !== undefined) {
-        if (RegistryStatus < 3) {
-          where.RegistryStatus = RegistryStatus
+      if (RegistrationStatus !== undefined) {
+        if (RegistrationStatus < 3) {
+          where.RegistrationStatus = RegistrationStatus
         }
       }
 

@@ -4,11 +4,11 @@ const cache = { maps: 'maps' }
 module.exports = {
   Query: {
     maps: (parent, args, { models }) => {
-      const { CountryCode, RegistryStatus } = args
+      const { CountryCode, RegistrationStatus } = args
 
       let where = {}
       if (CountryCode) where.CountryCode = CountryCode
-      if (RegistryStatus) where.RegistryStatus = RegistryStatus
+      if (RegistrationStatus) where.RegistrationStatus = RegistrationStatus
 
       return new Promise((resolve, reject) => {
         const cacheMaps = Converter.formatCache(cache.maps, args)
