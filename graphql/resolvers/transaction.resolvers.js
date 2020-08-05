@@ -120,6 +120,11 @@ module.exports = {
 
               result.push({
                 ...trx,
+                Status:
+                  (trx.TransactionType === 1 && trx.MultisigChild === false) ||
+                  (trx.TransactionType === 1 && trx.Escrow === null)
+                    ? 'Approved'
+                    : trx.Status,
               })
             })
           ))
@@ -239,6 +244,11 @@ module.exports = {
 
         return {
           ...trx,
+          Status:
+            (trx.TransactionType === 1 && trx.MultisigChild === false) ||
+            (trx.TransactionType === 1 && trx.Escrow === null)
+              ? 'Approved'
+              : trx.Status,
           ...(trx.MultiSignature && {
             MultiSignature: {
               ...trx.MultiSignature,
