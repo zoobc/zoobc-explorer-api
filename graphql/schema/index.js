@@ -33,6 +33,16 @@ const linkSchema = gql`
     Address: String
     Port: Int
   }
+
+  type NodeAddressInfo {
+    NodeID: String
+    Address: String
+    Port: Int
+    BlockHeight: Int
+    BlockHash: String
+    Status: String
+    Signature: String
+  }
 `
 
 module.exports = [
