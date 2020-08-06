@@ -113,6 +113,9 @@ module.exports = {
 
                 result.push({
                   ...trx,
+                  ...(escrow && {
+                    Status: escrow.Status,
+                  }),
                   EscrowTransaction: escrow && { ...escrow },
                 })
                 return
@@ -238,6 +241,9 @@ module.exports = {
 
           return {
             ...trx,
+            ...(escrow && {
+              Status: escrow.Status,
+            }),
             EscrowTransaction: escrow && { ...escrow },
           }
         }
