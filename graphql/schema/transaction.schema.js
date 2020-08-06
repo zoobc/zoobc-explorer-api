@@ -6,6 +6,10 @@ module.exports = gql`
     transaction(TransactionID: String!): Transaction!
   }
 
+  extend type Mutation {
+    transactions(transactions: [InputTransaction!]!): String!
+  }
+
   extend type Subscription {
     transactions: [Transaction!]!
   }
@@ -25,6 +29,7 @@ module.exports = gql`
     Sender: String
     Recipient: String
     Fee: Float
+    Status: String
     FeeConversion: String
     Version: Int
     TransactionHash: String
@@ -144,5 +149,11 @@ module.exports = gql`
   type Signatures {
     Address: String
     Signature: String
+  }
+
+  input InputTransaction {
+    TransactionID: String
+    Timestamp: Date
+    FeeConversion: String
   }
 `

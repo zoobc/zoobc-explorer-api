@@ -113,6 +113,9 @@ module.exports = {
 
                 result.push({
                   ...trx,
+                  ...(escrow && {
+                    Status: escrow.Status,
+                  }),
                   EscrowTransaction: escrow && { ...escrow },
                 })
                 return
@@ -120,6 +123,11 @@ module.exports = {
 
               result.push({
                 ...trx,
+                Status:
+                  (trx.TransactionType === 1 && trx.MultisigChild === false) ||
+                  (trx.TransactionType === 1 && trx.Escrow === null)
+                    ? 'Approved'
+                    : trx.Status,
               })
             })
           ))
@@ -233,12 +241,20 @@ module.exports = {
 
           return {
             ...trx,
+            ...(escrow && {
+              Status: escrow.Status,
+            }),
             EscrowTransaction: escrow && { ...escrow },
           }
         }
 
         return {
           ...trx,
+          Status:
+            (trx.TransactionType === 1 && trx.MultisigChild === false) ||
+            (trx.TransactionType === 1 && trx.Escrow === null)
+              ? 'Approved'
+              : trx.Status,
           ...(trx.MultiSignature && {
             MultiSignature: {
               ...trx.MultiSignature,
@@ -282,6 +298,18 @@ module.exports = {
   Transaction: {
     Block: async (transaction, args, { models }) => {
       return await models.Blocks.findOne({ BlockID: transaction.BlockID }).lean()
+    },
+  },
+
+  Mutation: {
+    transactions: (parent, { transactions }) => {
+      if (transactions != null && transactions.length > 0) {
+        pubsub.publish(events.transactions, {
+          transactions,
+        })
+        return 'succesfully publish transactions data'
+      }
+      return 'failed publish transactions data'
     },
   },
 

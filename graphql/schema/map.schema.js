@@ -2,7 +2,7 @@ const { gql } = require('apollo-server-express')
 
 module.exports = gql`
   extend type Query {
-    maps(CountryCode: String, RegistryStatus: Int): [Maps!]!
+    maps(CountryCode: String, RegistrationStatus: Int): [Maps!]!
   }
 
   type Maps {
@@ -10,8 +10,8 @@ module.exports = gql`
     NodeID: String
     NodePublicKey: String
     OwnerAddress: String
-    NodeAddress: NodeAddress
-    RegistryStatus: Int
+    NodeAddressInfo: NodeAddressInfo
+    RegistrationStatus: Int
     CountryCode: String
     CountryName: String
     RegionCode: String

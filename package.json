@@ -21,8 +21,12 @@
     "eslint:fix": "eslint --fix ."
   },
   "lint-staged": {
-    "*.+(js|jsx)": ["eslint --fix"],
-    "*.+(js|jsx|json|css|md)": ["prettier --write"]
+    "*.+(js|jsx)": [
+      "eslint --fix"
+    ],
+    "*.+(js|jsx|json|css|md)": [
+      "prettier --write"
+    ]
   },
   "husky": {
     "hooks": {
@@ -33,8 +37,8 @@
     "node": ">=8.3.0"
   },
   "dependencies": {
-    "apollo-server": "^2.9.3",
-    "apollo-server-express": "^2.9.3",
+    "apollo-server": "^2.16.0",
+    "apollo-server-express": "^2.16.0",
     "body-parser": "^1.19.0",
     "chalk": "^2.4.2",
     "compression": "^1.7.4",
@@ -44,9 +48,9 @@
     "express": "^4.17.1",
     "express-rate-limit": "^5.0.0",
     "express-session": "^1.16.2",
-    "graphql": "^14.5.4",
+    "graphql": "^15.3.0",
     "graphql-iso-date": "^3.6.1",
-    "graphql-resolvers": "^0.3.3",
+    "graphql-resolvers": "^0.4.2",
     "helmet": "^3.21.0",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
