@@ -101,12 +101,19 @@ module.exports = {
   },
 
   Mutation: {
-    blocks: (parent, { blocks }) => {
-      if (blocks != null && blocks.length > 0) {
-        pubsub.publish(events.blocks, { blocks })
-        return 'succesfully publish blocks data'
-      }
-      return 'failed publish blocks data'
+    blocks: (parent, args, { models }) => {
+      return new Promise((resolve, reject) => {
+        models.Blocks.find()
+          .sort({ Height: -1, Timestamp: -1 })
+          .limit(5)
+          .select()
+          .lean()
+          .exec((err, blocks) => {
+            if (err) return reject('failed publish blocks data')
+            pubsub.publish(events.blocks, { blocks })
+            return resolve('succesfully publish blocks data')
+          })
+      })
     },
   },
 
