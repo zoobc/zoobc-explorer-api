@@ -302,14 +302,19 @@ module.exports = {
   },
 
   Mutation: {
-    transactions: (parent, { transactions }) => {
-      if (transactions != null && transactions.length > 0) {
-        pubsub.publish(events.transactions, {
-          transactions,
-        })
-        return 'succesfully publish transactions data'
-      }
-      return 'failed publish transactions data'
+    transactions: (parent, args, { models }) => {
+      return new Promise((resolve, reject) => {
+        models.Transactions.find()
+          .sort({ Height: -1, Timestamp: -1 })
+          .limit(5)
+          .select()
+          .lean()
+          .exec((err, transactions) => {
+            if (err) return reject('failed publish transactions data')
+            pubsub.publish(events.transactions, { transactions })
+            return resolve('succesfully publish transactions data')
+          })
+      })
     },
   },
 

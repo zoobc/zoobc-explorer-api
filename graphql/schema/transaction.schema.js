@@ -7,7 +7,7 @@ module.exports = gql`
   }
 
   extend type Mutation {
-    transactions(transactions: [InputTransaction!]!): String!
+    transactions: String!
   }
 
   extend type Subscription {
@@ -149,11 +149,5 @@ module.exports = gql`
   type Signatures {
     Address: String
     Signature: String
-  }
-
-  input InputTransaction {
-    TransactionID: String
-    Timestamp: Date
-    FeeConversion: String
   }
 `
