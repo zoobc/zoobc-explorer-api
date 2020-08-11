@@ -7,7 +7,7 @@ module.exports = gql`
   }
 
   extend type Mutation {
-    blocks(blocks: [InputBlock!]!): String!
+    blocks: String!
   }
 
   extend type Subscription {
@@ -78,12 +78,5 @@ module.exports = gql`
     ReferenceBlockHash: String
     RMRLinked: String
     RecipientSignature: String
-  }
-
-  input InputBlock {
-    BlockID: String
-    Height: Int
-    BlocksmithAddress: String
-    Timestamp: Date
   }
 `
