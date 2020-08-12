@@ -53,6 +53,8 @@ module.exports = gql`
     TotalRewardsConversion: String
 
     PublishedReceipts: [PublishedReceipt!]
+
+    TotalTransaction: Int
   }
   type SkippedBlocksmith {
     BlocksmithPublicKey: String

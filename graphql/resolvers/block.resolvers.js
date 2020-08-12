@@ -14,6 +14,27 @@ function parseOrder(string) {
   return { [string]: 'asc' }
 }
 
+const blocksMapped = async (blocks, models) => {
+  const blocksMapped = []
+
+  blocks &&
+    blocks.length > 0 &&
+    (await Promise.all(
+      blocks.map(async block => {
+        const totalTransaction = await models.Transactions.where({
+          BlockID: block.BlockID,
+        }).countDocuments()
+        blocksMapped.push({
+          ...block,
+          TotalTransaction: totalTransaction,
+        })
+        return
+      })
+    ))
+
+  return blocksMapped
+}
+
 module.exports = {
   Query: {
     blocks: (parent, args, { models }) => {
@@ -42,22 +63,26 @@ module.exports = {
                 .skip((pg - 1) * lm)
                 .sort(od)
                 .lean()
-                .exec((err, data) => {
+                .exec(async (err, data) => {
                   if (err) return reject(err)
 
-                  const result = {
-                    Blocks: data,
-                    Paginate: {
-                      Page: parseInt(pg),
-                      Count: data.length,
-                      Total: nodePublicKey ? totalWithFilter : totalWithoutFilter,
-                    },
-                  }
+                  blocksMapped(data, models)
+                    .then(res => {
+                      const result = {
+                        Blocks: res,
+                        Paginate: {
+                          Page: parseInt(pg),
+                          Count: data.length,
+                          Total: nodePublicKey ? totalWithFilter : totalWithoutFilter,
+                        },
+                      }
 
-                  RedisCache.set(cacheBlocks, result, err => {
-                    if (err) return reject(err)
-                    return resolve(result)
-                  })
+                      RedisCache.set(cacheBlocks, result, err => {
+                        if (err) return reject(err)
+                        return resolve(result)
+                      })
+                    })
+                    .catch(err => reject(err))
                 })
             })
           })
@@ -108,10 +133,18 @@ module.exports = {
           .limit(5)
           .select()
           .lean()
-          .exec((err, blocks) => {
-            if (err) return reject('failed publish blocks data')
-            pubsub.publish(events.blocks, { blocks })
-            return resolve('succesfully publish blocks data')
+          .exec((err, data) => {
+            if (err) return reject(`failed to publish blocks data. It is caused by ${err}`)
+
+            blocksMapped(data, models)
+              .then(blocks => {
+                if (blocks != null && blocks.length > 0) {
+                  pubsub.publish(events.blocks, { blocks })
+                  return resolve('succesfully publish blocks data')
+                }
+                return reject(`failed to publish blocks data. The data is empty.`)
+              })
+              .catch(err => reject(`failed to publish blocks data. It is caused by ${err}`))
           })
       })
     },
