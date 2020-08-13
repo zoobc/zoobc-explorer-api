@@ -21,7 +21,7 @@ module.exports = gql`
     RegistrationStatus: Int
     Latest: Boolean
     Height: Int
-    ParticipationScore: Int
+    ParticipationScore: String
     BlocksFunds: Int
     RewardsPaid: Float
     RewardsPaidConversion: String
