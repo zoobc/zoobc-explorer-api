@@ -46,13 +46,13 @@ module.exports = gql`
     ReceiptValue: Float
     PopChange: String
     BlocksmithAddress: String
-    SkippedBlocksmiths: [SkippedBlocksmith!]
+    SkippedBlocksmiths: [SkippedBlocksmith]
 
     # Aggregate
     TotalRewards: Float
     TotalRewardsConversion: String
 
-    PublishedReceipts: [PublishedReceipt!]
+    PublishedReceipts: [PublishedReceipt]
 
     TotalTransaction: Int
   }
@@ -64,7 +64,7 @@ module.exports = gql`
   }
 
   type PublishedReceipt {
-    BatchReceipt: BatchReceipt!
+    BatchReceipt: BatchReceipt
     IntermediateHashes: String
     BlockHeight: Int
     ReceiptIndex: Int
