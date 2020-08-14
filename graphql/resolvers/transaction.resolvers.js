@@ -310,9 +310,14 @@ module.exports = {
           .select()
           .lean()
           .exec((err, transactions) => {
-            if (err) return reject('failed publish transactions data')
-            pubsub.publish(events.transactions, { transactions })
-            return resolve('succesfully publish transactions data')
+            if (err) return reject(`failed to publish transactions data. It is caused by ${err}`)
+
+            if (transactions != null && transactions.length > 0) {
+              pubsub.publish(events.transactions, { transactions })
+              return resolve('succesfully publish transactions data')
+            }
+
+            return reject(`failed to publish transactions data. The data is empty.`)
           })
       })
     },

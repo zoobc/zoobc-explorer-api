@@ -36,5 +36,6 @@ module.exports = {
   graphql_client: {
     id: process.env.GRAPHQL_CLIENT_ID || '1234567890',
     secret: process.env.GRAPHQL_CLIENT_SECRET || 'client-secret-key',
+    useSignatureHeader: process.env.USE_SIGNATURE_HEADER || 'true',
   },
 }
