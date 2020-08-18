@@ -14,7 +14,14 @@ function parseOrder(string) {
   return { [string]: 'asc' }
 }
 
-const blocksMapped = async (blocks, models) => {
+function parseOrder2(string) {
+  if (string[0] === '-') {
+    return `${string.slice(1)}`
+  }
+  return `${string}`
+}
+
+const blocksMapped = async (blocks, models, order) => {
   const blocksMapped = []
 
   blocks &&
@@ -32,7 +39,10 @@ const blocksMapped = async (blocks, models) => {
       })
     ))
 
-  return blocksMapped
+  return blocksMapped.sort((a, b) => {
+    const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
+    return a[orderFormatted] > b[orderFormatted] ? -1 : 1
+  })
 }
 
 module.exports = {
@@ -41,7 +51,7 @@ module.exports = {
       const { page, limit, order, NodePublicKey } = args
       const pg = page !== undefined ? parseInt(page) : 1
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit)
-      const od = order !== undefined ? parseOrder(order) : { Height: 'asc' }
+      const od = order !== undefined ? parseOrder(order) : { Height: 'desc' }
       const nodePublicKey = NodePublicKey !== undefined ? { BlocksmithID: NodePublicKey } : {}
 
       return new Promise((resolve, reject) => {
@@ -66,7 +76,7 @@ module.exports = {
                 .exec(async (err, data) => {
                   if (err) return reject(err)
 
-                  blocksMapped(data, models)
+                  blocksMapped(data, models, order)
                     .then(res => {
                       const result = {
                         Blocks: res,
