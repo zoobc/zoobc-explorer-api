@@ -243,8 +243,20 @@ module.exports = {
               })
             ))
 
+          const status =
+            multisigMapped &&
+            multisigMapped.length > 0 &&
+            multisigMapped.filter(multi => multi.Status === 'Executed').length > 0
+              ? 'Approved'
+              : multisigMapped.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length > 0
+              ? 'Expired'
+              : multisigMapped.filter(multi => multi.Status === 'Pending').length > 0
+              ? 'Pending'
+              : 'Pending'
+
           return {
             ...trx,
+            Status: status,
             MultiSignatureTransactions: multisigMapped,
             ...(multisigMapped.length > 0 && {
               MultiSignature: multisigMapped[0].MultiSignature,
@@ -270,11 +282,7 @@ module.exports = {
 
         return {
           ...trx,
-          Status:
-            (trx.TransactionType === 1 && trx.MultisigChild === false) ||
-            (trx.TransactionType === 1 && trx.Escrow === null)
-              ? 'Approved'
-              : trx.Status,
+          Status: trx.TransactionType === 1 && trx.Escrow === null ? 'Approved' : trx.Status,
           ...(trx.MultiSignature && {
             MultiSignature: {
               ...trx.MultiSignature,
