@@ -21,6 +21,19 @@ function parseOrder2(string) {
   return `${string}`
 }
 
+const setMultisigStatus = data => {
+  const status =
+    data.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length > 0
+      ? 'Expired'
+      : data.filter(multi => multi.Status === 'Pending').length > 0
+      ? 'Pending'
+      : data.filter(multi => multi.Status === 'Executed').length > 0
+      ? 'Approved'
+      : 'Pending'
+
+  return status
+}
+
 module.exports = {
   Query: {
     transactions: (parent, args, { models }) => {
@@ -133,16 +146,7 @@ module.exports = {
           result.length > 0 &&
           result.map(i => {
             if (i.MultiSignatureTransactions != null && i.MultiSignatureTransactions.length > 0) {
-              const status =
-                i.MultiSignatureTransactions.filter(multi => multi.Status === 'Executed').length > 0
-                  ? 'Approved'
-                  : i.MultiSignatureTransactions.filter(
-                      multi => multi.Status === 'Expired' || multi.Status === 'Rejected'
-                    ).length > 0
-                  ? 'Expired'
-                  : i.MultiSignatureTransactions.filter(multi => multi.Status === 'Pending').length > 0
-                  ? 'Pending'
-                  : 'Pending'
+              const status = setMultisigStatus(i.MultiSignatureTransactions)
 
               return {
                 ...i,
@@ -247,16 +251,7 @@ module.exports = {
               })
             ))
 
-          const status =
-            multisigMapped &&
-            multisigMapped.length > 0 &&
-            multisigMapped.filter(multi => multi.Status === 'Executed').length > 0
-              ? 'Approved'
-              : multisigMapped.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length > 0
-              ? 'Expired'
-              : multisigMapped.filter(multi => multi.Status === 'Pending').length > 0
-              ? 'Pending'
-              : 'Pending'
+          const status = multisigMapped && multisigMapped.length > 0 && setMultisigStatus(multisigMapped)
 
           return {
             ...trx,
