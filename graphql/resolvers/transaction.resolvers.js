@@ -152,10 +152,14 @@ module.exports = {
             return i
           })
 
-        return resultMapped.sort((a, b) => {
-          const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
-          return a[orderFormatted] > b[orderFormatted] ? -1 : 1
-        })
+        return (
+          resultMapped &&
+          resultMapped.length > 0 &&
+          resultMapped.sort((a, b) => {
+            const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
+            return a[orderFormatted] > b[orderFormatted] ? -1 : 1
+          })
+        )
       }
 
       return new Promise((resolve, reject) => {
