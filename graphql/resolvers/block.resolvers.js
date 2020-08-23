@@ -39,10 +39,14 @@ const blocksMapped = async (blocks, models, order) => {
       })
     ))
 
-  return blocksMapped.sort((a, b) => {
-    const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
-    return a[orderFormatted] > b[orderFormatted] ? -1 : 1
-  })
+  return (
+    blocksMapped &&
+    blocksMapped.length > 0 &&
+    blocksMapped.sort((a, b) => {
+      const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
+      return a[orderFormatted] > b[orderFormatted] ? -1 : 1
+    })
+  )
 }
 
 module.exports = {
