@@ -21,6 +21,19 @@ function parseOrder2(string) {
   return `${string}`
 }
 
+const setMultisigStatus = data => {
+  const status =
+    data.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length > 0
+      ? 'Expired'
+      : data.filter(multi => multi.Status === 'Pending').length > 0
+      ? 'Pending'
+      : data.filter(multi => multi.Status === 'Executed').length > 0
+      ? 'Approved'
+      : 'Pending'
+
+  return status
+}
+
 module.exports = {
   Query: {
     transactions: (parent, args, { models }) => {
@@ -123,19 +136,34 @@ module.exports = {
 
               result.push({
                 ...trx,
-                Status:
-                  (trx.TransactionType === 1 && trx.MultisigChild === false) ||
-                  (trx.TransactionType === 1 && trx.Escrow === null)
-                    ? 'Approved'
-                    : trx.Status,
+                Status: trx.TransactionType === 1 && trx.Escrow === null ? 'Approved' : trx.Status,
               })
             })
           ))
 
-        return result.sort((a, b) => {
-          const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
-          return a[orderFormatted] > b[orderFormatted] ? -1 : 1
-        })
+        const resultMapped =
+          result &&
+          result.length > 0 &&
+          result.map(i => {
+            if (i.MultiSignatureTransactions != null && i.MultiSignatureTransactions.length > 0) {
+              const status = setMultisigStatus(i.MultiSignatureTransactions)
+
+              return {
+                ...i,
+                Status: status,
+              }
+            }
+            return i
+          })
+
+        return (
+          resultMapped &&
+          resultMapped.length > 0 &&
+          resultMapped.sort((a, b) => {
+            const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
+            return a[orderFormatted] > b[orderFormatted] ? -1 : 1
+          })
+        )
       }
 
       return new Promise((resolve, reject) => {
@@ -223,8 +251,11 @@ module.exports = {
               })
             ))
 
+          const status = multisigMapped && multisigMapped.length > 0 && setMultisigStatus(multisigMapped)
+
           return {
             ...trx,
+            Status: status,
             MultiSignatureTransactions: multisigMapped,
             ...(multisigMapped.length > 0 && {
               MultiSignature: multisigMapped[0].MultiSignature,
@@ -250,11 +281,7 @@ module.exports = {
 
         return {
           ...trx,
-          Status:
-            (trx.TransactionType === 1 && trx.MultisigChild === false) ||
-            (trx.TransactionType === 1 && trx.Escrow === null)
-              ? 'Approved'
-              : trx.Status,
+          Status: trx.TransactionType === 1 && trx.Escrow === null ? 'Approved' : trx.Status,
           ...(trx.MultiSignature && {
             MultiSignature: {
               ...trx.MultiSignature,
