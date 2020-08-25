@@ -25,6 +25,7 @@ module.exports = gql`
     BlocksFunds: Int
     RewardsPaid: Float
     RewardsPaidConversion: String
+    RegistrationTime: Date
     NodeAddressInfo: NodeAddressInfo
     RegistrationTime: Date
   }

@@ -22,14 +22,23 @@ function parseOrder2(string) {
 }
 
 const setMultisigStatus = data => {
-  const status =
-    data.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length > 0
-      ? 'Expired'
-      : data.filter(multi => multi.Status === 'Pending').length > 0
-      ? 'Pending'
-      : data.filter(multi => multi.Status === 'Executed').length > 0
-      ? 'Approved'
-      : 'Pending'
+  let status = 'Pending'
+
+  const pendingCount = data.filter(multi => multi.Status === 'Pending').length
+
+  const rejectedCount = data.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length
+
+  const approvedCount = data.filter(multi => multi.Status === 'Executed').length
+
+  if (pendingCount > 0 || approvedCount === rejectedCount) {
+    status = 'Pending'
+  } else {
+    if (approvedCount > rejectedCount) {
+      status = 'Approved'
+    } else {
+      status = 'Expired'
+    }
+  }
 
   return status
 }
