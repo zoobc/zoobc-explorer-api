@@ -213,7 +213,7 @@ module.exports = {
       const { TransactionID } = args
 
       const criteria = {
-        $or: [{ TransactionID: TransactionID }, { TransactionHash: Buffer.from(TransactionID, 'base64') }],
+        $or: [{ TransactionID: TransactionID }, { TransactionHash: TransactionID }],
       }
 
       const getTransaction = async () => {
