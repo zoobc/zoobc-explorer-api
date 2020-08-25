@@ -26,5 +26,6 @@ module.exports = gql`
     RewardsPaid: Float
     RewardsPaidConversion: String
     NodeAddressInfo: NodeAddressInfo
+    RegistrationTime: Date
   }
 `
