@@ -119,7 +119,8 @@ module.exports = {
           if (typeof checkId === 'number' && isNaN(checkId)) {
             criteria = BlockID != null ? { BlockID: BlockID } : {}
           } else {
-            criteria = BlockID != null ? { $or: [{ BlockID: BlockID }, { Height: BlockID }] } : {}
+            criteria =
+              BlockID != null ? { $or: [{ BlockID: BlockID }, { Height: BlockID }, { BlockHash: BlockID }] } : {}
           }
 
           models.Blocks.findOne()

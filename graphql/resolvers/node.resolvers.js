@@ -18,7 +18,7 @@ module.exports = {
       const { page, limit, order, AccountAddress, RegistrationStatus } = args
       const pg = page !== undefined ? parseInt(page) : 1
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit)
-      const od = order !== undefined ? parseOrder(order) : { Height: 'asc' }
+      const od = order !== undefined ? parseOrder(order) : { RegistrationTime: 'desc' }
 
       let where = {}
       if (AccountAddress !== undefined) {
