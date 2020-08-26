@@ -33,6 +33,7 @@ module.exports = gql`
     FeeConversion: String
     Version: Int
     TransactionHash: String
+    TransactionHashFormatted: String
     TransactionBodyLength: Int
     TransactionBodyBytes: String
     TransactionIndex: Int
@@ -138,6 +139,7 @@ module.exports = gql`
 
   type SignatureInfo {
     TransactionHash: String
+    TransactionHashFormatted: String
     Signatures: [Signatures]
   }
 
