@@ -150,10 +150,8 @@ module.exports = {
             })
           ))
 
-        const resultMapped =
-          result &&
-          result.length > 0 &&
-          result.map(i => {
+        if (result && result.length > 0) {
+          const resultMapped = result.map(i => {
             if (i.MultiSignatureTransactions != null && i.MultiSignatureTransactions.length > 0) {
               const status = setMultisigStatus(i.MultiSignatureTransactions)
 
@@ -165,14 +163,13 @@ module.exports = {
             return i
           })
 
-        return (
-          resultMapped &&
-          resultMapped.length > 0 &&
-          resultMapped.sort((a, b) => {
+          return resultMapped.sort((a, b) => {
             const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
             return a[orderFormatted] > b[orderFormatted] ? -1 : 1
           })
-        )
+        } else {
+          return result
+        }
       }
 
       return new Promise((resolve, reject) => {
