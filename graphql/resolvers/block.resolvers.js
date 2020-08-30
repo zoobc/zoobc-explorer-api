@@ -52,13 +52,31 @@ const blocksMapped = async (blocks, models, order) => {
 const getPopChanges = async (height, models) => {
   const participantScores = await models.ParticipationScores.find().where({ Height: height }).select().lean().exec()
 
-  const participantScoresMapped =
+  const participantScoresFiltered =
     participantScores &&
     participantScores.length > 0 &&
     participantScores.filter(item => {
       const score = Math.sign(parseFloat(item.Score))
       if (score === 0 || score === 1) return item
     })
+
+  const participantScoresMapped = []
+
+  participantScoresFiltered &&
+    participantScoresFiltered.length > 0 &&
+    (await Promise.all(
+      participantScoresFiltered.map(async pop => {
+        const node = await models.Nodes.findOne().where({ NodeID: pop.NodeID }).select().lean().exec()
+
+        participantScoresMapped.push({
+          ...pop,
+          ...(node && {
+            NodePublicKey: node.NodePublicKey,
+          }),
+        })
+        return
+      })
+    ))
 
   return participantScoresMapped
 }
@@ -157,6 +175,7 @@ module.exports = {
 
               try {
                 const PopChanges = await getPopChanges(result.Height, models)
+
                 const AccountRewards = await getAccountRewards(result.Height, models)
 
                 const finalResult = {
