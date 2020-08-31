@@ -88,6 +88,7 @@ module.exports = gql`
 
   type PopChange {
     NodeID: String
+    NodePublicKey: String
     Score: String
     Latest: Boolean
     Height: Int
