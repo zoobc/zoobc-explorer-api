@@ -22,14 +22,23 @@ function parseOrder2(string) {
 }
 
 const setMultisigStatus = data => {
-  const status =
-    data.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length > 0
-      ? 'Expired'
-      : data.filter(multi => multi.Status === 'Pending').length > 0
-      ? 'Pending'
-      : data.filter(multi => multi.Status === 'Executed').length > 0
-      ? 'Approved'
-      : 'Pending'
+  let status = 'Pending'
+
+  const pendingCount = data.filter(multi => multi.Status === 'Pending').length
+
+  const rejectedCount = data.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length
+
+  const approvedCount = data.filter(multi => multi.Status === 'Executed').length
+
+  if (pendingCount > 0 || approvedCount === rejectedCount) {
+    status = 'Pending'
+  } else {
+    if (approvedCount > rejectedCount) {
+      status = 'Approved'
+    } else {
+      status = 'Expired'
+    }
+  }
 
   return status
 }
@@ -141,10 +150,8 @@ module.exports = {
             })
           ))
 
-        const resultMapped =
-          result &&
-          result.length > 0 &&
-          result.map(i => {
+        if (result && result.length > 0) {
+          const resultMapped = result.map(i => {
             if (i.MultiSignatureTransactions != null && i.MultiSignatureTransactions.length > 0) {
               const status = setMultisigStatus(i.MultiSignatureTransactions)
 
@@ -156,14 +163,13 @@ module.exports = {
             return i
           })
 
-        return (
-          resultMapped &&
-          resultMapped.length > 0 &&
-          resultMapped.sort((a, b) => {
+          return resultMapped.sort((a, b) => {
             const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
             return a[orderFormatted] > b[orderFormatted] ? -1 : 1
           })
-        )
+        } else {
+          return result
+        }
       }
 
       return new Promise((resolve, reject) => {
@@ -204,7 +210,7 @@ module.exports = {
       const { TransactionID } = args
 
       const criteria = {
-        $or: [{ TransactionID: TransactionID }, { TransactionHash: Buffer.from(TransactionID, 'base64') }],
+        $or: [{ TransactionID: TransactionID }, { TransactionHash: TransactionID }],
       }
 
       const getTransaction = async () => {

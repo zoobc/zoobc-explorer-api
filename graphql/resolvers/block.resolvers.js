@@ -49,6 +49,49 @@ const blocksMapped = async (blocks, models, order) => {
   )
 }
 
+const getPopChanges = async (height, models) => {
+  const participantScores = await models.ParticipationScores.find().where({ Height: height }).select().lean().exec()
+
+  const participantScoresFiltered =
+    participantScores &&
+    participantScores.length > 0 &&
+    participantScores.filter(item => {
+      const score = Math.sign(parseFloat(item.Score))
+      if (score === 0 || score === 1) return item
+    })
+
+  const participantScoresMapped = []
+
+  participantScoresFiltered &&
+    participantScoresFiltered.length > 0 &&
+    (await Promise.all(
+      participantScoresFiltered.map(async pop => {
+        const node = await models.Nodes.findOne().where({ NodeID: pop.NodeID }).select().lean().exec()
+
+        participantScoresMapped.push({
+          ...pop,
+          ...(node && {
+            NodePublicKey: node.NodePublicKey,
+          }),
+        })
+        return
+      })
+    ))
+
+  return participantScoresMapped
+}
+
+const getAccountRewards = async (height, models) => {
+  const accountLedgers = await models.AccountLedgers.find()
+    .where({ BlockHeight: height })
+    .select()
+    .sort({ Timestamp: 'desc' })
+    .lean()
+    .exec()
+
+  return accountLedgers
+}
+
 module.exports = {
   Query: {
     blocks: (parent, args, { models }) => {
@@ -119,20 +162,35 @@ module.exports = {
           if (typeof checkId === 'number' && isNaN(checkId)) {
             criteria = BlockID != null ? { BlockID: BlockID } : {}
           } else {
-            criteria = BlockID != null ? { $or: [{ BlockID: BlockID }, { Height: BlockID }] } : {}
+            criteria =
+              BlockID != null ? { $or: [{ BlockID: BlockID }, { Height: BlockID }, { BlockHash: BlockID }] } : {}
           }
 
           models.Blocks.findOne()
             .where(criteria)
             .lean()
-            .exec((err, result) => {
+            .exec(async (err, result) => {
               if (err) return reject(err)
               if (!result) return resolve({})
 
-              RedisCache.set(cacheBlock, result, err => {
-                if (err) return reject(err)
-                return resolve(result)
-              })
+              try {
+                const PopChanges = await getPopChanges(result.Height, models)
+
+                const AccountRewards = await getAccountRewards(result.Height, models)
+
+                const finalResult = {
+                  ...result,
+                  PopChanges,
+                  AccountRewards,
+                }
+
+                RedisCache.set(cacheBlock, finalResult, err => {
+                  if (err) return reject(err)
+                  return resolve(finalResult)
+                })
+              } catch (error) {
+                return reject(error)
+              }
             })
         })
       })

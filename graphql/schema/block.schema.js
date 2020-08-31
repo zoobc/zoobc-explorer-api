@@ -55,6 +55,10 @@ module.exports = gql`
     PublishedReceipts: [PublishedReceipt]
 
     TotalTransaction: Int
+
+    PopChanges: [PopChange]
+
+    AccountRewards: [AccountReward]
   }
   type SkippedBlocksmith {
     BlocksmithPublicKey: String
@@ -80,5 +84,26 @@ module.exports = gql`
     ReferenceBlockHash: String
     RMRLinked: String
     RecipientSignature: String
+  }
+
+  type PopChange {
+    NodeID: String
+    NodePublicKey: String
+    Score: String
+    Latest: Boolean
+    Height: Int
+    DifferenceScores: Float
+    DifferenceScorePercentage: Float
+    Flag: String
+  }
+
+  type AccountReward {
+    AccountAddress: String
+    BalanceChange: Float
+    BalanceChangeConversion: String
+    BlockHeight: Int
+    TransactionID: Int
+    Timestamp: Date
+    EventType: String
   }
 `
