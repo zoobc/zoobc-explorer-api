@@ -43,6 +43,13 @@ const setMultisigStatus = data => {
   return status
 }
 
+const formatRecipientData = value => {
+  return value ===
+    '\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000'
+    ? ''
+    : value
+}
+
 module.exports = {
   Query: {
     transactions: (parent, args, { models }) => {
@@ -90,6 +97,7 @@ module.exports = {
                   multisig.map(i => {
                     return {
                       ...i,
+                      Recipient: formatRecipientData(i.Recipient),
                       ...(i.MultiSignature && {
                         MultiSignature: {
                           ...i.MultiSignature,
@@ -233,6 +241,7 @@ module.exports = {
               multisig.map(i => {
                 return {
                   ...i,
+                  Recipient: formatRecipientData(i.Recipient),
                   ...(i.MultiSignature && {
                     MultiSignature: {
                       ...i.MultiSignature,
