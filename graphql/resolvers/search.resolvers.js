@@ -21,7 +21,7 @@ module.exports = {
           const checkId = Number(Id)
 
           if (typeof checkId === 'number' && isNaN(checkId)) {
-            criteria = Id !== undefined ? { BlockID: Id } : {}
+            criteria = Id !== undefined ? { $or: [{ BlockHash: Id }, { PreviousBlockID: Id }] } : {}
           } else {
             criteria = Id !== undefined ? { $or: [{ BlockID: Id }, { Height: Id }] } : {}
           }
@@ -52,6 +52,7 @@ module.exports = {
                   criteria = {
                     $or: [
                       { TransactionID: Id },
+                      { TransactionHashFormatted: Id },
                       { 'NodeRegistration.NodePublicKey': Id },
                       { 'UpdateNodeRegistration.NodePublicKey': Id },
                       { 'RemoveNodeRegistration.NodePublicKey': Id },
