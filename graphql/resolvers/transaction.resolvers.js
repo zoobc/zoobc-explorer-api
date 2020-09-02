@@ -143,6 +143,7 @@ module.exports = {
 
                 result.push({
                   ...trx,
+                  Recipient: formatRecipientData(trx.Recipient),
                   ...(escrow && {
                     Status: escrow.Status,
                   }),
@@ -287,6 +288,7 @@ module.exports = {
 
           return {
             ...trx,
+            Recipient: formatRecipientData(trx.Recipient),
             ...(escrow && {
               Status: escrow.Status,
             }),
