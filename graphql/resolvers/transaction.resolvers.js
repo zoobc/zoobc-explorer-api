@@ -143,11 +143,13 @@ module.exports = {
 
                 result.push({
                   ...trx,
-                  Recipient: formatRecipientData(trx.Recipient),
                   ...(escrow && {
                     Status: escrow.Status,
                   }),
-                  EscrowTransaction: escrow && { ...escrow },
+                  EscrowTransaction: escrow && {
+                    ...escrow,
+                    Recipient: formatRecipientData(escrow.Recipient),
+                  },
                 })
                 return
               }
@@ -288,11 +290,13 @@ module.exports = {
 
           return {
             ...trx,
-            Recipient: formatRecipientData(trx.Recipient),
             ...(escrow && {
               Status: escrow.Status,
             }),
-            EscrowTransaction: escrow && { ...escrow },
+            EscrowTransaction: escrow && {
+              ...escrow,
+              Recipient: formatRecipientData(escrow.Recipient),
+            },
           }
         }
 
