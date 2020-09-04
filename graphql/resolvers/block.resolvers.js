@@ -21,7 +21,7 @@ function parseOrder2(string) {
   return `${string}`
 }
 
-const blocksMapped = async (blocks, models, order) => {
+const blocksMapped = async (blocks, models, order = { Height: 'desc' }) => {
   const blocksMapped = []
 
   blocks &&
