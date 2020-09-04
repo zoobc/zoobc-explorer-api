@@ -156,6 +156,7 @@ module.exports = {
 
               result.push({
                 ...trx,
+                Recipient: formatRecipientData(trx.Recipient),
                 Status: trx.TransactionType === 1 && trx.Escrow === null ? 'Approved' : trx.Status,
               })
             })
@@ -302,6 +303,7 @@ module.exports = {
 
         return {
           ...trx,
+          Recipient: formatRecipientData(trx.Recipient),
           Status: trx.TransactionType === 1 && trx.Escrow === null ? 'Approved' : trx.Status,
           ...(trx.MultiSignature && {
             MultiSignature: {
