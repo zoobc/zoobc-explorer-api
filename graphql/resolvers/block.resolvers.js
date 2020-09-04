@@ -39,14 +39,12 @@ const blocksMapped = async (blocks, models, order) => {
       })
     ))
 
-  return (
-    blocksMapped &&
-    blocksMapped.length > 0 &&
-    blocksMapped.sort((a, b) => {
-      const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
-      return a[orderFormatted] > b[orderFormatted] ? -1 : 1
-    })
-  )
+  return blocksMapped && blocksMapped.length > 0
+    ? blocksMapped.sort((a, b) => {
+        const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
+        return order[0] === '-' ? b[orderFormatted] - a[orderFormatted] : a[orderFormatted] - b[orderFormatted]
+      })
+    : blocksMapped
 }
 
 const getPopChanges = async (height, models) => {

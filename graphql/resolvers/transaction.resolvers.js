@@ -43,13 +43,20 @@ const setMultisigStatus = data => {
   return status
 }
 
+const formatRecipientData = value => {
+  return value ===
+    '\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000'
+    ? ''
+    : value
+}
+
 module.exports = {
   Query: {
     transactions: (parent, args, { models }) => {
       const { page, limit, order, BlockID, AccountAddress } = args
       const pg = page !== undefined ? parseInt(page) : 1
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit)
-      const od = order !== undefined ? parseOrder(order) : { Height: 'desc' }
+      const od = order !== undefined ? parseOrder(order) : { Timestamp: 'desc' }
       const blockId = BlockID !== undefined ? { BlockID } : null
       const accountAddress =
         AccountAddress !== undefined ? { $or: [{ Sender: AccountAddress }, { Recipient: AccountAddress }] } : null
@@ -90,6 +97,7 @@ module.exports = {
                   multisig.map(i => {
                     return {
                       ...i,
+                      Recipient: formatRecipientData(i.Recipient),
                       ...(i.MultiSignature && {
                         MultiSignature: {
                           ...i.MultiSignature,
@@ -138,7 +146,10 @@ module.exports = {
                   ...(escrow && {
                     Status: escrow.Status,
                   }),
-                  EscrowTransaction: escrow && { ...escrow },
+                  EscrowTransaction: escrow && {
+                    ...escrow,
+                    Recipient: formatRecipientData(escrow.Recipient),
+                  },
                 })
                 return
               }
@@ -164,8 +175,8 @@ module.exports = {
           })
 
           return resultMapped.sort((a, b) => {
-            const orderFormatted = order !== undefined ? parseOrder2(order) : 'Height'
-            return a[orderFormatted] > b[orderFormatted] ? -1 : 1
+            const orderFormatted = order !== undefined ? parseOrder2(order) : 'Timestamp'
+            return order[0] === '-' ? b[orderFormatted] - a[orderFormatted] : a[orderFormatted] - b[orderFormatted]
           })
         } else {
           return result
@@ -222,7 +233,7 @@ module.exports = {
           const multisig = await models.Transactions.find()
             .where({ 'MultiSignature.SignatureInfo.TransactionHash': trx.TransactionHash })
             .select()
-            .sort({ Height: 'desc' })
+            .sort({ Timestamp: 'desc' })
             .lean()
             .exec()
 
@@ -233,6 +244,7 @@ module.exports = {
               multisig.map(i => {
                 return {
                   ...i,
+                  Recipient: formatRecipientData(i.Recipient),
                   ...(i.MultiSignature && {
                     MultiSignature: {
                       ...i.MultiSignature,
@@ -281,7 +293,10 @@ module.exports = {
             ...(escrow && {
               Status: escrow.Status,
             }),
-            EscrowTransaction: escrow && { ...escrow },
+            EscrowTransaction: escrow && {
+              ...escrow,
+              Recipient: formatRecipientData(escrow.Recipient),
+            },
           }
         }
 
@@ -338,7 +353,7 @@ module.exports = {
     transactions: (parent, args, { models }) => {
       return new Promise((resolve, reject) => {
         models.Transactions.find()
-          .sort({ Height: -1, Timestamp: -1 })
+          .sort({ Timestamp: -1 })
           .limit(5)
           .select()
           .lean()
