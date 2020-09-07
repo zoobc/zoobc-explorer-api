@@ -222,7 +222,7 @@ module.exports = {
       const { TransactionID } = args
 
       const criteria = {
-        $or: [{ TransactionID: TransactionID }, { TransactionHash: TransactionID }],
+        $or: [{ TransactionID: TransactionID }, { TransactionHashFormatted: TransactionID }],
       }
 
       const getTransaction = async () => {
