@@ -4,6 +4,7 @@ const cache = {
   searchTransaction: 'searchTransaction',
   searchBlock: 'searchBlock',
   searchAccount: 'searchAccount',
+  searchNode: 'searchNode',
 }
 
 module.exports = {
@@ -53,10 +54,10 @@ module.exports = {
                     $or: [
                       { TransactionID: Id },
                       { TransactionHashFormatted: Id },
-                      { 'NodeRegistration.NodePublicKey': Id },
-                      { 'UpdateNodeRegistration.NodePublicKey': Id },
-                      { 'RemoveNodeRegistration.NodePublicKey': Id },
-                      { 'ClaimNodeRegistration.NodePublicKey': Id },
+                      // { 'NodeRegistration.NodePublicKey': Id },
+                      // { 'UpdateNodeRegistration.NodePublicKey': Id },
+                      // { 'RemoveNodeRegistration.NodePublicKey': Id },
+                      // { 'ClaimNodeRegistration.NodePublicKey': Id },
                     ],
                   }
 
@@ -88,19 +89,44 @@ module.exports = {
                             .lean()
                             .exec((err, account) => {
                               if (err) return reject(err)
-                              if (!account) return resolve({})
 
-                              const resAccount = {
-                                ID: account.AccountAddress,
-                                Height: null,
-                                Timestamp: null,
-                                FoundIn: 'Account',
+                              if (account) {
+                                const resAccount = {
+                                  ID: account.AccountAddress,
+                                  Height: null,
+                                  Timestamp: null,
+                                  FoundIn: 'Account',
+                                }
+                                RedisCache.set(cacheAccount, resAccount, err => {
+                                  if (err) return reject(err)
+                                  return resolve(resAccount)
+                                })
+                              } else {
+                                const cacheNode = Converter.formatCache(cache.searchNode, args)
+                                RedisCache.get(cacheNode, (err, resRedis) => {
+                                  if (err) return reject(err)
+                                  if (resRedis) return resolve(resRedis)
+
+                                  models.Nodes.findOne()
+                                    .where({ NodePublicKey: Id })
+                                    .lean()
+                                    .exec((err, node) => {
+                                      if (err) return reject(err)
+                                      if (!node) return resolve({})
+
+                                      const resNode = {
+                                        ID: node.NodePublicKey,
+                                        Height: node.Height,
+                                        Timestamp: node.RegistrationTime,
+                                        FoundIn: 'Node',
+                                      }
+                                      RedisCache.set(cacheNode, resNode, err => {
+                                        if (err) return reject(err)
+                                        return resolve(resNode)
+                                      })
+                                    })
+                                })
                               }
-
-                              RedisCache.set(cacheAccount, resAccount, err => {
-                                if (err) return reject(err)
-                                return resolve(resAccount)
-                              })
                             })
                         })
                       }
