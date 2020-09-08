@@ -158,10 +158,9 @@ module.exports = {
           const checkId = Number(BlockID)
 
           if (typeof checkId === 'number' && isNaN(checkId)) {
-            criteria = BlockID != null ? { BlockID: BlockID } : {}
+            criteria = BlockID !== undefined ? { $or: [{ BlockHash: BlockID }, { PreviousBlockID: BlockID }] } : {}
           } else {
-            criteria =
-              BlockID != null ? { $or: [{ BlockID: BlockID }, { Height: BlockID }, { BlockHash: BlockID }] } : {}
+            criteria = BlockID !== undefined ? { $or: [{ BlockID: BlockID }, { Height: BlockID }] } : {}
           }
 
           models.Blocks.findOne()
