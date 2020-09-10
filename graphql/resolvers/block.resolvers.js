@@ -70,6 +70,7 @@ const getPopChanges = async (height, models) => {
           ...pop,
           ...(node && {
             NodePublicKey: node.NodePublicKey,
+            NodePublicKeyFormatted: node.NodePublicKeyFormatted,
           }),
         })
         return
