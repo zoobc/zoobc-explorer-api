@@ -9,6 +9,7 @@ module.exports = gql`
     _id: ID!
     NodeID: String
     NodePublicKey: String
+    NodePublicKeyFormatted: String
     OwnerAddress: String
     NodeAddressInfo: NodeAddressInfo
     RegistrationStatus: Int

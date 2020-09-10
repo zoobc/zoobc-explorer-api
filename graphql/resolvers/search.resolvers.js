@@ -108,14 +108,14 @@ module.exports = {
                                   if (resRedis) return resolve(resRedis)
 
                                   models.Nodes.findOne()
-                                    .where({ NodePublicKey: Id })
+                                    .where({ NodePublicKeyFormatted: Id })
                                     .lean()
                                     .exec((err, node) => {
                                       if (err) return reject(err)
                                       if (!node) return resolve({})
 
                                       const resNode = {
-                                        ID: node.NodePublicKey,
+                                        ID: node.NodePublicKeyFormatted,
                                         Height: node.Height,
                                         Timestamp: node.RegistrationTime,
                                         FoundIn: 'Node',

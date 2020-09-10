@@ -15,6 +15,7 @@ module.exports = gql`
     _id: ID!
     NodeID: String
     NodePublicKey: String
+    NodePublicKeyFormatted: String
     OwnerAddress: String
     RegisteredBlockHeight: Int
     LockedFunds: String
