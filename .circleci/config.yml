@@ -22,15 +22,20 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - '04:a3:fa:ae:79:4f:97:4d:e8:66:74:45:8a:0c:c1:33'
+            # - '04:a3:fa:ae:79:4f:97:4d:e8:66:74:45:8a:0c:c1:33'
+            - '13:56:00:d1:a0:36:a8:17:07:17:b6:5c:19:71:8f:b9'
       - run:
           name: Setup SSH Key Mainnet
+          # command: |
+            # ssh-keyscan -H ${SSH_HOST_MAINNET} >> ~/.ssh/known_hosts
           command: |
-            ssh-keyscan -H ${SSH_HOST_MAINNET} >> ~/.ssh/known_hosts
+            ssh-keyscan -H ${SSH_HOST_TESTNET} >> ~/.ssh/known_hosts
       - run:
           name: Deploy Mainnet
+          # command: |
+            # ssh ${SSH_USER}@${SSH_HOST_MAINNET} "pm2 deploy ecosystem.config.js api update"
           command: |
-            ssh ${SSH_USER}@${SSH_HOST_MAINNET} "pm2 deploy ecosystem.config.js api update"
+            ssh ${SSH_USER}@${SSH_HOST_TESTNET} "pm2 deploy ecosystem.config.js apiProduction update --force"
 
 workflows:
   version: 2
