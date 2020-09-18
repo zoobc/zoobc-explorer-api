@@ -21,27 +21,27 @@ function parseOrder2(string) {
   return `${string}`
 }
 
-const setMultisigStatus = data => {
-  let status = 'Pending'
+// const setMultisigStatus = data => {
+//   let status = 'Pending'
 
-  const pendingCount = data.filter(multi => multi.Status === 'Pending').length
+//   const pendingCount = data.filter(multi => multi.Status === 'Pending').length
 
-  const rejectedCount = data.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length
+//   const rejectedCount = data.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length
 
-  const approvedCount = data.filter(multi => multi.Status === 'Executed').length
+//   const approvedCount = data.filter(multi => multi.Status === 'Executed').length
 
-  if (pendingCount > 0 || approvedCount === rejectedCount) {
-    status = 'Pending'
-  } else {
-    if (approvedCount > rejectedCount) {
-      status = 'Approved'
-    } else {
-      status = 'Expired'
-    }
-  }
+//   if (pendingCount > 0 || approvedCount === rejectedCount) {
+//     status = 'Pending'
+//   } else {
+//     if (approvedCount > rejectedCount) {
+//       status = 'Approved'
+//     } else {
+//       status = 'Expired'
+//     }
+//   }
 
-  return status
-}
+//   return status
+// }
 
 const formatRecipientData = value => {
   return value ===
@@ -91,11 +91,11 @@ const groupingMultisig = async (models, trx, order) => {
 
   const multisigMapped = multisigMapping(multisig)
 
-  const status = multisigMapped && multisigMapped.length > 0 && setMultisigStatus(multisigMapped)
+  // const status = multisigMapped && multisigMapped.length > 0 && setMultisigStatus(multisigMapped)
 
   return {
     ...trx,
-    Status: status,
+    // Status: status,
     MultiSignatureTransactions: multisigMapped,
     ...(multisigMapped.length > 0 && {
       MultiSignature: multisigMapped[0].MultiSignature,
@@ -202,19 +202,19 @@ module.exports = {
           ))
 
         if (result && result.length > 0) {
-          const resultMapped = result.map(i => {
-            if (i.MultiSignatureTransactions != null && i.MultiSignatureTransactions.length > 0) {
-              const status = setMultisigStatus(i.MultiSignatureTransactions)
+          // const resultMapped = result.map(i => {
+          //   if (i.MultiSignatureTransactions != null && i.MultiSignatureTransactions.length > 0) {
+          //     const status = setMultisigStatus(i.MultiSignatureTransactions)
 
-              return {
-                ...i,
-                Status: status,
-              }
-            }
-            return i
-          })
+          //     return {
+          //       ...i,
+          //       Status: status,
+          //     }
+          //   }
+          //   return i
+          // })
 
-          return resultMapped.sort((a, b) => {
+          return result.sort((a, b) => {
             const orderFormatted = order !== undefined ? parseOrder2(order) : 'Timestamp'
             return order[0] === '-' ? b[orderFormatted] - a[orderFormatted] : a[orderFormatted] - b[orderFormatted]
           })
