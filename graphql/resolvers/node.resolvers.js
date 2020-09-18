@@ -81,7 +81,7 @@ module.exports = {
           if (err) return reject(err)
           if (resRedis) return resolve(resRedis)
 
-          const where = NodeID ? { NodeID } : { NodePublicKey }
+          const where = NodeID ? { NodeID } : { NodePublicKeyFormatted: NodePublicKey }
           models.Nodes.findOne()
             .where(where)
             .lean()

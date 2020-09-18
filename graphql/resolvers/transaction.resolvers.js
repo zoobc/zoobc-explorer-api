@@ -21,33 +21,103 @@ function parseOrder2(string) {
   return `${string}`
 }
 
-const setMultisigStatus = data => {
-  let status = 'Pending'
+// const setMultisigStatus = data => {
+//   let status = 'Pending'
 
-  const pendingCount = data.filter(multi => multi.Status === 'Pending').length
+//   const pendingCount = data.filter(multi => multi.Status === 'Pending').length
 
-  const rejectedCount = data.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length
+//   const rejectedCount = data.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length
 
-  const approvedCount = data.filter(multi => multi.Status === 'Executed').length
+//   const approvedCount = data.filter(multi => multi.Status === 'Executed').length
 
-  if (pendingCount > 0 || approvedCount === rejectedCount) {
-    status = 'Pending'
-  } else {
-    if (approvedCount > rejectedCount) {
-      status = 'Approved'
-    } else {
-      status = 'Expired'
-    }
-  }
+//   if (pendingCount > 0 || approvedCount === rejectedCount) {
+//     status = 'Pending'
+//   } else {
+//     if (approvedCount > rejectedCount) {
+//       status = 'Approved'
+//     } else {
+//       status = 'Expired'
+//     }
+//   }
 
-  return status
-}
+//   return status
+// }
 
 const formatRecipientData = value => {
   return value ===
     '\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000'
     ? ''
     : value
+}
+
+const multisigFormatObject = i => {
+  return {
+    ...i,
+    Recipient: formatRecipientData(i.Recipient),
+    ...(i.MultiSignature && {
+      MultiSignature: {
+        ...i.MultiSignature,
+        SignatureInfo: {
+          ...(i.MultiSignature.SignatureInfo && {
+            ...i.MultiSignature.SignatureInfo,
+            ...(i.MultiSignature.SignatureInfo.Signatures && {
+              Signatures: Object.entries(i.MultiSignature.SignatureInfo.Signatures).map(([key, value]) => {
+                return {
+                  Address: key,
+                  Signature: value,
+                }
+              }),
+            }),
+          }),
+        },
+      },
+    }),
+  }
+}
+
+const multisigMapping = multisig => {
+  return multisig && multisig.length > 0 && multisig.map(i => multisigFormatObject(i))
+}
+
+const groupingMultisig = async (models, trx, order) => {
+  const multisig = await models.Transactions.find()
+    .where({
+      'MultiSignature.SignatureInfo.TransactionHash': trx.TransactionHash,
+    })
+    .select()
+    .sort(order)
+    .lean()
+    .exec()
+
+  const multisigMapped = multisigMapping(multisig)
+
+  // const status = multisigMapped && multisigMapped.length > 0 && setMultisigStatus(multisigMapped)
+
+  return {
+    ...trx,
+    // Status: status,
+    MultiSignatureTransactions: multisigMapped,
+    ...(multisigMapped.length > 0 && {
+      MultiSignature: multisigMapped[0].MultiSignature,
+    }),
+  }
+}
+
+const singleMultisig = async (models, trx) => {
+  const trxHash =
+    trx.MultiSignature && trx.MultiSignature.SignatureInfo && trx.MultiSignature.SignatureInfo.TransactionHash
+
+  const parent = await models.Transactions.findOne().where({ TransactionHash: trxHash }).select().lean().exec()
+
+  if (parent === null || parent === undefined) {
+    const childMapped = multisigFormatObject(trx)
+
+    return {
+      ...childMapped,
+    }
+  }
+
+  return null
 }
 
 module.exports = {
@@ -62,7 +132,7 @@ module.exports = {
         AccountAddress !== undefined ? { $or: [{ Sender: AccountAddress }, { Recipient: AccountAddress }] } : null
 
       const criteria = {
-        $and: [blockId ? blockId : accountAddress ? accountAddress : {}, { TransactionType: { $nin: [4, 5] } }],
+        $and: [blockId ? blockId : accountAddress ? accountAddress : {}, { TransactionType: { $nin: [4] } }],
       }
 
       const getTransactions = async () => {
@@ -81,53 +151,22 @@ module.exports = {
           transactions.length > 0 &&
           (await Promise.all(
             transactions.map(async trx => {
-              if (trx.MultisigChild === true) {
-                const multisig = await models.Transactions.find()
-                  .where({
-                    'MultiSignature.SignatureInfo.TransactionHash': trx.TransactionHash,
-                  })
-                  .select()
-                  .sort(od)
-                  .lean()
-                  .exec()
+              if (trx.TransactionType === 1 && trx.MultisigChild === true) {
+                const multisigGrouped = await groupingMultisig(models, trx, od)
 
-                const multisigMapped =
-                  multisig &&
-                  multisig.length > 0 &&
-                  multisig.map(i => {
-                    return {
-                      ...i,
-                      Recipient: formatRecipientData(i.Recipient),
-                      ...(i.MultiSignature && {
-                        MultiSignature: {
-                          ...i.MultiSignature,
-                          SignatureInfo: {
-                            ...(i.MultiSignature.SignatureInfo && {
-                              ...i.MultiSignature.SignatureInfo,
-                              ...(i.MultiSignature.SignatureInfo.Signatures && {
-                                Signatures: Object.entries(i.MultiSignature.SignatureInfo.Signatures).map(
-                                  ([key, value]) => {
-                                    return {
-                                      Address: key,
-                                      Signature: value,
-                                    }
-                                  }
-                                ),
-                              }),
-                            }),
-                          },
-                        },
-                      }),
-                    }
-                  })
+                result.push(multisigGrouped)
 
-                result.push({
-                  ...trx,
-                  MultiSignatureTransactions: multisigMapped,
-                  ...(multisigMapped.length > 0 && {
-                    MultiSignature: multisigMapped[0].MultiSignature,
-                  }),
-                })
+                return
+              }
+
+              if (trx.TransactionType === 5) {
+                const multisig = await singleMultisig(models, trx)
+
+                if (multisig !== null) {
+                  result.push(multisig)
+
+                  return
+                }
 
                 return
               }
@@ -163,19 +202,19 @@ module.exports = {
           ))
 
         if (result && result.length > 0) {
-          const resultMapped = result.map(i => {
-            if (i.MultiSignatureTransactions != null && i.MultiSignatureTransactions.length > 0) {
-              const status = setMultisigStatus(i.MultiSignatureTransactions)
+          // const resultMapped = result.map(i => {
+          //   if (i.MultiSignatureTransactions != null && i.MultiSignatureTransactions.length > 0) {
+          //     const status = setMultisigStatus(i.MultiSignatureTransactions)
 
-              return {
-                ...i,
-                Status: status,
-              }
-            }
-            return i
-          })
+          //     return {
+          //       ...i,
+          //       Status: status,
+          //     }
+          //   }
+          //   return i
+          // })
 
-          return resultMapped.sort((a, b) => {
+          return result.sort((a, b) => {
             const orderFormatted = order !== undefined ? parseOrder2(order) : 'Timestamp'
             return order[0] === '-' ? b[orderFormatted] - a[orderFormatted] : a[orderFormatted] - b[orderFormatted]
           })
@@ -190,7 +229,7 @@ module.exports = {
           if (err) return reject(err)
           if (resRedis) return resolve(resRedis)
 
-          models.Transactions.where({ TransactionType: { $nin: [4, 5] } }).countDocuments((err, totalWithoutFilter) => {
+          models.Transactions.where({ TransactionType: { $nin: [4] } }).countDocuments((err, totalWithoutFilter) => {
             if (err) return reject(err)
 
             models.Transactions.where(criteria).countDocuments((err, totalWithFilter) => {
@@ -222,7 +261,7 @@ module.exports = {
       const { TransactionID } = args
 
       const criteria = {
-        $or: [{ TransactionID: TransactionID }, { TransactionHash: TransactionID }],
+        $or: [{ TransactionID: TransactionID }, { TransactionHashFormatted: TransactionID }],
       }
 
       const getTransaction = async () => {
@@ -230,56 +269,16 @@ module.exports = {
 
         if (!trx) return {}
 
-        if (trx.MultisigChild === true) {
-          const multisig = await models.Transactions.find()
-            .where({ 'MultiSignature.SignatureInfo.TransactionHash': trx.TransactionHash })
-            .select()
-            .sort({ Timestamp: 'desc' })
-            .lean()
-            .exec()
+        if (trx.TransactionType === 1 && trx.MultisigChild === true) {
+          const multisigGrouped = await groupingMultisig(models, trx, { Timestamp: 'desc' })
 
-          const multisigMapped =
-            multisig &&
-            multisig.length > 0 &&
-            (await Promise.all(
-              multisig.map(i => {
-                return {
-                  ...i,
-                  Recipient: formatRecipientData(i.Recipient),
-                  ...(i.MultiSignature && {
-                    MultiSignature: {
-                      ...i.MultiSignature,
-                      SignatureInfo: {
-                        ...(i.MultiSignature.SignatureInfo && {
-                          ...i.MultiSignature.SignatureInfo,
-                          ...(i.MultiSignature.SignatureInfo.Signatures && {
-                            Signatures: Object.entries(i.MultiSignature.SignatureInfo.Signatures).map(
-                              ([key, value]) => {
-                                return {
-                                  Address: key,
-                                  Signature: value,
-                                }
-                              }
-                            ),
-                          }),
-                        }),
-                      },
-                    },
-                  }),
-                }
-              })
-            ))
+          return multisigGrouped
+        }
 
-          const status = multisigMapped && multisigMapped.length > 0 && setMultisigStatus(multisigMapped)
+        if (trx.TransactionType === 5) {
+          const multisig = multisigFormatObject(trx)
 
-          return {
-            ...trx,
-            Status: status,
-            MultiSignatureTransactions: multisigMapped,
-            ...(multisigMapped.length > 0 && {
-              MultiSignature: multisigMapped[0].MultiSignature,
-            }),
-          }
+          return multisig
         }
 
         if (trx.Escrow != null) {
@@ -305,24 +304,6 @@ module.exports = {
           ...trx,
           Recipient: formatRecipientData(trx.Recipient),
           Status: trx.TransactionType === 1 && trx.Escrow === null ? 'Approved' : trx.Status,
-          ...(trx.MultiSignature && {
-            MultiSignature: {
-              ...trx.MultiSignature,
-              SignatureInfo: {
-                ...(trx.MultiSignature.SignatureInfo && {
-                  ...trx.MultiSignature.SignatureInfo,
-                  ...(trx.MultiSignature.SignatureInfo.Signatures && {
-                    Signatures: Object.entries(trx.MultiSignature.SignatureInfo.Signatures).map(([key, value]) => {
-                      return {
-                        Address: key,
-                        Signature: value,
-                      }
-                    }),
-                  }),
-                }),
-              },
-            },
-          }),
         }
       }
 

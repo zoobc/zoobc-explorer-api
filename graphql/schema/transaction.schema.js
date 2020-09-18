@@ -79,6 +79,7 @@ module.exports = gql`
 
   type NodeRegistration {
     NodePublicKey: String
+    NodePublicKeyFormatted: String
     AccountAddress: String
     NodeAddress: NodeAddress
     LockedBalance: Float
@@ -95,6 +96,7 @@ module.exports = gql`
 
   type UpdateNodeRegistration {
     NodePublicKey: String
+    NodePublicKeyFormatted: String
     NodeAddress: NodeAddress
     LockedBalance: Float
     LockedBalanceConversion: String
@@ -110,10 +112,12 @@ module.exports = gql`
 
   type RemoveNodeRegistration {
     NodePublicKey: String
+    NodePublicKeyFormatted: String
   }
 
   type ClaimNodeRegistration {
     NodePublicKey: String
+    NodePublicKeyFormatted: String
     ProofOfOwnership: ProofOfOwnership
   }
 
