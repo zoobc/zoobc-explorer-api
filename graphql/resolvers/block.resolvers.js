@@ -94,54 +94,57 @@ const getAccountRewards = async (height, models) => {
 module.exports = {
   Query: {
     blocks: (parent, args, { models }) => {
-      const { page, limit, order, NodePublicKey } = args
+      const { page, limit, order, NodePublicKey, refresh } = args
       const pg = page !== undefined ? parseInt(page) : 1
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit)
       const od = order !== undefined ? parseOrder(order) : { Height: 'desc' }
       const nodePublicKey = NodePublicKey !== undefined ? { BlocksmithID: NodePublicKey } : {}
+      const rfr = refresh !== undefined ? refresh : false
 
       return new Promise((resolve, reject) => {
         const cacheBlocks = Converter.formatCache(cache.blocks, args)
         RedisCache.get(cacheBlocks, (err, resRedis) => {
           if (err) return reject(err)
-          if (resRedis) return resolve(resRedis)
-
-          models.Blocks.countDocuments((err, totalWithoutFilter) => {
-            if (err) return reject(err)
-
-            models.Blocks.where(nodePublicKey).countDocuments((err, totalWithFilter) => {
+          if (resRedis && rfr === false) {
+            return resolve(resRedis)
+          } else if (!resRedis || rfr === true) {
+            models.Blocks.countDocuments((err, totalWithoutFilter) => {
               if (err) return reject(err)
 
-              models.Blocks.find()
-                .where(nodePublicKey)
-                .select()
-                .limit(lm)
-                .skip((pg - 1) * lm)
-                .sort(od)
-                .lean()
-                .exec(async (err, data) => {
-                  if (err) return reject(err)
+              models.Blocks.where(nodePublicKey).countDocuments((err, totalWithFilter) => {
+                if (err) return reject(err)
 
-                  blocksMapped(data, models, order)
-                    .then(res => {
-                      const result = {
-                        Blocks: res,
-                        Paginate: {
-                          Page: parseInt(pg),
-                          Count: data.length,
-                          Total: nodePublicKey ? totalWithFilter : totalWithoutFilter,
-                        },
-                      }
+                models.Blocks.find()
+                  .where(nodePublicKey)
+                  .select()
+                  .limit(lm)
+                  .skip((pg - 1) * lm)
+                  .sort(od)
+                  .lean()
+                  .exec(async (err, data) => {
+                    if (err) return reject(err)
 
-                      RedisCache.set(cacheBlocks, result, err => {
-                        if (err) return reject(err)
-                        return resolve(result)
+                    blocksMapped(data, models, order)
+                      .then(res => {
+                        const result = {
+                          Blocks: res,
+                          Paginate: {
+                            Page: parseInt(pg),
+                            Count: data.length,
+                            Total: nodePublicKey ? totalWithFilter : totalWithoutFilter,
+                          },
+                        }
+
+                        RedisCache.set(cacheBlocks, result, err => {
+                          if (err) return reject(err)
+                          return resolve(result)
+                        })
                       })
-                    })
-                    .catch(err => reject(err))
-                })
+                      .catch(err => reject(err))
+                  })
+              })
             })
-          })
+          }
         })
       })
     },
