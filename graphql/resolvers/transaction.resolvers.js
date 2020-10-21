@@ -123,13 +123,14 @@ const singleMultisig = async (models, trx) => {
 module.exports = {
   Query: {
     transactions: (parent, args, { models }) => {
-      const { page, limit, order, BlockID, AccountAddress } = args
+      const { page, limit, order, BlockID, AccountAddress, refresh } = args
       const pg = page !== undefined ? parseInt(page) : 1
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit)
       const od = order !== undefined ? parseOrder(order) : { Timestamp: 'desc' }
       const blockId = BlockID !== undefined ? { BlockID } : null
       const accountAddress =
         AccountAddress !== undefined ? { $or: [{ Sender: AccountAddress }, { Recipient: AccountAddress }] } : null
+      const rfr = refresh !== undefined ? refresh : false
 
       const criteria = {
         $and: [blockId ? blockId : accountAddress ? accountAddress : {}, { TransactionType: { $nin: [4] } }],
@@ -227,32 +228,34 @@ module.exports = {
         const cacheTransactions = Converter.formatCache(cache.transactions, args)
         RedisCache.get(cacheTransactions, (err, resRedis) => {
           if (err) return reject(err)
-          if (resRedis) return resolve(resRedis)
-
-          models.Transactions.where({ TransactionType: { $nin: [4] } }).countDocuments((err, totalWithoutFilter) => {
-            if (err) return reject(err)
-
-            models.Transactions.where(criteria).countDocuments((err, totalWithFilter) => {
+          if (resRedis && rfr === false) {
+            return resolve(resRedis)
+          } else if (!resRedis || rfr === true) {
+            models.Transactions.where({ TransactionType: { $nin: [4] } }).countDocuments((err, totalWithoutFilter) => {
               if (err) return reject(err)
 
-              getTransactions()
-                .then(res => {
-                  const result = {
-                    Transactions: res,
-                    Paginate: {
-                      Page: parseInt(pg),
-                      Count: res.length,
-                      Total: blockId || accountAddress ? totalWithFilter : totalWithoutFilter,
-                    },
-                  }
-                  RedisCache.set(cacheTransactions, result, err => {
-                    if (err) return reject(err)
-                    return resolve(result)
+              models.Transactions.where(criteria).countDocuments((err, totalWithFilter) => {
+                if (err) return reject(err)
+
+                getTransactions()
+                  .then(res => {
+                    const result = {
+                      Transactions: res,
+                      Paginate: {
+                        Page: parseInt(pg),
+                        Count: res.length,
+                        Total: blockId || accountAddress ? totalWithFilter : totalWithoutFilter,
+                      },
+                    }
+                    RedisCache.set(cacheTransactions, result, err => {
+                      if (err) return reject(err)
+                      return resolve(result)
+                    })
                   })
-                })
-                .catch(err => reject(err))
+                  .catch(err => reject(err))
+              })
             })
-          })
+          }
         })
       })
     },
