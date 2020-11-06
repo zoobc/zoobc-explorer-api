@@ -34,7 +34,9 @@ module.exports = gql`
     BlockID: String
     Height: Int
     Sender: String
+    SenderFormatted: String
     Recipient: String
+    RecipientFormatted: String
     Fee: Float
     Status: String
     FeeConversion: String
@@ -45,6 +47,7 @@ module.exports = gql`
     TransactionBodyBytes: String
     TransactionIndex: Int
     Signature: String
+    Message: String
     TransactionBody: String
     TransactionTypeName: String
     SendMoney: SendMoney

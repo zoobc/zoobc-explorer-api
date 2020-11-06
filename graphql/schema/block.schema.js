@@ -40,6 +40,9 @@ module.exports = gql`
     Version: Int
     PayloadLength: Int
     PayloadHash: String
+    MerkleRoot: String
+    MerkleTree: String
+    ReferenceBlockHeight: Int
 
     # BlockExtendedInfo
     TotalReceipts: Float
@@ -68,14 +71,14 @@ module.exports = gql`
   }
 
   type PublishedReceipt {
-    BatchReceipt: BatchReceipt
+    Receipt: Receipt
     IntermediateHashes: String
     BlockHeight: Int
     ReceiptIndex: Int
     PublishedIndex: Int
   }
 
-  type BatchReceipt {
+  type Receipt {
     SenderPublicKey: String
     RecipientPublicKey: String
     DatumType: Int
@@ -100,6 +103,7 @@ module.exports = gql`
 
   type AccountReward {
     AccountAddress: String
+    AccountAddressFormatted: String
     BalanceChange: Float
     BalanceChangeConversion: String
     BlockHeight: Int
