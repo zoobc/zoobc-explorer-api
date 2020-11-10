@@ -14,7 +14,6 @@ module.exports = gql`
   type Account {
     _id: ID!
     AccountAddress: String
-    AccountAddressFormatted: String
     Balance: Float
     BalanceConversion: String
     SpendableBalance: Float
