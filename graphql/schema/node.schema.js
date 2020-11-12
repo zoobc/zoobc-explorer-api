@@ -13,6 +13,14 @@ module.exports = gql`
     node(NodeID: String, NodePublicKey: String): Node!
   }
 
+  extend type Mutation {
+    nodes: String!
+  }
+
+  extend type Subscription {
+    nodes: [Node!]!
+  }
+
   type Nodes {
     Nodes: [Node!]!
     Paginate: Paginate!

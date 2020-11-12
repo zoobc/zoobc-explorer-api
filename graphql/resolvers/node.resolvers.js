@@ -1,5 +1,7 @@
 const { Converter, RedisCache } = require('../../utils')
 const pageLimit = require('../../config/config').app.pageLimit
+const { pubsub, events } = require('../subscription')
+
 const cache = {
   nodes: 'nodes',
   node: 'node',
@@ -10,6 +12,39 @@ function parseOrder(string) {
     return { [string.slice(1)]: 'desc' }
   }
   return { [string]: 'asc' }
+}
+
+function parseOrder2(string) {
+  if (string[0] === '-') {
+    return `${string.slice(1)}`
+  }
+  return `${string}`
+}
+
+const nodesMapped = async (nodes, models, order = { Height: 'desc' }) => {
+  const nodesMapped = []
+
+  nodes &&
+    nodes.length > 0 &&
+    (await Promise.all(
+      nodes.map(async node => {
+        const totalNode = await models.Nodes.where({
+          NodeID: node.NodeID,
+        }).countDocuments()
+        nodesMapped.push({
+          ...node,
+          TotalNode: totalNode,
+        })
+        return
+      })
+    ))
+
+  return nodesMapped && nodesMapped.length > 0
+    ? nodesMapped.sort((a, b) => {
+        const orderFormatted = order !== undefined ? parseOrder2(order) : 'RegisteredBlockHeight'
+        return order[0] === '-' ? b[orderFormatted] - a[orderFormatted] : a[orderFormatted] - b[orderFormatted]
+      })
+    : nodesMapped
 }
 
 module.exports = {
@@ -100,6 +135,37 @@ module.exports = {
             })
         })
       })
+    },
+  },
+
+  Mutation: {
+    nodes: (parent, args, { models }) => {
+      return new Promise((resolve, reject) => {
+        models.Nodes.find()
+          .sort({ RegisteredBlockHeight: -1, RegistrationTime: -1 })
+          .limit(5)
+          .select()
+          .lean()
+          .exec((err, data) => {
+            if (err) return reject(`failed to publish nodes data. It is caused by ${err}`)
+
+            nodesMapped(data, models)
+              .then(nodes => {
+                if (nodes != null && nodes.length > 0) {
+                  pubsub.publish(events.nodes, { nodes })
+                  return resolve('succesfully publish nodes data')
+                }
+                return reject(`failed to publish nodes data. The data is empty.`)
+              })
+              .catch(err => reject(`failed to publish nodes data. It is caused by ${err}`))
+          })
+      })
+    },
+  },
+
+  Subscription: {
+    nodes: {
+      subscribe: () => pubsub.asyncIterator([events.nodes]),
     },
   },
 }
