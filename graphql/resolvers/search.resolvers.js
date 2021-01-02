@@ -22,7 +22,7 @@ module.exports = {
           const checkId = Number(Id)
 
           if (typeof checkId === 'number' && isNaN(checkId)) {
-            criteria = Id !== undefined ? { $or: [{ BlockHash: Id }, { PreviousBlockID: Id }] } : {}
+            criteria = Id !== undefined ? { $or: [{ BlockHashFormatted: Id }, { PreviousBlockIDFormatted: Id }] } : {}
           } else {
             criteria = Id !== undefined ? { $or: [{ BlockID: Id }, { Height: Id }] } : {}
           }
@@ -85,14 +85,14 @@ module.exports = {
                           if (resRedis) return resolve(resRedis)
 
                           models.Accounts.findOne()
-                            .where({ AccountAddress: Id })
+                            .where({ AccountAddressFormatted: Id })
                             .lean()
                             .exec((err, account) => {
                               if (err) return reject(err)
 
                               if (account) {
                                 const resAccount = {
-                                  ID: account.AccountAddress,
+                                  ID: account.AccountAddressFormatted,
                                   Height: null,
                                   Timestamp: null,
                                   FoundIn: 'Account',

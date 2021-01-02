@@ -162,7 +162,10 @@ module.exports = {
           const checkId = Number(BlockID)
 
           if (typeof checkId === 'number' && isNaN(checkId)) {
-            criteria = BlockID !== undefined ? { $or: [{ BlockHash: BlockID }, { PreviousBlockID: BlockID }] } : {}
+            criteria =
+              BlockID !== undefined
+                ? { $or: [{ BlockHashFormatted: BlockID }, { PreviousBlockIDFormatted: BlockID }] }
+                : {}
           } else {
             criteria = BlockID !== undefined ? { $or: [{ BlockID: BlockID }, { Height: BlockID }] } : {}
           }
