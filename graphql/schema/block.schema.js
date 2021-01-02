@@ -23,7 +23,9 @@ module.exports = gql`
     _id: ID!
     BlockID: String
     BlockHash: String
+    BlockHashFormatted: String
     PreviousBlockID: String
+    PreviousBlockIDFormatted: String
     Height: Int
     Timestamp: Date
     BlockSeed: String
@@ -31,6 +33,7 @@ module.exports = gql`
     CumulativeDifficulty: String
     SmithScale: Int
     BlocksmithID: String
+    BlocksmithIDFormatted: String
     TotalAmount: Float
     TotalAmountConversion: String
     TotalFee: Float
@@ -40,44 +43,49 @@ module.exports = gql`
     Version: Int
     PayloadLength: Int
     PayloadHash: String
+    MerkleRoot: String
+    MerkleTree: String
+    ReferenceBlockHeight: Int
 
     # BlockExtendedInfo
     TotalReceipts: Float
     ReceiptValue: Float
     PopChange: String
     BlocksmithAddress: String
+    BlocksmithAddressFormatted: String
     SkippedBlocksmiths: [SkippedBlocksmith]
 
     # Aggregate
     TotalRewards: Float
     TotalRewardsConversion: String
-
     PublishedReceipts: [PublishedReceipt]
-
     TotalTransaction: Int
-
     PopChanges: [PopChange]
-
     AccountRewards: [AccountReward]
   }
+
   type SkippedBlocksmith {
     BlocksmithPublicKey: String
+    BlocksmithPublicKeyFormatted: String
     POPChange: String
     BlockHeight: Int
     BlocksmithIndex: Int
   }
 
   type PublishedReceipt {
-    BatchReceipt: BatchReceipt
     IntermediateHashes: String
+    IntermediateHashesFormatted: String
     BlockHeight: Int
     ReceiptIndex: Int
     PublishedIndex: Int
+    Receipt: Receipt
   }
 
-  type BatchReceipt {
+  type Receipt {
     SenderPublicKey: String
+    SenderPublicKeyFormatted: String
     RecipientPublicKey: String
+    RecipientPublicKeyFormatted: String
     DatumType: Int
     DatumHash: String
     ReferenceBlockHeight: Int
@@ -90,8 +98,8 @@ module.exports = gql`
     NodeID: String
     NodePublicKey: String
     NodePublicKeyFormatted: String
-    Score: String
     Latest: Boolean
+    Score: String
     Height: Int
     DifferenceScores: Float
     DifferenceScorePercentage: Float
@@ -100,6 +108,7 @@ module.exports = gql`
 
   type AccountReward {
     AccountAddress: String
+    AccountAddressFormatted: String
     BalanceChange: Float
     BalanceChangeConversion: String
     BlockHeight: Int
