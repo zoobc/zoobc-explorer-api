@@ -21,28 +21,6 @@ function parseOrder2(string) {
   return `${string}`
 }
 
-// const setMultisigStatus = data => {
-//   let status = 'Pending'
-
-//   const pendingCount = data.filter(multi => multi.Status === 'Pending').length
-
-//   const rejectedCount = data.filter(multi => multi.Status === 'Expired' || multi.Status === 'Rejected').length
-
-//   const approvedCount = data.filter(multi => multi.Status === 'Executed').length
-
-//   if (pendingCount > 0 || approvedCount === rejectedCount) {
-//     status = 'Pending'
-//   } else {
-//     if (approvedCount > rejectedCount) {
-//       status = 'Approved'
-//     } else {
-//       status = 'Expired'
-//     }
-//   }
-
-//   return status
-// }
-
 const formatRecipientData = value => {
   return value ===
     '\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000'
@@ -90,7 +68,6 @@ const groupingMultisig = async (models, trx, order) => {
     .exec()
 
   const multisigMapped = multisigMapping(multisig)
-
   // const status = multisigMapped && multisigMapped.length > 0 && setMultisigStatus(multisigMapped)
 
   return {
@@ -129,7 +106,9 @@ module.exports = {
       const od = order !== undefined ? parseOrder(order) : { Timestamp: 'desc' }
       const blockId = BlockID !== undefined ? { BlockID } : null
       const accountAddress =
-        AccountAddress !== undefined ? { $or: [{ Sender: AccountAddress }, { Recipient: AccountAddress }] } : null
+        AccountAddress !== undefined
+          ? { $or: [{ SenderFormatted: AccountAddress }, { RecipientFormatted: AccountAddress }] }
+          : null
       const rfr = refresh !== undefined ? refresh : false
 
       const criteria = {
@@ -154,21 +133,16 @@ module.exports = {
             transactions.map(async trx => {
               if (trx.TransactionType === 1 && trx.MultisigChild === true) {
                 const multisigGrouped = await groupingMultisig(models, trx, od)
-
                 result.push(multisigGrouped)
-
                 return
               }
 
               if (trx.TransactionType === 5) {
                 const multisig = await singleMultisig(models, trx)
-
                 if (multisig !== null) {
                   result.push(multisig)
-
                   return
                 }
-
                 return
               }
 
@@ -274,13 +248,11 @@ module.exports = {
 
         if (trx.TransactionType === 1 && trx.MultisigChild === true) {
           const multisigGrouped = await groupingMultisig(models, trx, { Timestamp: 'desc' })
-
           return multisigGrouped
         }
 
         if (trx.TransactionType === 5) {
           const multisig = multisigFormatObject(trx)
-
           return multisig
         }
 
