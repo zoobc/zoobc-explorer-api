@@ -77,7 +77,7 @@ module.exports = {
           if (resRedis) return resolve(resRedis)
 
           models.Accounts.findOne()
-            .where({ AccountAddress: AccountAddress })
+            .where({ AccountAddressFormatted: AccountAddress })
             .lean()
             .exec((err, result) => {
               if (err) return reject(err)

@@ -4,7 +4,7 @@
   "description": "A service for searching and displaying data published by the explorer server web API",
   "repository": "git@github.com:zoobc/zoobc-explorer-api.git",
   "author": "ZooBC Explorer API Team",
-  "license": "Apache License 2.0",
+  "license": "GPL-3.0",
   "private": true,
   "bin": "app.js",
   "main": "app.js",

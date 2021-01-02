@@ -34,7 +34,9 @@ module.exports = gql`
     BlockID: String
     Height: Int
     Sender: String
+    SenderFormatted: String
     Recipient: String
+    RecipientFormatted: String
     Fee: Float
     Status: String
     FeeConversion: String
@@ -44,30 +46,64 @@ module.exports = gql`
     TransactionBodyLength: Int
     TransactionBodyBytes: String
     TransactionIndex: Int
+    MultisigChild: Boolean
     Signature: String
     TransactionBody: String
+    Message: String
+    MessageFormatted: String
     TransactionTypeName: String
     SendMoney: SendMoney
-    NodeRegistration: NodeRegistration
-    SetupAccount: SetupAccount
-    UpdateNodeRegistration: UpdateNodeRegistration
-    RemoveAccount: RemoveAccount
-    RemoveNodeRegistration: RemoveNodeRegistration
     ClaimNodeRegistration: ClaimNodeRegistration
+    NodeRegistration: NodeRegistration
+    RemoveNodeRegistration: RemoveNodeRegistration
+    UpdateNodeRegistration: UpdateNodeRegistration
+    SetupAccount: SetupAccount
+    RemoveAccount: RemoveAccount
+    MultiSignature: MultiSignature
     ApprovalEscrow: ApprovalEscrow
     Escrow: Escrow
     EscrowTransaction: Transaction
-    MultisigChild: Boolean
-    MultiSignature: MultiSignature
     MultiSignatureTransactions: [Transaction!]
     Block: Block!
+    FeeVoteCommit: FeeVoteCommit
+    FeeVoteReveal: FeeVoteReveal
+    LiquidPayment: LiquidPayment
+    LiquidPaymentStop: LiquidPaymentStop
+  }
+
+  type LiquidPaymentStop {
+    TransactionID: String
+  }
+
+  type LiquidPayment {
+    Amount: Float
+    AmountConversion: String
+    CompleteMinutes: Int
+  }
+
+  type FeeVoteInfo {
+    RecentBlockHash: String
+    RecentBlockHeight: String
+    FeeVote: Int
+  }
+
+  type FeeVoteReveal {
+    FeeVoteInfo: FeeVoteInfo
+    VoterSignature: String
+  }
+
+  type FeeVoteCommit {
+    VoteHash: String
   }
 
   type Escrow {
     ID: String
     SenderAddress: String
+    SenderAddressFormatted: String
     RecipientAddress: String
+    RecipientAddressFormatted: String
     ApproverAddress: String
+    ApproverAddressFormatted: String
     Amount: Float
     AmountConversion: String
     Commission: Float
@@ -88,6 +124,7 @@ module.exports = gql`
     NodePublicKey: String
     NodePublicKeyFormatted: String
     AccountAddress: String
+    AccountAddressFormatted: String
     NodeAddress: NodeAddress
     LockedBalance: Float
     LockedBalanceConversion: String
@@ -96,7 +133,9 @@ module.exports = gql`
 
   type SetupAccount {
     SetterAccountAddress: String
+    SetterAccountAddressFormatted: String
     RecipientAccountAddress: String
+    RecipientAccountAddressFormatted: String
     Property: String
     Value: String
   }
@@ -112,7 +151,9 @@ module.exports = gql`
 
   type RemoveAccount {
     SetterAccountAddress: String
+    SetterAccountAddressFormatted: String
     RecipientAccountAddress: String
+    RecipientAccountAddressFormatted: String
     Property: String
     Value: String
   }
@@ -129,23 +170,25 @@ module.exports = gql`
   }
 
   type ApprovalEscrow {
-    TransactionID: String
     Approval: String
+    TransactionID: String
   }
 
   type MultiSignature {
-    MultiSignatureInfo: MultiSignatureInfo
     UnsignedTransactionBytes: String
+    MultiSignatureInfo: MultiSignatureInfo
     SignatureInfo: SignatureInfo
   }
 
   type MultiSignatureInfo {
-    MinimumSignatures: Int
-    Nonce: String
-    Addresses: [String]
     MultisigAddress: String
+    MultisigAddressFormatted: String
     BlockHeight: Int
+    Nonce: String
+    MinimumSignatures: Int
     Latest: Boolean
+    Addresses: [String]
+    AddressesFormatted: [String]
   }
 
   type SignatureInfo {

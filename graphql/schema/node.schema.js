@@ -24,17 +24,18 @@ module.exports = gql`
     NodePublicKey: String
     NodePublicKeyFormatted: String
     OwnerAddress: String
+    OwnerAddressFormatted: String
     RegisteredBlockHeight: Int
     LockedFunds: String
     RegistrationStatus: Int
     Latest: Boolean
     Height: Int
     ParticipationScore: String
+    PercentageScore: Float
     BlocksFunds: Int
     RewardsPaid: Float
     RewardsPaidConversion: String
     NodeAddressInfo: NodeAddressInfo
     RegistrationTime: Date
-    PercentageScore: Float
   }
 `
