@@ -54,6 +54,7 @@ const multisigFormatObject = i => {
 }
 
 const multisigMapping = multisig => {
+  if (multisig && multisig.length < 1) return []
   return multisig && multisig.length > 0 && multisig.map(i => multisigFormatObject(i))
 }
 
