@@ -110,7 +110,7 @@ module.exports = {
     },
 
     account: (parent, args, { models }) => {
-      const { AccountAddress } = args
+      const { AccountAddressFormatted } = args
 
       return new Promise((resolve, reject) => {
         const cacheAccount = Converter.formatCache(cache.account, args)
@@ -119,7 +119,7 @@ module.exports = {
           if (resRedis) return resolve(resRedis)
 
           models.Accounts.findOne()
-            .where({ AccountAddressFormatted: AccountAddress })
+            .where({ AccountAddressFormatted: AccountAddressFormatted })
             .lean()
             .exec((err, result) => {
               if (err) return reject(err)

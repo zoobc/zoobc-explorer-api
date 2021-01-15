@@ -143,14 +143,14 @@ const singleMultisig = async (models, trx) => {
 module.exports = {
   Query: {
     transactions: (parent, args, { models }) => {
-      const { page, limit, order, BlockID, AccountAddress, refresh } = args
+      const { page, limit, order, BlockID, AccountAddressFormatted, refresh } = args
       const pg = page !== undefined ? parseInt(page) : 1
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit)
       const od = order !== undefined ? parseOrder(order) : { Timestamp: 'desc' }
       const blockId = BlockID !== undefined ? { BlockID } : null
       const accountAddress =
-        AccountAddress !== undefined
-          ? { $or: [{ SenderFormatted: AccountAddress }, { RecipientFormatted: AccountAddress }] }
+        AccountAddressFormatted !== undefined
+          ? { $or: [{ SenderFormatted: AccountAddressFormatted }, { RecipientFormatted: AccountAddressFormatted }] }
           : null
       const rfr = refresh !== undefined ? refresh : false
 
