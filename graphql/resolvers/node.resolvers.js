@@ -57,15 +57,15 @@ function parseOrder(string) {
 module.exports = {
   Query: {
     nodes: (parent, args, { models }) => {
-      const { page, limit, order, AccountAddress, RegistrationStatus, refresh } = args
+      const { page, limit, order, AccountAddressFormatted, RegistrationStatus, refresh } = args
       const pg = page !== undefined ? parseInt(page) : 1
       const lm = limit !== undefined ? parseInt(limit) : parseInt(pageLimit)
       const od = order !== undefined ? parseOrder(order) : { RegisteredBlockHeight: 'desc' }
       const rfr = refresh !== undefined ? refresh : false
 
       let where = {}
-      if (AccountAddress !== undefined) {
-        where.OwnerAddress = AccountAddress
+      if (AccountAddressFormatted !== undefined) {
+        where.OwnerAddressFormatted = AccountAddressFormatted
       }
       if (RegistrationStatus !== undefined) {
         if (RegistrationStatus < 3) {

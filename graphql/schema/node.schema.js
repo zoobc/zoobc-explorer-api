@@ -48,7 +48,7 @@ module.exports = gql`
       page: Int
       limit: Int
       order: String
-      AccountAddress: String
+      AccountAddressFormatted: String
       RegistrationStatus: Int
       refresh: Boolean
     ): Nodes!
