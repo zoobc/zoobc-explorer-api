@@ -40,33 +40,24 @@
  * shall be included in all copies or substantial portions of the Software.
 **/
 
-const fs = require('fs')
-const http = require('http')
-const https = require('https')
-const express = require('express')
+const mongoose = require('mongoose')
+const { upserts } = require('../utils')
 
-const config = require('./config/config')
-const app = express().set('port', config.app.port)
+const schema = new mongoose.Schema(
+  {
+    Username: { type: String, index: true },
+    Email: { type: String },
+    Password: { type: String },
+    Role: { type: String },
+    Active: { type: Boolean },
+    ResetToken: { type: String },
+    ResetExpired: { type: Date },
+  },
+  {
+    toJSON: { virtuals: true },
+  }
+)
 
-const server =
-  !fs.existsSync(config.app.openSslKeyPath) || !fs.existsSync(config.app.openSslCertPath)
-    ? http.createServer(app)
-    : https.createServer(
-        {
-          key: fs.readFileSync(config.app.openSslKeyPath),
-          cert: fs.readFileSync(config.app.openSslCertPath),
-        },
-        app
-      )
+schema.plugin(upserts)
 
-require('./modules/cors')(app)
-require('./modules/compression')(app)
-require('./modules/log')(app)
-require('./modules/swagger')(app)
-require('./modules/cluster')(server)
-require('./modules/graphql')(app, server)
-require('./modules/redis')()
-require('./modules/mongoose')()
-require('./api/routes')(app)
-
-module.exports = app
+module.exports = mongoose.model('Admins', schema)
