@@ -49,7 +49,7 @@ module.exports = gql`
       limit: Int
       order: String
       BlockID: String
-      AccountAddress: String
+      AccountAddressFormatted: String
       refresh: Boolean
     ): Transactions!
     transaction(TransactionID: String!): Transaction!
