@@ -238,10 +238,10 @@ module.exports = {
                 const currentHeight = block.Height
 
                 const previousBlock = await getBlockByHeight(currentHeight - 1, models)
-                const previousHeight = previousBlock ? previousBlock.Height : -1
+                const previousHeight = previousBlock ? previousBlock.Height : 0
 
                 const nextBlock = await getBlockByHeight(currentHeight + 1, models)
-                const nextHeight = nextBlock ? nextBlock.Height : -1
+                const nextHeight = nextBlock ? nextBlock.Height : nextBlock.Height + 1
 
                 const finalResult = {
                   Block: block,
