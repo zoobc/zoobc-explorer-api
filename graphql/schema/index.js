@@ -71,6 +71,17 @@ const linkSchema = gql`
     Total: Int
   }
 
+  type NextPrevious {
+    Previous: NextPreviousValue!
+    Next: NextPreviousValue!
+  }
+
+  type NextPreviousValue {
+    Enabled: Boolean
+    Height: Int
+    BlockHashFormatted: String
+  }
+
   type NodeAddress {
     Address: String
     Port: Int

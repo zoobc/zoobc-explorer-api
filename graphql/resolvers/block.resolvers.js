@@ -133,6 +133,11 @@ const getAccountRewards = async (height, models) => {
   return accountLedgers
 }
 
+const getBlockByHeight = async (height, models) => {
+  const block = await models.Blocks.findOne().where({ Height: height }).lean().exec()
+  return block
+}
+
 module.exports = {
   Query: {
     blocks: (parent, args, { models }) => {
@@ -224,10 +229,34 @@ module.exports = {
 
                 const AccountRewards = await getAccountRewards(result.Height, models)
 
-                const finalResult = {
+                const block = {
                   ...result,
                   PopChanges,
                   AccountRewards,
+                }
+
+                const currentHeight = block.Height
+
+                const previousBlock = await getBlockByHeight(currentHeight - 1, models)
+                const previousHeight = previousBlock ? previousBlock.Height : -1
+
+                const nextBlock = await getBlockByHeight(currentHeight + 1, models)
+                const nextHeight = nextBlock ? nextBlock.Height : -1
+
+                const finalResult = {
+                  Block: block,
+                  NextPrevious: {
+                    Previous: {
+                      Enabled: previousHeight > 0,
+                      Height: previousHeight,
+                      BlockHashFormatted: previousBlock ? previousBlock.BlockHashFormatted : '',
+                    },
+                    Next: {
+                      Enabled: nextHeight > 0,
+                      Height: nextHeight,
+                      BlockHashFormatted: nextBlock ? nextBlock.BlockHashFormatted : '',
+                    },
+                  },
                 }
 
                 RedisCache.set(cacheBlock, finalResult, err => {
