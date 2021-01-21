@@ -247,12 +247,12 @@ module.exports = {
                   Block: block,
                   NextPrevious: {
                     Previous: {
-                      Enabled: previousHeight > 0,
+                      Enabled: previousBlock ? true : false,
                       Height: previousHeight,
                       BlockHashFormatted: previousBlock ? previousBlock.BlockHashFormatted : '',
                     },
                     Next: {
-                      Enabled: nextHeight > 0,
+                      Enabled: nextBlock ? true : false,
                       Height: nextHeight,
                       BlockHashFormatted: nextBlock ? nextBlock.BlockHashFormatted : '',
                     },
