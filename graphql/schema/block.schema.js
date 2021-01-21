@@ -45,7 +45,7 @@ const { gql } = require('apollo-server-express')
 module.exports = gql`
   extend type Query {
     blocks(page: Int, limit: Int, order: String, NodePublicKey: String, refresh: Boolean): Blocks!
-    block(BlockID: String!): Block!
+    block(BlockID: String!): BlockDetail!
   }
 
   extend type Mutation {
@@ -60,6 +60,12 @@ module.exports = gql`
     Blocks: [Block!]!
     Paginate: Paginate!
   }
+
+  type BlockDetail {
+    Block: Block!
+    NextPrevious: NextPrevious!
+  }
+
   type Block {
     # Block
     _id: ID!
