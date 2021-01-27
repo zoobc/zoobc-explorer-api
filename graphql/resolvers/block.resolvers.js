@@ -133,8 +133,16 @@ const getAccountRewards = async (height, models) => {
   return accountLedgers
 }
 
-const getBlockByHeight = async (height, models) => {
-  const block = await models.Blocks.findOne().where({ Height: height }).lean().exec()
+// const getBlockByHeight = async (height, models) => {
+//   const block = await models.Blocks.findOne().where({ Height: height }).lean().exec()
+//   return block
+// }
+
+const getBlocksByHeight = async (heightStart, heightEnd, models) => {
+  const block = await models.Blocks.find()
+    .where({ Height: { $gte: heightStart, $lte: heightEnd } })
+    .lean()
+    .exec()
   return block
 }
 
@@ -237,25 +245,21 @@ module.exports = {
 
                 const currentHeight = block.Height
 
-                const previousBlock = await getBlockByHeight(currentHeight - 1, models)
-                const previousHeight = previousBlock ? previousBlock.Height : 0
+                const resPreviousBlocks = await getBlocksByHeight(currentHeight - 5, currentHeight - 1, models)
+                const previousBlocks = resPreviousBlocks.map(item => {
+                  return { Enabled: true, Height: item.Height, BlockHashFormatted: item.BlockHashFormatted }
+                }, [])
 
-                const nextBlock = await getBlockByHeight(currentHeight + 1, models)
-                const nextHeight = nextBlock ? nextBlock.Height : currentHeight + 1
+                const resNextBlocks = await getBlocksByHeight(currentHeight + 1, currentHeight + 5, models)
+                const nextBlocks = resNextBlocks.map(item => {
+                  return { Enabled: true, Height: item.Height, BlockHashFormatted: item.BlockHashFormatted }
+                }, [])
 
                 const finalResult = {
                   Block: block,
                   NextPrevious: {
-                    Previous: {
-                      Enabled: previousBlock ? true : false,
-                      Height: previousHeight,
-                      BlockHashFormatted: previousBlock ? previousBlock.BlockHashFormatted : '',
-                    },
-                    Next: {
-                      Enabled: nextBlock ? true : false,
-                      Height: nextHeight,
-                      BlockHashFormatted: nextBlock ? nextBlock.BlockHashFormatted : '',
-                    },
+                    Previous: previousBlocks,
+                    Next: nextBlocks,
                   },
                 }
 
