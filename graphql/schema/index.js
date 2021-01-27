@@ -72,8 +72,8 @@ const linkSchema = gql`
   }
 
   type NextPrevious {
-    Previous: NextPreviousValue!
-    Next: NextPreviousValue!
+    Previous: [NextPreviousValue]!
+    Next: [NextPreviousValue]!
   }
 
   type NextPreviousValue {
