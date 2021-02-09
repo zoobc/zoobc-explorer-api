@@ -45,6 +45,13 @@ const { gql } = require('apollo-server-express')
 module.exports = gql`
   extend type Query {
     admin(Identifier: String!): Admin!
+    profile: ProfileResponse!
+  }
+
+  type ProfileResponse {
+    Success: Boolean!
+    Message: String
+    Data: ProfileAdmin
   }
 
   type Admin {
@@ -55,5 +62,12 @@ module.exports = gql`
     Active: Boolean
     ResetToken: String
     ResetExpired: Date
+  }
+
+  type ProfileAdmin {
+    _id: ID!
+    Identifier: String
+    Role: String
+    Active: Boolean
   }
 `

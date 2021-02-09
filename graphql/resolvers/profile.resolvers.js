@@ -40,34 +40,25 @@
  * shall be included in all copies or substantial portions of the Software.
 **/
 
-const { GraphQLDateTime } = require('graphql-iso-date')
-const blockResolvers = require('./block.resolvers')
-const transactionResolvers = require('./transaction.resolvers')
-const accountResolvers = require('./account.resolvers')
-const searchResolvers = require('./search.resolvers')
-const nodeResolvers = require('./node.resolvers')
-const graphResolvers = require('./graph.resolvers')
-const mapResolvers = require('./map.resolvers')
-const authResolvers = require('./auth.resolvers')
-const keywordResolvers = require('./keyword.resolvers')
-const dashboardResolvers = require('./dashboard.resolvers')
-const profileResolvers = require('./profile.resolvers')
-
-const customScalarResolver = {
-  Date: GraphQLDateTime,
+function parseResponse(success, message, data) {
+  return {
+    Success: success,
+    Message: message,
+    Data: data ? data : {},
+  }
 }
 
-module.exports = [
-  customScalarResolver,
-  blockResolvers,
-  transactionResolvers,
-  accountResolvers,
-  searchResolvers,
-  nodeResolvers,
-  graphResolvers,
-  mapResolvers,
-  authResolvers,
-  keywordResolvers,
-  dashboardResolvers,
-  profileResolvers,
-]
+module.exports = {
+  Query: {
+    profile: async (parent, args, { auth }) => {
+      try {
+        if (!auth) return parseResponse(false, 'You must be logged to access this')
+        if (auth && auth.Role !== 'Admin') return parseResponse(false, 'You do not have authorized this access')
+
+        return parseResponse(true, 'Success fetch data', auth)
+      } catch (err) {
+        throw new Error(err.message)
+      }
+    },
+  },
+}
