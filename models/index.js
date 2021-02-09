@@ -1,6 +1,6 @@
 /** 
  * ZooBC Copyright (C) 2020 Quasisoft Limited - Hong Kong
- * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-api>
+ * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-scheduler>
 
  * ZooBC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ const Admins = require('./Admins')
 const Blocks = require('./Blocks')
 const Accounts = require('./Accounts')
 const Generals = require('./Generals')
+const Keywords = require('./Keywords')
 const AdminLogs = require('./AdminLogs')
 const Transactions = require('./Transactions')
 const AccountLedgers = require('./AccountLedgers')
@@ -56,6 +57,7 @@ module.exports = {
   Blocks,
   Accounts,
   Generals,
+  Keywords,
   AdminLogs,
   Transactions,
   AccountLedgers,

@@ -1,6 +1,6 @@
 /** 
  * ZooBC Copyright (C) 2020 Quasisoft Limited - Hong Kong
- * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-scheduler>
+ * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-api>
 
  * ZooBC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,34 +40,48 @@
  * shall be included in all copies or substantial portions of the Software.
 **/
 
-const mongoose = require('mongoose')
-const { upserts } = require('../utils')
-
-const schema = new mongoose.Schema(
-  {
-    AccountAddress: { type: Buffer, index: true },
-    AccountAddressFormatted: { type: String } /** update */,
-    Balance: { type: Number },
-    BalanceConversion: { type: String },
-    SpendableBalance: { type: Number },
-    SpendableBalanceConversion: { type: String },
-    FirstActive: { type: Date },
-    LastActive: { type: Date },
-    TotalRewards: { type: Number },
-    TotalRewardsConversion: { type: String },
-    TotalFeesPaid: { type: Number },
-    TotalFeesPaidConversion: { type: String },
-    BlockHeight: { type: Number },
-    TransactionHeight: { type: Number },
-    PopRevenue: { type: Number },
-    Nodes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Nodes' }],
-    Transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Transactions' }],
-  },
-  {
-    toJSON: { virtuals: true },
+function parseResponse(success, message, data) {
+  return {
+    Success: success,
+    Message: message,
+    Data: data ? data : {},
   }
-)
+}
 
-schema.plugin(upserts)
+module.exports = {
+  Query: {
+    dashboard: async (parent, args, { models, auth }) => {
+      try {
+        if (!auth) return parseResponse(false, 'You must be logged to access this')
+        if (auth && auth.Role !== 'Admin') return parseResponse(false, 'You do not have authorized this access')
 
-module.exports = mongoose.model('Accounts', schema)
+        const totalBlock = await models.Blocks.countDocuments().exec()
+        const totalTransaction = await models.Transactions.countDocuments().exec()
+        const totalAccount = await models.Accounts.countDocuments().exec()
+        const totalNode = await models.Nodes.countDocuments().exec()
+
+        const keywordSeen = await models.Keywords.find().select('Keyword Seen').lean().exec()
+
+        const adminLogs = await models.AdminLogs.find()
+          .populate('Admin')
+          .limit(10)
+          .sort({ LoginAt: 'desc' })
+          .lean()
+          .exec()
+
+        const data = {
+          TotalBlock: totalBlock || 0,
+          TotalTransaction: totalTransaction || 0,
+          TotalAccount: totalAccount || 0,
+          TotalNode: totalNode || 0,
+          KeywordSeen: keywordSeen || [],
+          AdminLogs: adminLogs || [],
+        }
+
+        return parseResponse(true, 'Success fetch data', data)
+      } catch (err) {
+        return parseResponses(false, err.message)
+      }
+    },
+  },
+}

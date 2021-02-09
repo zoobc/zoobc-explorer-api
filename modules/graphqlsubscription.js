@@ -40,14 +40,32 @@
  * shall be included in all copies or substantial portions of the Software.
 **/
 
-const { ApolloServer, AuthenticationError } = require('apollo-server')
 const moment = require('moment')
+const jwt = require('jsonwebtoken')
+const { ApolloServer, AuthenticationError } = require('apollo-server')
 
 const models = require('../models')
-const resolvers = require('../graphql/resolvers')
+const config = require('../config/config')
 const typeDefs = require('../graphql/schema')
 const { msg, hmacEncrypt } = require('../utils')
-const config = require('../config/config')
+const resolvers = require('../graphql/resolvers')
+
+const parseToken = token => {
+  if (token.includes('Bearer ')) {
+    return token.slice('Bearer '.length)
+  }
+
+  throw new Error('Invalid token format')
+}
+
+const verifyJwt = token => {
+  const options = { ...config.token, expiresIn: `${config.app.tokenExpired}h` }
+
+  return jwt.verify(parseToken(token), config.app.tokenSecret, options, (err, decoded) => {
+    if (err) return err.message
+    return decoded
+  })
+}
 
 module.exports = () => {
   const apolloServer = new ApolloServer({
@@ -60,8 +78,22 @@ module.exports = () => {
       if (connection) return connection.context
 
       if (req) {
-        /** adding security header */
+        /** verify token if available */
+        let auth = null
+        const token = req.headers && req.headers.authorization
+        if (token) {
+          const verify = verifyJwt(token)
 
+          if (verify === 'invalid signature') throw new AuthenticationError('Invalid token signature')
+          if (verify === 'jwt expired') throw new AuthenticationError('Session login has been expired')
+
+          if (verify && verify.payload) {
+            const admin = await models.Admins.findOne({ _id: verify.payload._id, Role: verify.payload.Role }).exec()
+            if (admin) auth = admin
+          }
+        }
+
+        /** adding security header */
         if (config.graphql_client.useSignatureHeader === 'true') {
           const timestamp = parseInt(req.headers['x-timestamp']) - moment.utc('1970-01-01 00:00:00').unix()
           const signature = hmacEncrypt(`${config.graphql_client.id}&${timestamp}`, config.graphql_client.secret)
@@ -72,7 +104,7 @@ module.exports = () => {
             throw new AuthenticationError('You do not have authentication to access this endpoint')
         }
 
-        return { models }
+        return { req, models, auth }
       }
     },
 

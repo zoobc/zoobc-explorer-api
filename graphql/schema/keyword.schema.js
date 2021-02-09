@@ -1,6 +1,6 @@
 /** 
  * ZooBC Copyright (C) 2020 Quasisoft Limited - Hong Kong
- * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-scheduler>
+ * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-api>
 
  * ZooBC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,34 +40,40 @@
  * shall be included in all copies or substantial portions of the Software.
 **/
 
-const mongoose = require('mongoose')
-const { upserts } = require('../utils')
+const { gql } = require('apollo-server-express')
 
-const schema = new mongoose.Schema(
-  {
-    AccountAddress: { type: Buffer, index: true },
-    AccountAddressFormatted: { type: String } /** update */,
-    Balance: { type: Number },
-    BalanceConversion: { type: String },
-    SpendableBalance: { type: Number },
-    SpendableBalanceConversion: { type: String },
-    FirstActive: { type: Date },
-    LastActive: { type: Date },
-    TotalRewards: { type: Number },
-    TotalRewardsConversion: { type: String },
-    TotalFeesPaid: { type: Number },
-    TotalFeesPaidConversion: { type: String },
-    BlockHeight: { type: Number },
-    TransactionHeight: { type: Number },
-    PopRevenue: { type: Number },
-    Nodes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Nodes' }],
-    Transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Transactions' }],
-  },
-  {
-    toJSON: { virtuals: true },
+module.exports = gql`
+  extend type Query {
+    keywords(page: Int, limit: Int, order: String): Responses!
+    keyword(Keyword: String!): Response!
   }
-)
 
-schema.plugin(upserts)
+  extend type Mutation {
+    create(Keyword: String!, Content: String!, ExpiredAt: Date): Response!
+    update(Keyword: String!, Content: String!, ExpiredAt: Date): Response!
+    destroy(Keyword: String!): Response!
+  }
 
-module.exports = mongoose.model('Accounts', schema)
+  type Responses {
+    Success: Boolean!
+    Message: String
+    Data: [Keyword!]
+    Paginate: Paginate!
+  }
+
+  type Response {
+    Success: Boolean!
+    Message: String
+    Data: Keyword
+  }
+
+  type Keyword {
+    _id: ID!
+    Keyword: String
+    Content: String
+    ExpiredAt: Date
+    Seen: Int
+    CreatedBy: Admin
+    CreatedAt: Date
+  }
+`

@@ -1,6 +1,6 @@
 /** 
  * ZooBC Copyright (C) 2020 Quasisoft Limited - Hong Kong
- * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-scheduler>
+ * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-api>
 
  * ZooBC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,34 +40,26 @@
  * shall be included in all copies or substantial portions of the Software.
 **/
 
-const mongoose = require('mongoose')
-const { upserts } = require('../utils')
+const { gql } = require('apollo-server-express')
 
-const schema = new mongoose.Schema(
-  {
-    AccountAddress: { type: Buffer, index: true },
-    AccountAddressFormatted: { type: String } /** update */,
-    Balance: { type: Number },
-    BalanceConversion: { type: String },
-    SpendableBalance: { type: Number },
-    SpendableBalanceConversion: { type: String },
-    FirstActive: { type: Date },
-    LastActive: { type: Date },
-    TotalRewards: { type: Number },
-    TotalRewardsConversion: { type: String },
-    TotalFeesPaid: { type: Number },
-    TotalFeesPaidConversion: { type: String },
-    BlockHeight: { type: Number },
-    TransactionHeight: { type: Number },
-    PopRevenue: { type: Number },
-    Nodes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Nodes' }],
-    Transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Transactions' }],
-  },
-  {
-    toJSON: { virtuals: true },
+module.exports = gql`
+  extend type Query {
+    adminlogs(page: Int, limit: Int, order: String, refresh: Boolean): AdminLogs!
+    adminlog(LoginAt: Date!): AdminLog!
   }
-)
 
-schema.plugin(upserts)
+  type AdminLogs {
+    AdminLogs: [AdminLog!]!
+    Paginate: Paginate!
+  }
 
-module.exports = mongoose.model('Accounts', schema)
+  type AdminLog {
+    _id: ID!
+    Admin: Admin
+    Host: String
+    UserAgent: String
+    LoginAt: Date
+    ExpiredToken: Date
+    LogoutAt: Date
+  }
+`
