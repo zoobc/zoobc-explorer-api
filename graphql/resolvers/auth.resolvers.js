@@ -1,6 +1,6 @@
 /** 
  * ZooBC Copyright (C) 2020 Quasisoft Limited - Hong Kong
- * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-scheduler>
+ * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-api>
 
  * ZooBC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,34 +40,57 @@
  * shall be included in all copies or substantial portions of the Software.
 **/
 
-const mongoose = require('mongoose')
-const { upserts } = require('../utils')
+const moment = require('moment')
+const jwt = require('jsonwebtoken')
+const config = require('../../config/config')
+const { decrypt } = require('../../utils')
 
-const schema = new mongoose.Schema(
-  {
-    AccountAddress: { type: Buffer, index: true },
-    AccountAddressFormatted: { type: String } /** update */,
-    Balance: { type: Number },
-    BalanceConversion: { type: String },
-    SpendableBalance: { type: Number },
-    SpendableBalanceConversion: { type: String },
-    FirstActive: { type: Date },
-    LastActive: { type: Date },
-    TotalRewards: { type: Number },
-    TotalRewardsConversion: { type: String },
-    TotalFeesPaid: { type: Number },
-    TotalFeesPaidConversion: { type: String },
-    BlockHeight: { type: Number },
-    TransactionHeight: { type: Number },
-    PopRevenue: { type: Number },
-    Nodes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Nodes' }],
-    Transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Transactions' }],
-  },
-  {
-    toJSON: { virtuals: true },
+const createJWT = payload => {
+  const options = config.token
+  options.expiresIn = `${config.app.tokenExpired}h`
+
+  return jwt.sign({ payload }, config.app.tokenSecret, options)
+}
+
+function parseResponse(success, message, token, data) {
+  return {
+    Success: success,
+    Message: message,
+    Token: token ? token : null,
+    Data: data ? data : {},
   }
-)
+}
 
-schema.plugin(upserts)
+module.exports = {
+  Mutation: {
+    login: async (parent, args, { req, models }) => {
+      try {
+        const { Identifier, Password } = args
+        if (!Identifier || !Password) return parseResponse(false, 'Invalid payload data')
 
-module.exports = mongoose.model('Accounts', schema)
+        const admin = await models.Admins.findOne({ Identifier }).exec()
+        if (!admin) return parseResponse(false, 'Invalid Identifier or Password')
+        if (admin && !admin.Active) return parseResponse(false, 'Your account is not active')
+        if (Password !== decrypt(admin.Password)) return parseResponse(false, 'Invalid Identifier or Password')
+
+        const payload = { _id: admin._id, Identifier: admin.Identifier, Role: admin.Role }
+        const token = createJWT(payload)
+        const expiredAt = moment().add(config.app.tokenExpired, 'hours')
+
+        const payloadLog = {
+          Admin: admin,
+          Host: req.get('host'),
+          UserAgent: req.get('user-agent'),
+          LoginAt: moment().toDate(),
+          ExpiredToken: expiredAt,
+        }
+        const result = await models.AdminLogs.create(payloadLog)
+        delete result.Admin.Password
+        delete result.Admin.__v
+        return parseResponse(true, 'Success loged', token, result.Admin)
+      } catch (err) {
+        throw new Error(err.message)
+      }
+    },
+  },
+}

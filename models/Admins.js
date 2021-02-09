@@ -1,6 +1,6 @@
 /** 
  * ZooBC Copyright (C) 2020 Quasisoft Limited - Hong Kong
- * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-api>
+ * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-scheduler>
 
  * ZooBC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,8 +45,7 @@ const { upserts } = require('../utils')
 
 const schema = new mongoose.Schema(
   {
-    Username: { type: String, index: true },
-    Email: { type: String },
+    Identifier: { type: String, index: true },
     Password: { type: String },
     Role: { type: String },
     Active: { type: Boolean },

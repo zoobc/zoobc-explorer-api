@@ -1,6 +1,6 @@
 /** 
  * ZooBC Copyright (C) 2020 Quasisoft Limited - Hong Kong
- * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-scheduler>
+ * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-api>
 
  * ZooBC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,34 +40,23 @@
  * shall be included in all copies or substantial portions of the Software.
 **/
 
-const mongoose = require('mongoose')
-const { upserts } = require('../utils')
+const { msg } = require('../utils')
+const { Admins } = require('../models')
 
-const schema = new mongoose.Schema(
-  {
-    AccountAddress: { type: Buffer, index: true },
-    AccountAddressFormatted: { type: String } /** update */,
-    Balance: { type: Number },
-    BalanceConversion: { type: String },
-    SpendableBalance: { type: Number },
-    SpendableBalanceConversion: { type: String },
-    FirstActive: { type: Date },
-    LastActive: { type: Date },
-    TotalRewards: { type: Number },
-    TotalRewardsConversion: { type: String },
-    TotalFeesPaid: { type: Number },
-    TotalFeesPaidConversion: { type: String },
-    BlockHeight: { type: Number },
-    TransactionHeight: { type: Number },
-    PopRevenue: { type: Number },
-    Nodes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Nodes' }],
-    Transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Transactions' }],
-  },
-  {
-    toJSON: { virtuals: true },
+module.exports = async () => {
+  const Identifier = 'superzbc'
+  const superadmin = await Admins.findOne({ Identifier }).exec()
+
+  if (!superadmin) {
+    const data = {
+      Identifier,
+      Password: '9a23c2dd327605c04a90fe17c457fc2e420061673a91a6ed52efb518484b85dcfLzoE931/s/GVR+vtDSAiA==',
+      Role: 'Admin',
+      Active: true,
+    }
+    Admins.create(data, err => {
+      if (err) msg.red('❌', `Generate error: ${err.message}`)
+      msg.green('🚀', 'Success Generated Superadmin')
+    })
   }
-)
-
-schema.plugin(upserts)
-
-module.exports = mongoose.model('Accounts', schema)
+}

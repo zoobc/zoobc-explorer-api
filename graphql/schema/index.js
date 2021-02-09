@@ -49,6 +49,11 @@ const searchSchema = require('./search.schema')
 const nodeSchema = require('./node.schema')
 const graphSchema = require('./graph.schema')
 const mapSchema = require('./map.schema')
+const adminSchema = require('./admin.schema')
+const adminlogSchema = require('./adminlog.schema')
+const keywordSchema = require('./keyword.schema')
+const authSchema = require('./auth.schema')
+const dashboardSchema = require('./dashboard.schema')
 
 const linkSchema = gql`
   scalar Date
@@ -107,4 +112,9 @@ module.exports = [
   nodeSchema,
   graphSchema,
   mapSchema,
+  adminSchema,
+  adminlogSchema,
+  keywordSchema,
+  authSchema,
+  dashboardSchema,
 ]
