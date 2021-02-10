@@ -52,5 +52,6 @@ module.exports = gql`
     Height: Int
     Timestamp: Date
     FoundIn: String
+    Promotion: Keyword
   }
 `
