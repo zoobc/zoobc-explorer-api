@@ -56,6 +56,7 @@ module.exports = {
     rateLimitSuspendTime: 5,
     rateLimitMaxHitPerIP: 500,
     pageLimit: 10,
+    rootPassword: process.env.ROOT_PASSWORD || '1234567890',
     useCluster: process.env.USE_CLUSTER || 'true',
   },
   db: {
