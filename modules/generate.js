@@ -40,7 +40,9 @@
  * shall be included in all copies or substantial portions of the Software.
 **/
 
+const config = require('../config/config')
 const { msg } = require('../utils')
+const { encrypt } = require('../utils')
 const { Admins } = require('../models')
 
 module.exports = async () => {
@@ -50,7 +52,7 @@ module.exports = async () => {
   if (!superadmin) {
     const data = {
       Identifier,
-      Password: '9a23c2dd327605c04a90fe17c457fc2e420061673a91a6ed52efb518484b85dcfLzoE931/s/GVR+vtDSAiA==',
+      Password: encrypt(config.app.rootPassword),
       Role: 'Admin',
       Active: true,
     }
