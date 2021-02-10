@@ -1,6 +1,6 @@
 /** 
  * ZooBC Copyright (C) 2020 Quasisoft Limited - Hong Kong
- * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-scheduler>
+ * This file is part of ZooBC <https://github.com/zoobc/zoobc-explorer-api>
 
  * ZooBC is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,34 +40,25 @@
  * shall be included in all copies or substantial portions of the Software.
 **/
 
-const mongoose = require('mongoose')
-const { upserts } = require('../utils')
-
-const schema = new mongoose.Schema(
-  {
-    AccountAddress: { type: Buffer, index: true },
-    AccountAddressFormatted: { type: String } /** update */,
-    Balance: { type: Number },
-    BalanceConversion: { type: String },
-    SpendableBalance: { type: Number },
-    SpendableBalanceConversion: { type: String },
-    FirstActive: { type: Date },
-    LastActive: { type: Date },
-    TotalRewards: { type: Number },
-    TotalRewardsConversion: { type: String },
-    TotalFeesPaid: { type: Number },
-    TotalFeesPaidConversion: { type: String },
-    BlockHeight: { type: Number },
-    TransactionHeight: { type: Number },
-    PopRevenue: { type: Number },
-    Nodes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Nodes' }],
-    Transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Transactions' }],
-  },
-  {
-    toJSON: { virtuals: true },
+function parseResponse(success, message, data) {
+  return {
+    Success: success,
+    Message: message,
+    Data: data ? data : {},
   }
-)
+}
 
-schema.plugin(upserts)
+module.exports = {
+  Query: {
+    profile: async (parent, args, { auth }) => {
+      try {
+        if (!auth) return parseResponse(false, 'You must be logged to access this')
+        if (auth && auth.Role !== 'Admin') return parseResponse(false, 'You do not have authorized this access')
 
-module.exports = mongoose.model('Accounts', schema)
+        return parseResponse(true, 'Success fetch data', auth)
+      } catch (err) {
+        throw new Error(err.message)
+      }
+    },
+  },
+}

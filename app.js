@@ -55,5 +55,6 @@ require('./modules/graphqlsubscription')()
 require('./modules/redis')()
 require('./modules/mongoose')()
 require('./api/routes')(app)
+require('./modules/generate')()
 
 module.exports = app
