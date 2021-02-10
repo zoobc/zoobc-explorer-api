@@ -173,9 +173,14 @@ module.exports = {
                                         })
                                           .populate('Admin')
                                           .lean()
-                                          .exec((err, promotion) => {
+                                          .exec(async (err, promotion) => {
                                             if (err) return reject(err)
                                             if (!promotion) return resolve({})
+
+                                            await models.Keywords.findByIdAndUpdate(
+                                              { _id: promotion._id },
+                                              { Seen: promotion.Seen + 1 }
+                                            )
 
                                             const resPromotion = {
                                               ID: promotion._id,
