@@ -110,9 +110,6 @@ module.exports = {
 
         if (!data) return parseResponse(false, 'Data not found')
 
-        const payload = { Seen: data.Seen + 1 }
-        await models.Keywords.findByIdAndUpdate({ _id: data._id }, payload)
-
         return parseResponse(true, 'Success fetch data', data ? data : {})
       } catch (err) {
         return parseResponses(false, err.message)
