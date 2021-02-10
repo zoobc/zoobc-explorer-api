@@ -47,6 +47,7 @@ const cache = {
   searchBlock: 'searchBlock',
   searchAccount: 'searchAccount',
   searchNode: 'searchNode',
+  searchPromotion: 'searchPromotion',
 }
 
 module.exports = {
@@ -154,18 +155,38 @@ module.exports = {
                                     .lean()
                                     .exec((err, node) => {
                                       if (err) return reject(err)
-                                      if (!node) return resolve({})
 
-                                      const resNode = {
-                                        ID: node.NodePublicKeyFormatted,
-                                        Height: node.Height,
-                                        Timestamp: node.RegistrationTime,
-                                        FoundIn: 'Node',
+                                      if (node) {
+                                        const resNode = {
+                                          ID: node.NodePublicKeyFormatted,
+                                          Height: node.Height,
+                                          Timestamp: node.RegistrationTime,
+                                          FoundIn: 'Node',
+                                        }
+                                        RedisCache.set(cacheNode, resNode, err => {
+                                          if (err) return reject(err)
+                                          return resolve(resNode)
+                                        })
+                                      } else {
+                                        models.Keywords.findOne({
+                                          Keyword: { $regex: Id.toLowerCase(), $options: 'i' },
+                                        })
+                                          .populate('Admin')
+                                          .lean()
+                                          .exec((err, promotion) => {
+                                            if (err) return reject(err)
+                                            if (!promotion) return resolve({})
+
+                                            const resPromotion = {
+                                              ID: promotion._id,
+                                              Height: 0,
+                                              Timestamp: promotion.CreatedAt,
+                                              FoundIn: 'Promotion',
+                                              Promotion: promotion,
+                                            }
+                                            return resolve(resPromotion)
+                                          })
                                       }
-                                      RedisCache.set(cacheNode, resNode, err => {
-                                        if (err) return reject(err)
-                                        return resolve(resNode)
-                                      })
                                     })
                                 })
                               }

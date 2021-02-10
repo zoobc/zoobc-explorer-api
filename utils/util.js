@@ -53,13 +53,8 @@ function hmacEncrypt(message, key) {
 }
 
 function encrypt(payload) {
-  if (!payload) {
-    return null
-  }
-
-  if (isObject(payload)) {
-    payload = JSON.stringify(payload)
-  }
+  if (!payload) return null
+  if (isObject(payload)) payload = JSON.stringify(payload)
 
   const salt = CryptoJS.lib.WordArray.random(128 / 8)
   const iv = CryptoJS.lib.WordArray.random(128 / 8)
@@ -77,9 +72,7 @@ function encrypt(payload) {
 }
 
 function decrypt(payload) {
-  if (!payload) {
-    return null
-  }
+  if (!payload) return null
 
   const salt = CryptoJS.enc.Hex.parse(payload.substr(0, 32))
   const iv = CryptoJS.enc.Hex.parse(payload.substr(32, 32))

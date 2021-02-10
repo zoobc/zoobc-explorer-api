@@ -69,6 +69,7 @@ module.exports = {
         if (!Identifier || !Password) return parseResponse(false, 'Invalid payload data')
 
         const admin = await models.Admins.findOne({ Identifier }).exec()
+
         if (!admin) return parseResponse(false, 'Invalid Identifier or Password')
         if (admin && !admin.Active) return parseResponse(false, 'Your account is not active')
         if (Password !== decrypt(admin.Password)) return parseResponse(false, 'Invalid Identifier or Password')
@@ -78,7 +79,7 @@ module.exports = {
         const expiredAt = moment().add(config.app.tokenExpired, 'hours')
 
         const payloadLog = {
-          Admin: admin,
+          Admin: admin._id,
           Host: req.get('host'),
           UserAgent: req.get('user-agent'),
           LoginAt: moment().toDate(),
