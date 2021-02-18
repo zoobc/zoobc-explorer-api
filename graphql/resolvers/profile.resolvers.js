@@ -40,6 +40,8 @@
  * shall be included in all copies or substantial portions of the Software.
 **/
 
+const { encrypt } = require('../../utils')
+
 function parseResponse(success, message, data) {
   return {
     Success: success,
@@ -57,6 +59,27 @@ module.exports = {
 
         return parseResponse(true, 'Success fetch data', auth)
       } catch (err) {
+        throw new Error(err.message)
+      }
+    },
+  },
+
+  Mutation: {
+    changePassword: async (parent, args, { req, models, auth }) => {
+      try {
+        const { NewPassword } = args
+
+        if (!NewPassword) return parseResponse(false, 'Invalid payload data')
+        if (!auth) return parseResponse(false, 'You must be logged to access this')
+        if (auth && auth.Role !== 'Admin') return parseResponse(false, 'You do not have authorized this access')
+
+        const admin = await models.Admins.findOne({ _id: auth._id }).exec()
+        if (!admin) return parseResponse(false, 'Your account is not active')
+        if (admin && !admin.Active) return parseResponse(false, 'Your account is not active')
+
+        const result = await models.Admins.findByIdAndUpdate({ _id: auth._id }, { Password: encrypt(NewPassword) })
+        return parseResponse(true, 'Success updated data', result)
+      } catch (error) {
         throw new Error(err.message)
       }
     },
