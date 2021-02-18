@@ -65,7 +65,7 @@ module.exports = {
   },
 
   Mutation: {
-    changePassword: async (parent, args, { req, models, auth }) => {
+    changePassword: async (parent, args, { models, auth }) => {
       try {
         const { NewPassword } = args
 
