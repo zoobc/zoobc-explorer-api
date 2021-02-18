@@ -48,6 +48,10 @@ module.exports = gql`
     profile: ProfileResponse!
   }
 
+  extend type Mutation {
+    changePassword(NewPassword: String!): ProfileResponse!
+  }
+
   type ProfileResponse {
     Success: Boolean!
     Message: String
