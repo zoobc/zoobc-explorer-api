@@ -84,6 +84,7 @@ module.exports = {
 
         const total = await models.Keywords.countDocuments().exec()
         const data = await models.Keywords.find()
+          .populate('Admin')
           .select()
           .limit(lm)
           .skip((pg - 1) * lm)
@@ -103,8 +104,12 @@ module.exports = {
         const { Keyword } = args
 
         const data = await models.Keywords.findOne({ Keyword: { $regex: Keyword.toLowerCase(), $options: 'i' } })
+          .populate('Admin')
           .lean()
           .exec()
+
+        if (!data) return parseResponse(false, 'Data not found')
+
         return parseResponse(true, 'Success fetch data', data ? data : {})
       } catch (err) {
         return parseResponses(false, err.message)
@@ -127,7 +132,7 @@ module.exports = {
 
         if (data) return parseResponse(false, 'Keyword already exists')
 
-        const payload = { Keyword, Content, ExpiredAt, Seen: 0, CreatedBy: auth, CreatedAt: moment().toDate() }
+        const payload = { Keyword, Content, ExpiredAt, Seen: 0, CreatedBy: auth._id, CreatedAt: moment().toDate() }
         const result = await models.Keywords.create(payload)
         return parseResponse(true, 'Success created data', result)
       } catch (err) {
